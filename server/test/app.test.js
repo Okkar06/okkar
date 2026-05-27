@@ -14,7 +14,7 @@ test('GET /api/health returns ok status', async () => {
     assert.equal(response.status, 200)
     assert.equal(data.status, 'ok')
   } finally {
-    server.close()
+    await new Promise((resolve) => server.close(resolve))
   }
 })
 
@@ -33,6 +33,6 @@ test('POST /api/contacts validates required fields', async () => {
     assert.equal(response.status, 400)
     assert.equal(data.error, 'name, email, and message are required')
   } finally {
-    server.close()
+    await new Promise((resolve) => server.close(resolve))
   }
 })

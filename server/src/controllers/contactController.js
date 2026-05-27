@@ -1,7 +1,23 @@
 const { createContact } = require('../services/contactService')
 
 function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  if (typeof email !== 'string') {
+    return false
+  }
+
+  const normalized = email.trim()
+  if (normalized.length === 0 || normalized.length > 254) {
+    return false
+  }
+
+  const atIndex = normalized.indexOf('@')
+  const lastAtIndex = normalized.lastIndexOf('@')
+  if (atIndex <= 0 || atIndex !== lastAtIndex || atIndex === normalized.length - 1) {
+    return false
+  }
+
+  const domain = normalized.slice(atIndex + 1)
+  return domain.includes('.') && !domain.startsWith('.') && !domain.endsWith('.')
 }
 
 async function submitContact(req, res, next) {

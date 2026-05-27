@@ -15,7 +15,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/contacts', contactRoutes)
 
 app.use((error, _req, res, _next) => {
-  console.error(error)
+  console.error(error?.message || 'internal server error')
   res.status(500).json({ error: 'internal server error' })
 })
 
