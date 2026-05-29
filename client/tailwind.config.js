@@ -4,10 +4,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#111827',
-        card: '#1f2937',
-        accent: '#3b82f6',
-        accentAlt: '#8b5cf6',
+        bg: '#0f0f0f',
+        card: '#171717',
+        accent: '#5b42f5',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+      },
+      animation: {
+        marquee: 'marquee 18s linear infinite',
       },
     },
   },

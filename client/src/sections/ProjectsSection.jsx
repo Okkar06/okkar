@@ -1,42 +1,67 @@
+import { motion, useReducedMotion } from 'framer-motion'
 import SectionTitle from '../components/SectionTitle'
 import ProjectCard from '../components/ProjectCard'
 
-const projects = [
-  {
-    name: 'Portfolio Website',
-    description: 'A modern personal portfolio built with React, Tailwind CSS, and Express backend services.',
-    tags: ['React', 'Tailwind', 'Express', 'Prisma'],
-    githubUrl: 'https://github.com/Okkar06/okkar_profolio',
-    liveUrl: 'https://example.com',
-  },
-  {
-    name: 'Task Manager API',
-    description: 'A RESTful task management API with authentication, database persistence, and deployment-ready setup.',
-    tags: ['Node.js', 'Express', 'PostgreSQL'],
-    githubUrl: 'https://github.com/Okkar06',
-    liveUrl: 'https://example.com',
-  },
-  {
-    name: 'Realtime Chat App',
-    description: 'A responsive chat interface supporting real-time messaging and clean mobile-first UI patterns.',
-    tags: ['React', 'WebSocket', 'Tailwind'],
-    githubUrl: 'https://github.com/Okkar06',
-    liveUrl: 'https://example.com',
-  },
-]
+function ProjectsSection({ projects, title, subtitle }) {
+  const shouldReduceMotion = useReducedMotion()
 
-function ProjectsSection() {
+  const fadeInUp = shouldReduceMotion
+    ? { hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }
+    : { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: 'easeOut' } } }
+
+  const container = shouldReduceMotion
+    ? { hidden: {}, visible: {} }
+    : { hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }
+
+  const item = shouldReduceMotion
+    ? { hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }
+    : { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } } }
+
   return (
-    <section id="projects" className="px-6 py-20">
+    <motion.section
+      id="projects"
+      className="scroll-mt-24 px-6 py-24"
+      variants={fadeInUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+    >
       <div className="mx-auto max-w-6xl">
-        <SectionTitle title="Projects" subtitle="Selected work and experiments" />
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <SectionTitle
+          label="Projects"
+          title={
+            title || (
+              <>
+                {/* REPLACE: Projects title */}
+                Selected work &amp; experiments
+              </>
+            )
+          }
+          subtitle={
+            subtitle || (
+              <>
+                {/* REPLACE: Projects subtitle */}
+                A few things I’ve built recently — each one taught me something new.
+              </>
+            )
+          }
+        />
+
+        <motion.div
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          variants={container}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+        >
           {projects.map((project) => (
-            <ProjectCard key={project.name} {...project} />
+            <motion.div key={project.title} variants={item}>
+              <ProjectCard {...project} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 
