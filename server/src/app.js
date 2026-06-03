@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const cors = require('cors')
 const env = require('./config/env')
@@ -18,5 +19,9 @@ app.use((error, _req, res, _next) => {
   console.error(error?.message || 'internal server error')
   res.status(500).json({ error: 'internal server error' })
 })
+
+const clientDist = path.join(__dirname, '..', '..', 'client', 'dist')
+app.use(express.static(clientDist))
+app.get('*', (_req, res) => res.sendFile(path.join(clientDist, 'index.html')))
 
 module.exports = app

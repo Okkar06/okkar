@@ -1,11 +1,10 @@
 services:
-  # ── Express / Prisma backend ─────────────────────────────────────────────
+  # Single web service — Express serves both the API and the built React app
   - type: web
-    name: okkar-api
+    name: okkar
     env: node
-    rootDir: server
     plan: free
-    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy
+    buildCommand: npm run render-build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -13,22 +12,6 @@ services:
       - key: PORT
         value: 4000
       - key: DATABASE_URL
-        sync: false          # secret — set in Render dashboard, never commit
+        sync: false    # set in Render dashboard — never commit this value
       - key: CLIENT_ORIGIN
         value: https://okkar.onrender.com
-
-  # ── React / Vite frontend (static site) ──────────────────────────────────
-  - type: web
-    name: okkar
-    env: static
-    rootDir: client
-    plan: free
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_API_BASE_URL
-        value: https://okkar-api.onrender.com
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
