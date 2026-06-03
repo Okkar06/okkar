@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --accent: 91 66 245;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -16,5 +20,22 @@ a {
 }
 
 ::selection {
-  background: rgba(91, 66, 245, 0.35);
+  background: rgb(var(--accent) / 0.35);
+}
+
+/* Accent-aware gradient utilities — update with --accent CSS var */
+.bg-accent-glow {
+  background: radial-gradient(circle at top, rgb(var(--accent) / 0.18), transparent 55%);
+}
+
+.bg-card-accent-glow {
+  background: radial-gradient(circle at top left, rgb(var(--accent) / 0.1), transparent 65%);
+}
+
+.hover-shadow-accent {
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+
+.hover-shadow-accent:hover {
+  box-shadow: 0 28px 80px -28px rgb(var(--accent) / 0.5);
 }

@@ -4,7 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>client</title>
+    <title>Okkar Hein — Portfolio</title>
+    <script>
+      (function () {
+        var themes = {
+          violet: '91 66 245',
+          blue: '59 130 246',
+          cyan: '6 182 212',
+          emerald: '16 185 129',
+          rose: '244 63 94',
+          amber: '245 158 11',
+        }
+        try {
+          var saved = localStorage.getItem('accent-theme')
+          if (saved && themes[saved]) {
+            document.documentElement.style.setProperty('--accent', themes[saved])
+          }
+        } catch (_) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

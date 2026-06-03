@@ -6,7 +6,7 @@ export default {
       colors: {
         bg: '#0f0f0f',
         card: '#171717',
-        accent: '#5b42f5',
+        accent: 'rgb(var(--accent) / <alpha-value>)',
       },
       keyframes: {
         marquee: {

@@ -11,7 +11,7 @@ function ProjectsSection({ projects, title, subtitle }) {
 
   const container = shouldReduceMotion
     ? { hidden: {}, visible: {} }
-    : { hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }
+    : { hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }
 
   const item = shouldReduceMotion
     ? { hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }
@@ -20,43 +20,29 @@ function ProjectsSection({ projects, title, subtitle }) {
   return (
     <motion.section
       id="projects"
-      className="scroll-mt-24 px-6 py-24"
+      className="scroll-mt-24 px-6 py-28"
       variants={fadeInUp}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.15 }}
     >
       <div className="mx-auto max-w-6xl">
         <SectionTitle
           label="Projects"
-          title={
-            title || (
-              <>
-                {/* REPLACE: Projects title */}
-                Selected work &amp; experiments
-              </>
-            )
-          }
-          subtitle={
-            subtitle || (
-              <>
-                {/* REPLACE: Projects subtitle */}
-                A few things I’ve built recently — each one taught me something new.
-              </>
-            )
-          }
+          title={title || 'Selected work'}
+          subtitle={subtitle || "Things I've built — each one taught me something new."}
         />
 
         <motion.div
-          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
           variants={container}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.25 }}
+          viewport={{ once: true, amount: 0.15 }}
         >
-          {projects.map((project) => (
+          {projects.map((project, i) => (
             <motion.div key={project.title} variants={item}>
-              <ProjectCard {...project} />
+              <ProjectCard {...project} index={i} />
             </motion.div>
           ))}
         </motion.div>

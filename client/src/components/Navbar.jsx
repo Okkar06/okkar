@@ -1,5 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import ThemeSwitcher from './ThemeSwitcher'
 
 function Navbar({ name, links }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -7,28 +8,23 @@ function Navbar({ name, links }) {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false)
-      }
+      if (event.key === 'Escape') setIsOpen(false)
     }
-
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   useEffect(() => {
     if (!isOpen) return
-
     const handleResize = () => {
       if (window.innerWidth >= 768) setIsOpen(false)
     }
-
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [isOpen])
 
   const underlineClassName =
-    "relative text-sm tracking-wide text-neutral-200/90 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 hover:text-neutral-100 hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+    'relative text-sm tracking-wide text-neutral-200/90 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 hover:text-neutral-100 hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
 
   const menuVariants = shouldReduceMotion
     ? { hidden: { opacity: 1 }, visible: { opacity: 1 }, exit: { opacity: 1 } }
@@ -37,6 +33,7 @@ function Navbar({ name, links }) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-bg/80 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        {/* Logo */}
         <a
           href="#top"
           className="text-sm font-semibold tracking-[0.25em] text-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
@@ -45,14 +42,18 @@ function Navbar({ name, links }) {
           {name}
         </a>
 
+        {/* Desktop: nav links + theme switcher */}
         <div className="hidden items-center gap-7 md:flex">
           {links.map((link) => (
             <a key={link.href} href={link.href} className={underlineClassName}>
               {link.label}
             </a>
           ))}
+          <div className="h-4 w-px bg-white/15" aria-hidden="true" />
+          <ThemeSwitcher />
         </div>
 
+        {/* Mobile: hamburger only (theme switcher is in the dropdown) */}
         <button
           type="button"
           aria-label="Toggle navigation"
@@ -80,6 +81,7 @@ function Navbar({ name, links }) {
         </button>
       </nav>
 
+      {/* Mobile dropdown */}
       <AnimatePresence>
         {isOpen ? (
           <motion.div
@@ -101,6 +103,13 @@ function Navbar({ name, links }) {
                   {link.label}
                 </a>
               ))}
+              <div className="h-px w-full bg-white/10" aria-hidden="true" />
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                  Accent
+                </span>
+                <ThemeSwitcher />
+              </div>
             </div>
           </motion.div>
         ) : null}
