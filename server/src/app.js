@@ -22,6 +22,6 @@ app.use((error, _req, res, _next) => {
 
 const clientDist = path.join(__dirname, '..', '..', 'client', 'dist')
 app.use(express.static(clientDist))
-app.get('*', (_req, res) => res.sendFile(path.join(clientDist, 'index.html')))
+app.get('/{*path}', (_req, res) => res.sendFile(path.join(clientDist, 'index.html')))
 
 module.exports = app
