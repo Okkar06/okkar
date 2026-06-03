@@ -1,4 +1,4 @@
-# okkar_profolio
+# okkar_portfolio
 
 Personal portfolio website built with:
 - Frontend: React + Vite + Tailwind CSS (`/client`)
