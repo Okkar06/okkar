@@ -35,13 +35,13 @@ function App() {
         secondaryUrl: 'https://github.com/Okkar06/Trackify.git',
       },
       {
-        title: 'Food Delivery Management System',
+        title: 'Oasis Spa — Luxury Wellness Platform',
         description:
-          'A full-stack food delivery platform with responsive UI, REST APIs, authentication, restaurant/menu management, order processing, and real-time order status updates.',
-        tags: ['React', 'REST API', 'Auth', 'Node.js'],
-        date: 'May 2025',
+          'A full-stack spa management system with appointment booking, member care packages, vouchers, and revenue analytics. Built for Asian wellness traditions with a dark luxury theme.',
+        tags: ['React', 'TypeScript', 'Tailwind', 'Express', 'Node.js', 'PostgreSQL'],
+        date: 'Jun 2026',
         primaryUrl: '#',
-        secondaryUrl: 'https://github.com/Okkar06/Food_Delivery_Management_System',
+        secondaryUrl: 'https://github.com/Okkar06/Oasis-Spa',
       },
       {
         title: 'More coming soon',
@@ -65,15 +65,11 @@ function App() {
 
   return (
     <motion.div
-      className="relative min-h-screen bg-bg text-neutral-200"
+      className="relative min-h-screen"
       variants={pageVariants}
       initial="hidden"
       animate="visible"
     >
-      {/* Background: radial accent glow — colour set via --accent CSS var */}
-      <div className="bg-accent-glow pointer-events-none absolute inset-0 opacity-80" />
-      {/* Background: subtle grid */}
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:72px_72px] opacity-[0.15]" />
 
       <CursorDot />
 

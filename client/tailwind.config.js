@@ -3,6 +3,10 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        display: ["'Syne'", 'system-ui', 'sans-serif'],
+        sans: ["'Inter'", 'system-ui', '-apple-system', 'sans-serif'],
+      },
       colors: {
         bg: '#0f0f0f',
         card: '#171717',

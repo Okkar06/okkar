@@ -2,40 +2,295 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS  (light mode only)
+═══════════════════════════════════════════════════════ */
+
 :root {
   --accent: 91 66 245;
+
+  --color-hero-name: #ffffff;
+  --color-hero-accent-text: rgba(255, 255, 255, 0.75);
+
+  --color-cta-text: #08081e;
+  --color-cta-border: rgba(8, 8, 30, 0.26);
+  --color-cta-bg: rgba(8, 8, 30, 0.05);
+  --color-cta-link: rgba(8, 8, 30, 0.52);
+
+  --bg-start: #f4f4ff;
+  --bg-end: #e6e3f8;
+
+  --color-text-primary: #08081e;
+  --color-text-secondary: #4a4a78;
+
+  --color-surface: #f4f4ff;
+  --color-footer-bg: #0e0e28;
+
+  --color-nav-bg: rgba(6, 6, 20, 0.92);
+  --color-nav-border: rgba(160, 160, 210, 0.18);
+  --color-nav-text: rgba(230, 228, 255, 0.78);
+  --color-nav-logo: #eae9f8;
+
+  --color-card-border: rgba(80, 80, 160, 0.13);
+  --color-tag-text: #5050a0;
+  --color-tag-border: rgba(80, 80, 160, 0.18);
+  --color-tag-bg: rgba(80, 80, 160, 0.06);
 }
 
-html {
-  scroll-behavior: smooth;
+/* ═══════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════ */
+
+@keyframes heroGlow {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.75; }
 }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   GLOBAL
+═══════════════════════════════════════════════════════ */
+
+html { scroll-behavior: smooth; }
 
 body {
-  @apply m-0 bg-bg text-neutral-200 antialiased;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  @apply m-0 antialiased;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--color-text-primary);
+  background:
+    radial-gradient(ellipse at 18% 58%, rgb(var(--accent) / 0.13) 0%, transparent 48%),
+    radial-gradient(ellipse at 82% 82%, rgb(var(--accent) / 0.08) 0%, transparent 42%),
+    radial-gradient(ellipse at 50% 100%, rgb(var(--accent) / 0.06) 0%, transparent 55%),
+    linear-gradient(170deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  min-height: 100vh;
 }
 
-a {
-  @apply transition-colors;
+::selection { background: rgb(var(--accent) / 0.35); }
+
+/* ═══════════════════════════════════════════════════════
+   HERO  (diagonal split panels)
+═══════════════════════════════════════════════════════ */
+
+.hero-bg-top {
+  background:
+    linear-gradient(rgba(3, 3, 16, 0.50), rgba(3, 3, 16, 0.50)),
+    rgb(var(--accent));
 }
 
-::selection {
-  background: rgb(var(--accent) / 0.35);
+/* Pulsing ambient glow inside the dark panel */
+.hero-bg-top::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 75% 75%, rgb(var(--accent) / 0.3) 0%, transparent 55%);
+  animation: heroGlow 5s ease-in-out infinite;
+  pointer-events: none;
 }
 
-/* Accent-aware gradient utilities — update with --accent CSS var */
+.hero-bg-bottom {
+  background: linear-gradient(160deg, #f4f4ff 0%, #e8e5fa 100%);
+}
+
+.hero-text-primary { color: var(--color-hero-name); }
+.hero-text-accent  { color: var(--color-hero-accent-text); }
+.hero-text-muted   { color: var(--color-text-secondary); }
+
+/* ═══════════════════════════════════════════════════════
+   NAVBAR
+═══════════════════════════════════════════════════════ */
+
+.navbar-header {
+  background: var(--color-nav-bg);
+  border-bottom: 1px solid var(--color-nav-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.navbar-logo {
+  color: var(--color-nav-logo);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-decoration: none;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.navbar-link {
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  color: var(--color-nav-text);
+  position: relative;
+  text-decoration: none;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.navbar-link:hover { color: var(--color-nav-logo); }
+.navbar-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  height: 1px; width: 100%;
+  background: rgb(var(--accent));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.navbar-link:hover::after { transform: scaleX(1); }
+.navbar-mobile-btn {
+  display: grid;
+  place-items: center;
+  width: 2.5rem; height: 2.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-nav-border);
+  background: transparent;
+  color: var(--color-nav-logo);
+  cursor: pointer;
+}
+.navbar-mobile-btn:hover { background: rgba(150, 150, 210, 0.08); }
+.navbar-mobile-dropdown {
+  background: var(--color-nav-bg);
+  border-top: 1px solid var(--color-nav-border);
+  padding: 1.25rem 1.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION TEXT
+═══════════════════════════════════════════════════════ */
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.42em;
+  color: var(--color-text-secondary);
+}
+.section-heading { color: var(--color-text-primary); }
+.section-subtext  { color: var(--color-text-secondary); }
+
+.gradient-text {
+  background: linear-gradient(
+    125deg,
+    var(--color-text-primary) 0%,
+    rgb(var(--accent) / 0.85) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════
+   GLASS CARDS
+═══════════════════════════════════════════════════════ */
+
+.card-glass {
+  background: linear-gradient(
+    148deg,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(224, 220, 255, 0.88) 100%
+  );
+  border: 1px solid var(--color-card-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 1) inset,
+    0 8px 28px rgba(60, 50, 120, 0.12);
+}
+
+.card-inner-header {
+  background: linear-gradient(
+    135deg,
+    rgb(var(--accent) / 0.08) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  border-bottom: 1px solid var(--color-card-border);
+}
+
+.card-tag {
+  border: 1px solid var(--color-tag-border);
+  background: var(--color-tag-bg);
+  color: var(--color-tag-text);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ABOUT SECTION
+═══════════════════════════════════════════════════════ */
+
+.about-section { background: transparent; }
+
+.about-pull-quote {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-weight: 800;
+  background: linear-gradient(120deg, var(--color-text-primary) 0%, rgb(var(--accent) / 0.9) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.skill-tag {
+  display: inline-block;
+  padding: 0.375rem 1.125rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(var(--accent) / 0.45);
+  background: rgb(var(--accent) / 0.1);
+  color: var(--color-text-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.03em;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.skill-tag:hover {
+  background: rgb(var(--accent) / 0.18);
+  border-color: rgb(var(--accent) / 0.65);
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+
+.footer-section { background: var(--color-footer-bg); }
+.footer-text { color: var(--color-text-secondary); }
+.footer-icon-link {
+  display: grid;
+  place-items: center;
+  width: 2.25rem; height: 2.25rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(160, 160, 220, 0.15);
+  background: rgba(160, 160, 220, 0.05);
+  color: rgba(160, 160, 210, 0.9);
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.footer-icon-link:hover {
+  border-color: rgba(200, 200, 255, 0.3);
+  color: #eae9f8;
+  background: rgba(160, 160, 220, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ACCENT UTILITIES
+═══════════════════════════════════════════════════════ */
+
 .bg-accent-glow {
   background: radial-gradient(circle at top, rgb(var(--accent) / 0.18), transparent 55%);
 }
-
 .bg-card-accent-glow {
-  background: radial-gradient(circle at top left, rgb(var(--accent) / 0.1), transparent 65%);
+  background: radial-gradient(circle at top left, rgb(var(--accent) / 0.12), transparent 65%);
 }
-
 .hover-shadow-accent {
-  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease !important;
 }
-
 .hover-shadow-accent:hover {
-  box-shadow: 0 28px 80px -28px rgb(var(--accent) / 0.5);
+  box-shadow: 0 24px 64px -20px rgb(var(--accent) / 0.55);
 }

@@ -23,20 +23,17 @@ function Navbar({ name, links }) {
     return () => window.removeEventListener('resize', handleResize)
   }, [isOpen])
 
-  const underlineClassName =
-    'relative text-sm tracking-wide text-neutral-200/90 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 hover:text-neutral-100 hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
-
   const menuVariants = shouldReduceMotion
     ? { hidden: { opacity: 1 }, visible: { opacity: 1 }, exit: { opacity: 1 } }
     : { hidden: { opacity: 0, y: -10 }, visible: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -10 } }
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-bg/80 backdrop-blur">
+    <header className="navbar-header fixed inset-x-0 top-0 z-50 backdrop-blur-md">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <a
           href="#top"
-          className="text-sm font-semibold tracking-[0.25em] text-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          className="navbar-logo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2"
           onClick={() => setIsOpen(false)}
         >
           {name}
@@ -45,21 +42,29 @@ function Navbar({ name, links }) {
         {/* Desktop: nav links + theme switcher */}
         <div className="hidden items-center gap-7 md:flex">
           {links.map((link) => (
-            <a key={link.href} href={link.href} className={underlineClassName}>
+            <a
+              key={link.href}
+              href={link.href}
+              className="navbar-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2"
+            >
               {link.label}
             </a>
           ))}
-          <div className="h-4 w-px bg-white/15" aria-hidden="true" />
+          <div
+            className="h-4 w-px"
+            style={{ background: 'var(--color-nav-border)' }}
+            aria-hidden="true"
+          />
           <ThemeSwitcher />
         </div>
 
-        {/* Mobile: hamburger only (theme switcher is in the dropdown) */}
+        {/* Mobile: hamburger */}
         <button
           type="button"
           aria-label="Toggle navigation"
           aria-expanded={isOpen}
           onClick={() => setIsOpen((prev) => !prev)}
-          className="grid h-10 w-10 place-items-center rounded-md border border-white/10 bg-white/5 text-neutral-100 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg md:hidden"
+          className="navbar-mobile-btn md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2"
         >
           <span className="relative block h-4 w-5">
             <span
@@ -90,22 +95,29 @@ function Navbar({ name, links }) {
             exit="exit"
             variants={menuVariants}
             transition={{ duration: shouldReduceMotion ? 0 : 0.22, ease: 'easeOut' }}
-            className="border-t border-white/10 bg-bg/95 px-6 py-5 md:hidden"
+            className="navbar-mobile-dropdown md:hidden"
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-5">
               {links.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className={underlineClassName}
+                  className="navbar-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}
                 </a>
               ))}
-              <div className="h-px w-full bg-white/10" aria-hidden="true" />
+              <div
+                className="h-px w-full"
+                style={{ background: 'var(--color-nav-border)' }}
+                aria-hidden="true"
+              />
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-500">
+                <span
+                  className="text-xs font-semibold uppercase tracking-[0.3em]"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                >
                   Accent
                 </span>
                 <ThemeSwitcher />

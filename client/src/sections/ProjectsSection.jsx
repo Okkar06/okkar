@@ -41,7 +41,7 @@ function ProjectsSection({ projects, title, subtitle }) {
           viewport={{ once: true, amount: 0.15 }}
         >
           {projects.map((project, i) => (
-            <motion.div key={project.title} variants={item}>
+            <motion.div key={project.title} variants={item} className="h-full">
               <ProjectCard {...project} index={i} />
             </motion.div>
           ))}
