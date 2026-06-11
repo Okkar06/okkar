@@ -30,14 +30,8 @@ function Navbar({ name, links }) {
   return (
     <header className="navbar-header fixed inset-x-0 top-0 z-50 backdrop-blur-md">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        {/* Logo */}
-        <a
-          href="#top"
-          className="navbar-logo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2"
-          onClick={() => setIsOpen(false)}
-        >
-          {name}
-        </a>
+        {/* Logo placeholder — keeps justify-between spacing */}
+        <div aria-hidden="true" />
 
         {/* Desktop: nav links + theme switcher */}
         <div className="hidden items-center gap-7 md:flex">

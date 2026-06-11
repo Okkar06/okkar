@@ -26,10 +26,10 @@
   --color-surface: #f4f4ff;
   --color-footer-bg: #0e0e28;
 
-  --color-nav-bg: rgba(6, 6, 20, 0.92);
-  --color-nav-border: rgba(160, 160, 210, 0.18);
-  --color-nav-text: rgba(230, 228, 255, 0.78);
-  --color-nav-logo: #eae9f8;
+  --color-nav-bg: rgba(255, 255, 255, 0.88);
+  --color-nav-border: rgba(8, 8, 30, 0.08);
+  --color-nav-text: rgba(8, 8, 30, 0.55);
+  --color-nav-logo: #08081e;
 
   --color-card-border: rgba(80, 80, 160, 0.13);
   --color-tag-text: #5050a0;
@@ -80,6 +80,11 @@ body {
 }
 
 ::selection { background: rgb(var(--accent) / 0.35); }
+
+/* Hide native cursor on mouse devices — replaced by the custom bubble */
+@media (pointer: fine) {
+  *, *::before, *::after { cursor: none !important; }
+}
 
 /* ═══════════════════════════════════════════════════════
    HERO  (diagonal split panels)
@@ -157,7 +162,7 @@ body {
   color: var(--color-nav-logo);
   cursor: pointer;
 }
-.navbar-mobile-btn:hover { background: rgba(150, 150, 210, 0.08); }
+.navbar-mobile-btn:hover { background: rgba(8, 8, 30, 0.06); }
 .navbar-mobile-dropdown {
   background: var(--color-nav-bg);
   border-top: 1px solid var(--color-nav-border);

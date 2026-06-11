@@ -51,7 +51,7 @@ function HeroSection({ firstName, lastName, tagline }) {
           <div>
             <h1
               aria-label={firstName}
-              className="hero-text-primary font-display font-black leading-none tracking-tighter"
+              className="hero-text-primary font-sans font-black leading-none tracking-tight"
               style={{ fontSize: 'clamp(4.5rem, 13vw, 11rem)' }}
             >
               <span className="block overflow-hidden">
@@ -60,7 +60,7 @@ function HeroSection({ firstName, lastName, tagline }) {
             </h1>
             <div
               aria-label={lastName}
-              className="hero-text-accent font-display font-black leading-none tracking-tighter block"
+              className="hero-text-accent font-sans font-black leading-none tracking-tight block"
               style={{ fontSize: 'clamp(4rem, 12vw, 9.5rem)' }}
             >
               <span className="block overflow-hidden">

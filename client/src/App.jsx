@@ -40,16 +40,41 @@ function App() {
           'A full-stack spa management system with appointment booking, member care packages, vouchers, and revenue analytics. Built for Asian wellness traditions with a dark luxury theme.',
         tags: ['React', 'TypeScript', 'Tailwind', 'Express', 'Node.js', 'PostgreSQL'],
         date: 'Jun 2026',
-        primaryUrl: '#',
+        primaryUrl: '',
         secondaryUrl: 'https://github.com/Okkar06/Oasis-Spa',
       },
       {
-        title: 'More coming soon',
-        description: 'Currently working on new projects. Check my GitHub for the latest work in progress.',
-        tags: ['In progress'],
-        date: '2026',
+        title: 'SDC Audio Guide — QR-Driven Museum Audio Platform',
+        description:
+          'Replaces physical audio guide hardware at the Singapore Discovery Centre: visitors scan QR codes to stream multilingual audio with karaoke-style subtitles, while admins manage content via a dashboard with TTS generation, RBAC, audit logging, and playback analytics.',
+        tags: ['React', 'TypeScript', 'Node.js', 'Express', 'PostgreSQL', 'Prisma', 'JWT', 'Google TTS'],
+        date: 'Oct 2025',
+        primaryUrl: '',
+        secondaryUrl: 'https://github.com/SP-SOC-KH/project-2-group-2',
+      },
+      {
+        title: 'SilverCare — Home Support Booking Portal',
+        description:
+          'A full-stack home care platform where customers book elderly care services, pay via Stripe, and track appointments — backed by role-based access for admins and caregivers and a Spring Boot microservice for booking data.',
+        tags: ['Jakarta EE', 'Java', 'PostgreSQL', 'Stripe', 'JSP', 'Tomcat', 'BCrypt', 'REST API'],
+        date: 'Feb 2026',
+        primaryUrl: '',
+        secondaryUrl: 'https://github.com/ShaneSWA06/j2ee-project',
+      },
+      {
+        title: 'AR Treasure Hunt — Secure Gamified Learning Platform',
+        description:
+          'A full-stack gamified learning app where users scan QR codes to unlock timed quizzes, earn skill points, and adopt virtual pets — secured with JWT auth, RBAC route protection, Helmet.js headers, and parameterized SQL across every database operation.',
+        tags: ['React', 'Node.js', 'Express', 'PostgreSQL', 'JWT', 'BCrypt', 'Helmet', 'REST API'],
+        date: 'May 2025',
+        primaryUrl: '',
+        secondaryUrl: 'https://github.com/Okkar06/SecureProjectCA1',
+      },
+      {
+        placeholder: true,
+        title: 'More work on the way',
+        description: 'New projects in progress — check back soon or visit my GitHub to see what I\'m building next.',
         primaryUrl: 'https://github.com/Okkar06',
-        secondaryUrl: '',
       },
     ],
     contact: {

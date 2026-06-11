@@ -56,7 +56,7 @@ function ThemeSwitcher() {
       onClick={handleClick}
       aria-label={`Theme: ${active.name}. Click to advance.`}
       title={`Auto-cycling theme — ${active.name}`}
-      className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold text-white/70 transition-all duration-200 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+      className="flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3 py-1 text-xs font-semibold text-black/60 transition-all duration-200 hover:bg-black/8 hover:text-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
     >
       <span
         className="h-3 w-3 rounded-full transition-all duration-500"

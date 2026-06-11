@@ -61,8 +61,13 @@ function CursorDot() {
   return (
     <div
       ref={dotRef}
-      className="pointer-events-none fixed left-0 top-0 z-[60] h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_28px_rgba(91,66,245,0.55)]"
+      className="pointer-events-none fixed left-0 top-0 z-[60] h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full"
       aria-hidden="true"
+      style={{
+        background: 'rgb(var(--accent) / 0.25)',
+        border: '1.5px solid rgb(var(--accent) / 0.7)',
+        boxShadow: '0 0 18px rgb(var(--accent) / 0.5), 0 0 40px rgb(var(--accent) / 0.2)',
+      }}
     />
   )
 }
