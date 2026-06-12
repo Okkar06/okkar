@@ -78,7 +78,7 @@ function App() {
       },
     ],
     contact: {
-      email: 'oakkarhein.eduvalor.2023c@gmail.com',
+      email: 'okkarhein09@gmail.com',
       githubUrl: 'https://github.com/Okkar06',
       linkedinUrl: 'https://www.linkedin.com/in/okkar-hein',
     },

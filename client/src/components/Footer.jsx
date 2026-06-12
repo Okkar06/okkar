@@ -3,28 +3,6 @@ function Footer({ name, githubUrl, linkedinUrl }) {
 
   return (
     <footer className="footer-section relative">
-      {/* ── Layered SVG waves at the top of the footer ── */}
-      <div aria-hidden="true" style={{ lineHeight: 0, overflow: 'hidden' }}>
-        <svg
-          viewBox="0 0 1440 120"
-          preserveAspectRatio="none"
-          style={{ display: 'block', width: '100%', height: '120px' }}
-        >
-          <path
-            d="M0,60 C360,120 1080,0 1440,60 L1440,0 L0,0 Z"
-            style={{ fill: 'var(--color-accent)', opacity: 0.35 }}
-          />
-          <path
-            d="M0,80 C480,20 960,100 1440,40 L1440,0 L0,0 Z"
-            style={{ fill: 'var(--color-accent)', opacity: 0.6 }}
-          />
-          <path
-            d="M0,40 C300,90 1140,10 1440,70 L1440,0 L0,0 Z"
-            style={{ fill: 'var(--color-accent)', opacity: 1 }}
-          />
-        </svg>
-      </div>
-
       {/* ── Footer content ── */}
       <div className="px-6 py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">

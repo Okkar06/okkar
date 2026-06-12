@@ -3,7 +3,11 @@ import { motion, useReducedMotion } from 'framer-motion'
 const BIO =
   "I'm a Year 3 IT student at Singapore Polytechnic — a builder at heart who turns ideas into full-stack products. From React interfaces to Python backends and SQL databases, I design and ship end-to-end web applications that are fast, practical, and built to last. I bring initiative, craft, and a bias for shipping things that actually work."
 
-const SKILLS = ['React', 'Python', 'JavaScript', 'SQL', 'Node.js', 'Tailwind']
+const SKILLS = [
+  'React', 'TypeScript', 'JavaScript', 'Python',
+  'Node.js', 'Express', 'PostgreSQL', 'Prisma',
+  'Tailwind', 'JWT', 'REST APIs', 'Git',
+]
 
 function AboutSection({ photoSrc }) {
   const shouldReduceMotion = useReducedMotion()
@@ -34,10 +38,11 @@ function AboutSection({ photoSrc }) {
       <div className="mx-auto max-w-6xl">
 
         <motion.p
-          className="section-label mb-10"
+          className="mb-10 text-sm font-bold uppercase tracking-[0.38em]"
+          style={{ color: 'var(--color-text-secondary)' }}
           variants={sectionVariants}
         >
-          About
+          About Me
         </motion.p>
 
         <div className="grid gap-12 md:grid-cols-2 md:items-center">

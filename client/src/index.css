@@ -24,7 +24,7 @@
   --color-text-secondary: #4a4a78;
 
   --color-surface: #f4f4ff;
-  --color-footer-bg: #0e0e28;
+  --color-footer-bg: rgba(255, 255, 255, 0.88);
 
   --color-nav-bg: rgba(255, 255, 255, 0.88);
   --color-nav-border: rgba(8, 8, 30, 0.08);
@@ -264,23 +264,28 @@ body {
    FOOTER
 ═══════════════════════════════════════════════════════ */
 
-.footer-section { background: var(--color-footer-bg); }
+.footer-section {
+  background: var(--color-footer-bg);
+  border-top: 1px solid rgba(8, 8, 30, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
 .footer-text { color: var(--color-text-secondary); }
 .footer-icon-link {
   display: grid;
   place-items: center;
   width: 2.25rem; height: 2.25rem;
   border-radius: 9999px;
-  border: 1px solid rgba(160, 160, 220, 0.15);
-  background: rgba(160, 160, 220, 0.05);
-  color: rgba(160, 160, 210, 0.9);
+  border: 1px solid rgba(8, 8, 30, 0.1);
+  background: rgba(8, 8, 30, 0.04);
+  color: rgba(8, 8, 30, 0.45);
   text-decoration: none;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
 .footer-icon-link:hover {
-  border-color: rgba(200, 200, 255, 0.3);
-  color: #eae9f8;
-  background: rgba(160, 160, 220, 0.1);
+  border-color: rgb(var(--accent) / 0.4);
+  color: rgb(var(--accent));
+  background: rgb(var(--accent) / 0.06);
 }
 
 /* ═══════════════════════════════════════════════════════
