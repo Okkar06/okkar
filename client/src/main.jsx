@@ -5,7 +5,7 @@ import App from './App.jsx'
 
 // Record when the page started so we can enforce a minimum loader time
 const loaderStart = performance.now()
-const MIN_LOADER_MS = 1500
+const MIN_LOADER_MS = 2600
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

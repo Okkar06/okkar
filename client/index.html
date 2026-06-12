@@ -88,7 +88,7 @@
 
     /* Progress bar */
     .loader-bar {
-      width: clamp(160px, 28vw, 220px);
+      width: clamp(200px, 32vw, 260px);
       height: 3px;
       background: rgba(8,8,30,0.08);
       border-radius: 99px;
@@ -99,16 +99,11 @@
       width: 0%;
       background: #5b42f5;
       border-radius: 99px;
-      animation: loader-progress 28s cubic-bezier(0.1, 0.4, 0.6, 1) forwards;
+      /* exactly 2.4 s — matches MIN_LOADER_MS so bar always completes */
+      animation: loader-progress 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
-    /* Fast start, gradual crawl, finishes at 100% by ~30 s */
     @keyframes loader-progress {
       0%   { width: 0%; }
-      5%   { width: 28%; }
-      15%  { width: 50%; }
-      35%  { width: 68%; }
-      60%  { width: 82%; }
-      80%  { width: 92%; }
       100% { width: 100%; }
     }
 
