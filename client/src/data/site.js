@@ -10,6 +10,6 @@ export const site = {
   title: 'Okkar Hein — Web Developer Portfolio (Singapore)',
 
   // Image shown when the link is shared on LinkedIn, Slack, etc. (1200 x 630).
-  // Placeholder made from the starter map. Replace it with your own if you like.
+  // Made by docs/design/render_plates.py ("Lantern Cartography" survey plate of the village).
   ogImage: 'images/og-image.png',
 }
