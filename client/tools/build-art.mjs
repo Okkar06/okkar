@@ -23,6 +23,7 @@ import * as exterior from './art/exterior.mjs'
 import * as interior from './art/interior.mjs'
 import * as water from './art/water.mjs'
 import * as tiles from './art/tiles.mjs'
+import * as characters from './art/characters.mjs'
 
 const clientDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 const ATLAS_WIDTH = 256
@@ -118,6 +119,23 @@ const moduleText =
   'export const EXTRAS = ' + JSON.stringify(tileIds, null, 2) + '\n\n' +
   'export const EXTRAS_SOLID = ' + JSON.stringify(solidTiles) + '\n'
 fs.writeFileSync(path.join(clientDir, 'src', 'theme', 'tileIds.js'), moduleText)
+
+// ---------------------------------------------------------------------
+//  4. Character sprite sheets (player and Pip): their own PNGs, because
+//     Phaser loads them as spritesheets with fixed-size frames.
+// ---------------------------------------------------------------------
+const characterSheets = characters.sheets()
+for (let i = 0; i < characterSheets.length; i++) {
+  const sheetInfo = characterSheets[i]
+  const frameW = sheetInfo.frames[0].width
+  const frameH = sheetInfo.frames[0].height
+  const rowsOfFrames = Math.ceil(sheetInfo.frames.length / sheetInfo.columns)
+  const out = new PixelCanvas(frameW * sheetInfo.columns, frameH * rowsOfFrames)
+  for (let f = 0; f < sheetInfo.frames.length; f++) {
+    out.blit(sheetInfo.frames[f], (f % sheetInfo.columns) * frameW, Math.floor(f / sheetInfo.columns) * frameH)
+  }
+  fs.writeFileSync(path.join(clientDir, 'public', 'assets', 'sprites', sheetInfo.file), encodePng(out.width, out.height, out.data))
+}
 
 console.log(
   'Atlas: ' + sprites.length + ' sprites, ' + atlas.width + 'x' + atlas.height + ' px. ' +

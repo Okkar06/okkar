@@ -113,7 +113,8 @@ export class Fishing {
     this.mode = 'casting'
     this.direction = spot.direction
     this.target = { x: spot.x + Phaser.Math.Between(-4, 4), y: spot.y + Phaser.Math.Between(-3, 3) }
-    if (spot.direction.x !== 0) this.player.setFlipX(spot.direction.x < 0) // face the water
+    this.player.faceToward(spot.direction.x, spot.direction.y) // face the water
+    this.player.stand()
     // Look out over the water, so the bobber isn't hidden behind the prompt.
     this.scene.cameras.main.setFollowOffset(-spot.direction.x * 34, -spot.direction.y * 34)
     this.setPrompt('Casting…')
@@ -196,7 +197,7 @@ export class Fishing {
     this.tipDip = 3
     this.water.ripple(this.target.x, this.target.y + 2)
     this.later(120, function () { this.water.ripple(this.target.x - 2, this.target.y + 3) })
-    this.bang.setPosition(this.player.x, this.player.y - 15).setVisible(true).setScale(0.5)
+    this.bang.setPosition(this.player.x, this.player.y - 31).setVisible(true).setScale(0.5)
     this.scene.tweens.add({ targets: this.bang, scale: 1, duration: 140, ease: 'Back.easeOut' })
     this.later(BITE_WINDOW, function () {
       if (this.mode !== 'bite') return
@@ -225,7 +226,7 @@ export class Fishing {
     this.bobber.setVisible(false)
     this.caught.setFrame(catchInfo.fish.sprite).setPosition(from.x, from.y).setVisible(true).setAngle(0)
     const leap = { t: 0 }
-    const to = { x: this.player.x, y: this.player.y - 15 }
+    const to = { x: this.player.x, y: this.player.y - 31 }
     this.scene.tweens.add({
       targets: leap,
       t: 1,

@@ -16,10 +16,9 @@ export class WelcomeNpc {
   constructor(scene, x, bottomY, blockers) {
     this.scene = scene
     this.home = { x: x, y: bottomY }
-    this.sprite = scene.add.sprite(x, bottomY, 'npc', 0).setOrigin(0.5, 1)
-    this.sprite.play('npc-idle')
+    this.sprite = scene.add.sprite(x, bottomY, 'npc', 0).setOrigin(0.5, 1) // feet at bottomY
     this.shadow = addShadow(scene, x, bottomY - 1, 'shadow')
-    this.label = makeLabel(scene, x, bottomY - 18, guide.npcName, DEPTH.worldUi)
+    this.label = makeLabel(scene, x, bottomY - 34, guide.npcName, DEPTH.worldUi)
     this.blocker = addBlocker(scene, blockers, x, bottomY, 10, 5)
     this.syncExtras()
   }
@@ -30,7 +29,7 @@ export class WelcomeNpc {
     const y = this.sprite.y
     this.sprite.setDepth(DEPTH.world + y)
     this.shadow.setPosition(x + 1, y - 1)
-    this.label.setPosition(x, y - 18)
+    this.label.setPosition(x, y - 34)
   }
 
   walkTo(x, y, onArrive) {
@@ -38,8 +37,12 @@ export class WelcomeNpc {
     const distance = Math.sqrt((x - this.sprite.x) * (x - this.sprite.x) + (y - this.sprite.y) * (y - this.sprite.y))
     this.blocker.body.enable = false // don't shove the player while walking
     scene.tweens.killTweensOf(this.sprite)
-    this.sprite.setFlipX(x < this.sprite.x)
-    this.sprite.play('npc-walk', true)
+    // Walk cycle for the main direction of travel
+    const dx = x - this.sprite.x
+    const dy = y - this.sprite.y
+    this.facing = Math.abs(dx) > Math.abs(dy) ? 'side' : dy < 0 ? 'up' : 'down'
+    this.sprite.setFlipX(this.facing === 'side' && dx < 0)
+    this.sprite.play('npc-walk-' + this.facing, true)
     scene.tweens.add({
       targets: this.sprite,
       x: x,
@@ -49,7 +52,7 @@ export class WelcomeNpc {
       onUpdate: this.syncExtras,
       onUpdateScope: this,
       onComplete: function () {
-        this.sprite.play('npc-idle')
+        this.standStill()
         this.syncExtras()
         this.blocker.setPosition(x, y - 2.5)
         this.blocker.body.updateFromGameObject()
@@ -65,12 +68,25 @@ export class WelcomeNpc {
     const side = this.sprite.x >= player.x ? 1 : -1
     const self = this
     this.walkTo(player.x + side * 18, player.y + 8, function () {
-      self.sprite.setFlipX(side > 0) // face the player
+      self.facing = 'side'
+      self.sprite.setFlipX(side > 0) // face the player (side frames face right)
+      self.standStill()
       if (onArrive) onArrive()
     })
   }
 
+  // Stand on the first frame of the current direction.
+  standStill() {
+    this.sprite.anims.stop()
+    const rows = { down: 0, up: 4, side: 8 }
+    this.sprite.setFrame(rows[this.facing || 'down'])
+  }
+
   goHome() {
-    this.walkTo(this.home.x, this.home.y, null)
+    const self = this
+    this.walkTo(this.home.x, this.home.y, function () {
+      self.facing = 'down' // back home: face the visitors again
+      self.standStill()
+    })
   }
 }

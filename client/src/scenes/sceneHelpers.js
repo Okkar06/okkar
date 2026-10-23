@@ -191,8 +191,7 @@ export function moveToZone(scene, player, zone, onArrive) {
       followOffset: { x: 0, y: 4 },
     }).setDepth(DEPTH.worldUi)
   }
-  player.anims.play('player-walk', true)
-  player.setFlipX(targetX < player.x)
+  player.walkToward(targetX - player.x, targetY - player.y)
 
   scene.tweens.add({
     targets: player,
@@ -203,8 +202,7 @@ export function moveToZone(scene, player, zone, onArrive) {
     onComplete: function () {
       player.body.enable = true
       player.body.reset(targetX, targetY)
-      player.anims.stop()
-      player.setFrame(0)
+      player.stand()
       state.touring = false
       if (trail) {
         trail.stop()

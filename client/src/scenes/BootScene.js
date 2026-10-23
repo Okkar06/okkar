@@ -37,9 +37,10 @@ export class BootScene extends Phaser.Scene {
     // The village map, made in Tiled and exported as JSON
     this.load.tilemapTiledJSON('village-map', ASSETS + 'maps/village.json')
 
-    // Characters: 2 frames each (standing, mid-step)
-    this.load.spritesheet('player', ASSETS + 'sprites/player.png', { frameWidth: 16, frameHeight: 16 })
-    this.load.spritesheet('npc', ASSETS + 'sprites/npc.png', { frameWidth: 16, frameHeight: 16 })
+    // Characters: 16 x 32 frames (Stardew proportions), drawn by
+    // tools/art/characters.mjs. Rows: facing down, up, right; 4 walk frames each.
+    this.load.spritesheet('player', ASSETS + 'sprites/player.png', { frameWidth: 16, frameHeight: 32 })
+    this.load.spritesheet('npc', ASSETS + 'sprites/npc.png', { frameWidth: 16, frameHeight: 32 })
 
     // Props placed on the map's "Props" layer (the name must match the "sprite" property in Tiled)
     this.load.image('mailbox', ASSETS + 'sprites/mailbox.png')
@@ -48,24 +49,20 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
-    // Walking: swap between the two frames.
-    this.anims.create({
-      key: 'player-walk',
-      frames: this.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
-      frameRate: 7,
-      repeat: -1,
-    })
-
-    // The villager gently bobs while standing.
-    this.anims.create({
-      key: 'npc-idle',
-      frames: this.anims.generateFrameNumbers('npc', { frames: [0, 0, 0, 1] }),
-      frameRate: 3,
-      repeat: -1,
-    })
-
-    // Pip walking (same two frames as idle, faster).
-    this.anims.create({ key: 'npc-walk', frames: this.anims.generateFrameNumbers('npc', { start: 0, end: 1 }), frameRate: 7, repeat: -1 })
+    // Walk cycles for both characters, one per direction:
+    // 'player-walk-down', 'player-walk-up', 'player-walk-side' (same for 'npc').
+    const characters = ['player', 'npc']
+    const directions = ['down', 'up', 'side']
+    for (let c = 0; c < characters.length; c++) {
+      for (let d = 0; d < directions.length; d++) {
+        this.anims.create({
+          key: characters[c] + '-walk-' + directions[d],
+          frames: this.anims.generateFrameNumbers(characters[c], { start: d * 4, end: d * 4 + 3 }),
+          frameRate: 8,
+          repeat: -1,
+        })
+      }
+    }
 
     createDecorAnimations(this)
     createGlowTexture(this)

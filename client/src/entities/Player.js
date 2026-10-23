@@ -17,9 +17,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this)
     scene.physics.add.existing(this)
 
-    // Only the feet collide, so the head can overlap things "behind" it.
+    // The sprite is 16 x 32. Its anchor sits 3/4 of the way down (the hips), so
+    // the feet are 8px below the player's y, as with the old 16px sprite.
+    this.setOrigin(0.5, 0.75)
+    // Only the feet collide, so the head and body can overlap things "behind" it.
     this.body.setSize(10, 6)
-    this.body.setOffset(3, 10)
+    this.body.setOffset(3, 26)
+    this.facing = 'down' // 'down', 'up' or 'side' (side + flipX = left)
     this.setCollideWorldBounds(true)
 
     // Keyboard keys: arrows and WASD.
@@ -116,16 +120,36 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
     this.setVelocity(dx * PLAYER_SPEED, dy * PLAYER_SPEED)
 
-    // Animation: a small two-frame "step" while moving.
+    // Animation: the walk cycle for the direction we're moving in.
     if (length > 0.1) {
-      this.anims.play('player-walk', true)
-      if (dx < -0.1) this.setFlipX(true)
-      if (dx > 0.1) this.setFlipX(false)
+      this.walkToward(dx, dy)
     } else {
-      this.anims.stop()
-      this.setFrame(0)
+      this.stand()
     }
 
     this.updateDepth()
+  }
+
+  // Pick the facing from a movement direction and play that walk cycle.
+  walkToward(dx, dy) {
+    this.faceToward(dx, dy)
+    this.anims.play('player-walk-' + this.facing, true)
+  }
+
+  // Turn to face a direction without walking (e.g. towards the water).
+  faceToward(dx, dy) {
+    if (Math.abs(dx) > Math.abs(dy)) {
+      this.facing = 'side'
+      this.setFlipX(dx < 0) // the side frames face right
+    } else if (dy !== 0) {
+      this.facing = dy < 0 ? 'up' : 'down'
+    }
+  }
+
+  // Standing still: the first frame of the current direction's row.
+  stand() {
+    this.anims.stop()
+    const rows = { down: 0, up: 4, side: 8 }
+    this.setFrame(rows[this.facing])
   }
 }
