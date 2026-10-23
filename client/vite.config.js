@@ -90,6 +90,7 @@ function portfolioHtml(isDev) {
         result = result.split('<!--PERSON_JSON_LD-->').join('<script type="application/ld+json">' + personJson + '</script>')
         result = result.split('<!--PLAIN_VIEW-->').join(pageModule.renderPlainPage(data, ctx))
         result = result.split('<!--GAME_INTRO-->').join(pageModule.renderGameIntro(data, ctx))
+        result = result.split('<!--GAME_INTRO_MORE-->').join(pageModule.renderGameIntroMore(data))
         return result
       },
     },

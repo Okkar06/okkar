@@ -8,7 +8,7 @@
     <title>{{SITE_TITLE}}</title>
     <meta name="description" content="{{SITE_DESCRIPTION}}" />
     <link rel="canonical" href="{{SITE_URL}}/" />
-    <meta name="theme-color" content="#3f2631" />
+    <meta name="theme-color" content="#1b2a5c" />
 
     <!-- Link previews (LinkedIn, Slack, WhatsApp, X ...) -->
     <meta property="og:type" content="website" />
@@ -33,34 +33,44 @@
     <div id="game-root" aria-label="Interactive pixel-art village. Use the buttons at the top, or the plain view, for the same content."></div>
 
     <!-- ===================== LOADING / INTRO SCREEN ===================== -->
-    <section id="loading-screen" aria-labelledby="intro-title">
-      <div class="intro-card">
-        <p class="intro-eyebrow" id="intro-title">Welcome to the village of</p>
-        <!-- Filled from src/data at build time: name, headline, open to work, pitch, projects, contact -->
-        <!--GAME_INTRO-->
+    <section id="loading-screen" class="on-dusk" aria-label="Introduction">
+      <div class="hero">
+        <div class="hero-text">
+          <!-- Filled from src/data at build time: name, headline, open to work, pitch -->
+          <!--GAME_INTRO-->
 
-        <div class="loading-bar" aria-hidden="true"><div id="loading-fill"></div></div>
-        <p id="loading-status" role="status">Loading the village…</p>
+          <div class="intro-actions">
+            <button type="button" id="enter-btn" class="btn btn-primary btn-big" disabled>Enter the village</button>
+            <button type="button" id="intro-tour-btn" class="btn btn-ghost btn-big" disabled>Take the 1-minute tour</button>
+            <a class="btn-link" href="plain.html">Open the plain view</a>
+          </div>
+          <p id="loading-status" role="status">Lighting the lamps…</p>
+          <p class="intro-controls">
+            <span class="only-desktop">Move with <kbd>WASD</kbd> or the arrow keys, press <kbd>E</kbd> to open things.</span>
+            <span class="only-touch">Drag on the map to walk, then tap the button that pops up.</span>
+          </p>
 
-        <div class="intro-actions">
-          <button type="button" id="enter-btn" class="btn btn-primary btn-big" disabled>Enter the village</button>
-          <button type="button" id="intro-tour-btn" class="btn btn-big" disabled>Quick tour (1 min)</button>
-          <a class="btn btn-plain btn-big" href="plain.html">Skip the game: plain view</a>
+          <!-- Projects and contact links (also filled from src/data) -->
+          <div class="intro-more">
+            <!--GAME_INTRO_MORE-->
+          </div>
+          <p class="loading-hint">First visit? The server can take up to 30&nbsp;s to wake up.</p>
         </div>
-        <p class="intro-controls">
-          <span class="only-desktop">Move with <kbd>WASD</kbd> or the arrow keys (or click the map), and press <kbd>E</kbd> to interact.</span>
-          <span class="only-touch">Drag anywhere on the map to walk, and tap the button that pops up to open things.</span>
-        </p>
-        <p class="loading-hint">First visit? The server may take up to 30&nbsp;s to wake up.</p>
+
+        <!-- The survey plate: the real village map, drawn at dusk (docs/design) -->
+        <figure class="hero-plate">
+          <img src="/images/plate-hero.webp" width="1248" height="960" alt="The village drawn as a survey plate at dusk: houses and a workshop with lit windows, fenced plots, a crop field, a square with a fountain, and a lake with a dock." />
+          <div class="loading-bar" aria-hidden="true"><div id="loading-fill"></div></div>
+        </figure>
       </div>
     </section>
 
     <!-- ===================== HUD (always visible while playing) ===================== -->
-    <header id="hud" hidden>
+    <header id="hud" class="on-dusk" hidden>
       <div class="hud-left">
         <span id="hud-location" class="hud-location">Okkar's Village</span>
         <button type="button" class="hud-otw" data-action="contact" title="Open to work: contact me">
-          <span class="open-dot" aria-hidden="true"></span><span class="hud-otw-text">Open to work</span>
+          <span class="lantern" aria-hidden="true"></span><span class="hud-otw-text">Open to work</span>
         </button>
         <!-- Ambient sound toggle (off by default). Label is set by src/ui/AmbientSound.js -->
         <button type="button" id="sound-btn" class="hud-btn" aria-pressed="false">Sound off</button>
@@ -79,16 +89,16 @@
       </nav>
     </header>
 
-    <p id="hud-hint" hidden>
+    <p id="hud-hint" class="on-dusk" hidden>
       <span class="only-desktop"><kbd>WASD</kbd> to move, <kbd>E</kbd> to interact, <kbd>Esc</kbd> to close</span>
       <span class="only-touch">Drag anywhere to walk</span>
     </p>
 
     <!-- "Press E" prompt. It is a real button, so it can also be clicked/tapped. -->
-    <button type="button" id="interact-prompt" hidden></button>
+    <button type="button" id="interact-prompt" class="on-dusk" hidden></button>
 
     <!-- Pip's dialogue box (src/ui/DialogueBox.js) -->
-    <section id="dialogue" aria-labelledby="dialogue-name" hidden>
+    <section id="dialogue" class="on-dusk" aria-labelledby="dialogue-name" hidden>
       <div id="dialogue-portrait" class="dialogue-face" aria-hidden="true"></div>
       <div class="dialogue-main">
         <p id="dialogue-name" class="dialogue-name">Pip</p>
@@ -100,7 +110,7 @@
     </section>
 
     <!-- What you caught while fishing (doesn't block the game) -->
-    <div id="catch-card" role="status" aria-live="polite" hidden>
+    <div id="catch-card" class="on-dusk" role="status" aria-live="polite" hidden>
       <img id="catch-image" alt="" width="48" height="30" />
       <div class="catch-text">
         <p id="catch-title"></p>
@@ -110,13 +120,13 @@
     </div>
 
     <!-- Short messages, e.g. "Résumé coming soon" -->
-    <div id="toast" role="status" aria-live="polite" hidden></div>
+    <div id="toast" class="on-dusk" role="status" aria-live="polite" hidden></div>
 
 
     <!-- ===================== POP-UP PANEL ===================== -->
     <div id="panel-backdrop" hidden>
       <div id="panel" role="dialog" aria-modal="true" aria-labelledby="panel-title">
-        <div class="panel-header">
+        <div class="panel-header on-dusk">
           <h2 id="panel-title"></h2>
           <button type="button" id="panel-close" class="panel-close" aria-label="Close panel">✕</button>
         </div>

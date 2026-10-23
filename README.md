@@ -154,6 +154,23 @@ and the Workshop grows with your project list.
 
 ---
 
+## Design: "Surveyed at dusk"
+
+The website side (loading screen, HUD, panels, dialogue, plain view) follows one direction, written
+down in `docs/design/ui-direction.md`: dusk-blue chrome, parchment reading surfaces, and lamplight as
+the only accent. "Open to work" is shown as a lit lantern.
+
+The hero image and the link-preview image come from the **canvas-design** skill: the real village
+map redrawn as a survey plate at dusk (`docs/design/lantern-cartography.md` explains the idea).
+After changing the map, redraw them with:
+
+```bash
+pip install pillow            # once
+python docs/design/render_plates.py
+```
+
+---
+
 ## Art: palette, generated sprites, skills
 
 - **One palette**: `client/src/theme/palette.js` (sampled from the Kenney tiles). New art and Phaser tints
@@ -168,8 +185,9 @@ and the Workshop grows with your project list.
 
   Everything is packed into one small atlas (one download, one texture).
 - **Project skills** in `.claude/skills/`: `pixel-art-direction` (palette, outlines, shadows, light
-  direction), `game-polish` (y-sorting, ambient motion, performance, accessibility) and `cozy-interiors`
-  (how to dress a room). Claude Code follows them when working on this repo.
+  direction), `game-polish` (y-sorting, ambient motion, performance, accessibility), `cozy-interiors`
+  (how to dress a room), plus Anthropic's `frontend-design` and `canvas-design`. Claude Code follows them
+  when working on this repo.
 
 ---
 

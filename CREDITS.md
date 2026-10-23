@@ -23,7 +23,7 @@ All of this was drawn for this project, either as small hand-drawn sprites or by
 | `client/public/assets/sprites/mailbox.png`, `noticeboard.png`, `stall.png` | Village props |
 | `client/public/assets/atlas/decor.png` (+ `decor.json`) | ~110 generated sprites: shadows, tall grass, flowers, stones, stumps, crops, fountain, signposts, lamps, benches, fence ivy and flowers, a bluebird; chimneys, porches, doormats, flower boxes, lanterns, potted plants, market goods; all house and workshop furniture (bed, bookshelves, desk, laptop, mug, armchair, rug, fireplace and flames, frames, plants, lamps, string lights, sleeping cat, tool rack, blueprints, workbench, project models); lily pads, reeds, bubbles, fish and fish shadows, dragonflies, dock stool, bucket; weather particles (rain, splash, snow, petals, leaves, smoke) and puddles; guide arrow, sparkle, "!" bubble and bobber |
 | `client/public/assets/tilesets/extras.png` | Generated 16×16 tiles: cliff, forest floor, soil, cobbles, lake water (2 frames, 13 shore shapes), sand, dock planks, wood/stone floors, wallpaper and brick walls |
-| `client/public/images/og-image.png` | Link preview image, rendered from the starter village map plus text |
+| `client/public/images/plate-hero.webp`, `client/public/images/og-image.png`, `docs/design/plate-poster.png` | "Lantern Cartography" survey plate: the real village map redrawn as a cartographic plate at dusk (canvas-design skill). Rendered by `docs/design/render_plates.py`; the design philosophy is `docs/design/lantern-cartography.md` |
 | Runtime textures | The soft "glow" used for lights and fog is a radial gradient drawn in code (`src/systems/Lights.js`) |
 
 ## Sound
@@ -36,7 +36,8 @@ The ambient sound (wind, birdsong, rain and thunder) is synthesised in the brows
 | Font | Used for | Licence |
 |---|---|---|
 | [Atkinson Hyperlegible](https://fonts.google.com/specimen/Atkinson+Hyperlegible) | Body text in the game UI and plain view (designed by the Braille Institute for legibility) | SIL Open Font License 1.1 |
-| [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) | Pixel-style headings, signs and name plates | SIL Open Font License 1.1 |
+| [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) | Pixel-style headings, signs and name plates; the name on the survey plate | SIL Open Font License 1.1 |
+| [Jura](https://fonts.google.com/specimen/Jura), [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans) | Thin labels and the role line baked into the survey plate images (from the canvas-design skill's font set) | SIL Open Font License 1.1 |
 
 ## Code
 

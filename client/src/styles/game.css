@@ -1,12 +1,14 @@
 /* =====================================================================
-   GAME PAGE — canvas, loading screen, HUD, prompt, touch drag control, panels.
+   GAME PAGE — "Surveyed at dusk" (see docs/design/ui-direction.md)
+   Chrome (HUD, prompt, dialogue, toasts) is dusk blue with lamplight;
+   reading surfaces (panel bodies) are parchment with ink text.
    ===================================================================== */
 
 html,
 body.game-page {
   height: 100%;
   overflow: hidden; /* the game fills the screen; panels scroll on their own */
-  background: #2a1d24;
+  background: var(--dusk-deep);
   overscroll-behavior: none;
 }
 
@@ -30,105 +32,129 @@ body.game-page {
   display: none;
 }
 
-/* ---------- Loading / intro screen ---------- */
+/* A row of fence posts: the plate's own divider (dotted, evenly spaced). */
+.post-rule {
+  height: 4px;
+  border: 0;
+  background: radial-gradient(circle, currentColor 1.4px, transparent 1.9px) 0 50% / 11px 4px repeat-x;
+  opacity: 0.45;
+}
+
+/* =====================================================================
+   LOADING SCREEN = the hero. Text on the left, the survey plate on the right.
+   ===================================================================== */
 #loading-screen {
   position: fixed;
   inset: 0;
   z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
   overflow-y: auto;
-  background:
-    radial-gradient(ellipse at 20% 20%, rgba(132, 198, 105, 0.35), transparent 50%),
-    radial-gradient(ellipse at 80% 90%, rgba(91, 66, 245, 0.25), transparent 55%),
-    #2a1d24;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
+  background: var(--dusk);
+  transition: opacity 0.45s ease, visibility 0.45s ease;
 }
 #loading-screen.is-hidden {
   opacity: 0;
   visibility: hidden;
 }
-
-.intro-card {
-  width: 100%;
-  max-width: 640px;
-  margin: auto;
-  padding: 1.5rem 1.5rem 1.25rem;
-  border: 4px solid var(--ink);
-  border-radius: 14px;
-  background: var(--paper);
-  box-shadow: 0 6px 0 var(--ink), 0 20px 50px rgba(0, 0, 0, 0.4);
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 33rem) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  min-height: 100%;
+  max-width: 88rem;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 4rem);
 }
-.intro-eyebrow {
-  margin: 0;
-  font-family: var(--font-pixel);
-  color: var(--wood);
-  letter-spacing: 0.04em;
+
+.hero-text {
+  display: flex;
+  flex-direction: column;
 }
 .intro-name {
-  margin: 0.1rem 0 0.2rem;
+  margin: 0 0 0.9rem;
   font-family: var(--font-pixel);
-  font-size: clamp(2rem, 7vw, 3rem);
-  line-height: 1.05;
-  color: var(--ink);
+  font-size: clamp(3.2rem, 7.2vw, 5.75rem);
+  font-weight: 700;
+  line-height: 0.92;
+  color: var(--paper);
+  text-shadow: 0 5px 0 var(--dusk-deep);
 }
 .intro-headline {
-  margin: 0 0 0.25rem;
-  font-weight: 600;
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.hero-text .open-to-work {
+  margin: 1rem 0;
+  font-size: 1.05rem;
+  color: var(--lamp-glow);
+}
+.hero-text .open-to-work strong {
+  color: var(--lamp);
 }
 .intro-pitch {
-  margin: 0.5rem 0;
-}
-.intro-projects,
-.intro-contact {
-  margin: 0.4rem 0;
-  font-size: 0.9rem;
-}
-.intro-projects span {
-  font-weight: 700;
+  max-width: 34em;
+  margin: 0;
+  color: #d4d8ec; /* 9.6:1 on dusk */
+  font-size: 1.05rem;
+  line-height: 1.6;
 }
 .intro-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: 0.9rem;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 1.75rem;
 }
 .btn-big {
-  flex: 1 1 180px;
+  min-height: 52px;
+  padding: 0.7em 1.35em;
+  font-size: 1.02rem;
 }
-.btn-plain {
-  background: var(--paper-2);
-}
-.intro-controls {
-  margin: 0.8rem 0 0;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-.loading-bar {
-  height: 10px;
-  margin-top: 1rem;
-  border: 2px solid var(--ink);
-  border-radius: 6px;
-  background: #fff;
-  overflow: hidden;
-}
-#loading-fill {
-  width: 0%;
-  height: 100%;
-  background: var(--leaf);
-  transition: width 0.2s ease;
+#enter-btn.btn-primary {
+  box-shadow: 0 4px 0 var(--dusk-deep), 0 0 26px rgba(253, 190, 83, 0.28);
 }
 #loading-status {
-  margin: 0.35rem 0 0;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  margin: 0.9rem 0 0;
+  color: #b9bfdc; /* 7.6:1 */
+  font-size: 0.9rem;
+}
+.intro-controls {
+  margin: 0.25rem 0 0;
+  color: #b9bfdc;
+  font-size: 0.9rem;
+}
+.intro-controls kbd {
+  color: var(--paper);
+}
+.intro-more {
+  margin-top: 1.75rem;
+  padding-top: 1.1rem;
+  background: radial-gradient(circle, rgba(253, 243, 220, 0.45) 1.4px, transparent 1.9px) 0 0 / 11px 4px repeat-x;
+  font-size: 0.92rem;
+  color: #c9cee6;
+}
+.intro-projects {
+  margin: 0;
+  line-height: 1.7;
+}
+.intro-projects span {
+  color: var(--paper);
+  font-weight: 700;
+}
+.intro-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
 }
 .loading-hint {
-  margin: 0.4rem 0 0;
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  margin: 1rem 0 0;
+  color: #9aa1c4; /* 5.4:1 */
+  font-size: 0.82rem;
   opacity: 0;
   animation: hint-in 0.6s ease 5s forwards;
 }
@@ -136,7 +162,88 @@ body.game-page {
   to { opacity: 1; }
 }
 
-/* ---------- HUD ---------- */
+/* The survey plate. Its lamps "fade up" once, on load: the one orchestrated moment. */
+.hero-plate {
+  margin: 0;
+}
+.hero-plate img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #33467f;
+  border-radius: 3px;
+  box-shadow: 0 30px 70px rgba(8, 12, 32, 0.55);
+  animation: lamps-up 1.6s ease-out 0.15s both;
+}
+@keyframes lamps-up {
+  from { filter: brightness(0.55) saturate(0.6); opacity: 0.4; }
+}
+.loading-bar {
+  height: 3px;
+  margin-top: 0.85rem;
+  background: rgba(253, 243, 220, 0.14);
+  overflow: hidden;
+}
+#loading-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--lamp);
+  box-shadow: 0 0 10px var(--lamp);
+  transition: width 0.25s ease;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 1.5rem;
+  }
+  .hero-plate {
+    order: -1; /* picture first on narrow screens */
+  }
+  .hero-plate img {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: 58% 62%; /* the square, the workshop and the lake */
+  }
+  .intro-actions .btn-big {
+    flex: 1 1 13rem;
+  }
+  /* Phones: the buttons come before the pitch, so they're on the first screen. */
+  .intro-actions {
+    order: 1;
+    margin-top: 1.25rem;
+  }
+  .intro-pitch {
+    order: 2;
+    margin-top: 1.25rem;
+  }
+  #loading-status,
+  .intro-controls,
+  .intro-more,
+  .loading-hint {
+    order: 3;
+  }
+}
+@media (max-width: 600px) {
+  .hero {
+    padding-top: 1rem;
+  }
+  .hero-plate img {
+    aspect-ratio: 2 / 1; /* a shorter banner on phones */
+  }
+  .intro-name {
+    font-size: 3rem;
+    margin-bottom: 0.6rem;
+  }
+  .intro-headline {
+    font-size: 1.12rem;
+  }
+}
+
+/* =====================================================================
+   HUD — one dusk family of controls on top of the game.
+   ===================================================================== */
 #hud {
   position: fixed;
   top: 0;
@@ -164,24 +271,53 @@ body.game-page {
 .hud-location,
 .hud-otw,
 .hud-btn {
-  min-height: 36px;
-  padding: 0.35em 0.8em;
-  border: 2px solid var(--ink);
-  border-radius: 8px;
-  background: var(--paper);
-  color: var(--ink);
-  font: 600 0.85rem/1.2 var(--font-body);
-  text-decoration: none;
-  box-shadow: 0 3px 0 var(--ink);
   display: inline-flex;
   align-items: center;
-  gap: 0.45em;
+  gap: 0.5em;
+  min-height: 38px;
+  padding: 0.35em 0.85em;
+  border: 2px solid var(--dusk-deep);
+  border-radius: 8px;
+  background: rgba(27, 42, 92, 0.94);
+  color: var(--paper);
+  font: 700 0.86rem/1.2 var(--font-body);
+  text-decoration: none;
+  box-shadow: 0 3px 0 var(--dusk-deep);
+}
+.hud-otw,
+.hud-btn {
+  cursor: pointer;
+}
+.hud-btn:hover,
+.hud-otw:hover {
+  background: #23366f;
+}
+.hud-btn:active,
+.hud-otw:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--dusk-deep);
+}
+.hud-location {
+  font-family: var(--font-pixel);
+  font-weight: 500;
+  font-size: 0.98rem;
+  color: var(--lamp-glow);
+}
+.hud-otw .lantern {
+  width: 0.6rem;
+  height: 0.6rem;
+}
+.hud-btn-primary {
+  background: var(--lamp);
+  color: var(--ink);
+}
+.hud-btn-primary:hover {
+  background: var(--lamp-glow);
 }
 /* Short labels only show on narrow phones (see the 480px rule below). */
 .hud-short {
   display: none;
 }
-
 /* Square icon-only buttons (weather, help) */
 .hud-icon-btn {
   justify-content: center;
@@ -192,34 +328,9 @@ body.game-page {
   width: 20px;
   height: 20px;
 }
-
-/* Buttons whose label is split into spans (for the short phone labels)
-   must not get the flex gap between the pieces. */
+/* Labels split into spans must not get the flex gap between the pieces. */
 .hud-right .hud-btn {
   gap: 0;
-}
-.hud-location {
-  font-family: var(--font-pixel);
-  font-size: 0.95rem;
-}
-.hud-otw,
-.hud-btn {
-  cursor: pointer;
-}
-.hud-otw {
-  background: #e7fbf2;
-  color: #065f46;
-}
-.hud-btn:hover,
-.hud-otw:hover {
-  background: #fff;
-}
-.hud-btn-primary {
-  background: var(--accent);
-  color: #fff;
-}
-.hud-btn-primary:hover {
-  background: #4a33db;
 }
 
 #hud-hint {
@@ -229,10 +340,10 @@ body.game-page {
   z-index: 20;
   transform: translateX(-50%);
   margin: 0;
-  padding: 0.3em 0.8em;
+  padding: 0.3em 0.85em;
   border-radius: 6px;
-  background: rgba(42, 29, 36, 0.75);
-  color: #fdf3dc;
+  background: rgba(20, 31, 70, 0.8);
+  color: var(--paper);
   font-size: 0.8rem;
   white-space: nowrap;
   pointer-events: none;
@@ -247,40 +358,45 @@ body.game-page {
   transform: translateX(-50%);
   max-width: calc(100vw - 2rem);
   min-height: 48px;
-  padding: 0.6em 1.1em;
-  border: 3px solid var(--ink);
+  padding: 0.6em 1.15em;
+  border: 2px solid var(--dusk-deep);
   border-radius: 10px;
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--dusk);
+  color: var(--paper);
   font: 700 1rem/1.2 var(--font-body);
-  box-shadow: 0 4px 0 var(--ink);
+  box-shadow: 0 4px 0 var(--dusk-deep), 0 0 0 1px rgba(253, 190, 83, 0.35);
   cursor: pointer;
-  animation: prompt-bob 1.2s ease-in-out infinite;
+  animation: prompt-in 0.2s ease-out; /* plays each time it appears */
+}
+#interact-prompt:hover {
+  background: #23366f;
 }
 #interact-prompt kbd {
-  margin-right: 0.4em;
-  background: var(--ink);
-  color: var(--paper);
+  margin-right: 0.5em;
+  border-color: var(--ink);
+  background: var(--lamp);
+  color: var(--ink);
 }
-@keyframes prompt-bob {
-  50% { transform: translate(-50%, -3px); }
+@keyframes prompt-in {
+  from { transform: translate(-50%, 8px); opacity: 0; }
 }
 
 /* ---------- Toast ---------- */
 #toast {
   position: fixed;
   left: 50%;
-  top: 4.5rem;
+  top: 4.75rem;
   z-index: 60;
   transform: translateX(-50%);
   max-width: calc(100vw - 2rem);
-  padding: 0.7em 1.1em;
-  border: 3px solid var(--ink);
-  border-radius: 10px;
-  background: #fff7d6;
-  color: var(--ink);
-  font-weight: 600;
-  box-shadow: 0 4px 0 var(--ink);
+  padding: 0.7em 1.1em 0.7em 1em;
+  border: 2px solid var(--dusk-deep);
+  border-left: 6px solid var(--lamp);
+  border-radius: 8px;
+  background: var(--dusk);
+  color: var(--paper);
+  font-weight: 700;
+  box-shadow: 0 4px 0 var(--dusk-deep);
 }
 
 /* ---------- Pip's dialogue box ---------- */
@@ -290,14 +406,14 @@ body.game-page {
   bottom: calc(1rem + env(safe-area-inset-bottom));
   z-index: 35; /* above the HUD hint and prompt, below panels */
   display: flex;
-  gap: 0.9rem;
+  gap: 1rem;
   align-items: flex-start;
   width: min(40rem, calc(100vw - 1.5rem));
-  padding: 0.9rem 1rem 0.9rem 0.9rem;
-  border: 4px solid var(--ink);
-  border-radius: 14px;
-  background: var(--paper);
-  box-shadow: 0 5px 0 var(--ink), 0 18px 40px rgba(20, 12, 16, 0.35);
+  padding: 1rem 1rem 1rem 1rem;
+  border: 2px solid var(--dusk-deep);
+  border-radius: 12px;
+  background: var(--dusk);
+  box-shadow: 0 5px 0 var(--dusk-deep), 0 20px 44px rgba(8, 12, 32, 0.45);
   transform: translateX(-50%);
   animation: dialogue-in 0.2s ease-out;
 }
@@ -308,11 +424,12 @@ body.game-page {
   flex: none;
   width: 64px;
   height: 64px;
-  border: 3px solid var(--ink);
-  border-radius: 10px;
+  border: 2px solid var(--dusk-deep);
+  border-radius: 8px;
   background: var(--paper-2) no-repeat 0 0;
   background-size: 128px 64px; /* 2 frames; show the first */
   image-rendering: pixelated;
+  box-shadow: 0 0 0 2px rgba(253, 190, 83, 0.5);
 }
 .dialogue-main {
   flex: 1;
@@ -320,45 +437,48 @@ body.game-page {
 }
 .dialogue-name {
   display: inline-block;
-  margin: 0 0 0.3rem;
-  padding: 0.05em 0.6em;
-  border-radius: 6px;
-  background: var(--ink);
-  color: var(--paper);
+  margin: 0 0 0.35rem;
+  padding: 0.05em 0.55em;
+  border-radius: 4px;
+  background: var(--lamp);
+  color: var(--ink);
   font-family: var(--font-pixel);
   font-size: 0.95rem;
 }
 .dialogue-line {
   min-height: 3em; /* stops the box jumping while text types out */
   margin: 0;
-  font-size: 1.02rem;
-  line-height: 1.5;
+  font-size: 1.05rem;
+  line-height: 1.55;
 }
 .dialogue-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.7rem;
+  margin-top: 0.8rem;
+}
+.dialogue-actions .btn {
+  box-shadow: 0 3px 0 var(--dusk-deep);
 }
 .dialogue-skip {
   flex: none;
   align-self: flex-start;
   min-height: 36px;
   padding: 0.25em 0.8em;
-  border: 2px solid var(--ink);
+  border: 2px solid rgba(253, 243, 220, 0.55);
   border-radius: 8px;
   background: transparent;
-  color: var(--ink);
-  font: 600 0.85rem/1 var(--font-body);
+  color: var(--paper);
+  font: 700 0.85rem/1 var(--font-body);
   cursor: pointer;
 }
 .dialogue-skip:hover {
-  background: #fff;
+  border-color: var(--paper);
 }
 @media (max-width: 480px) {
   #dialogue {
     gap: 0.6rem;
-    padding: 0.7rem;
+    padding: 0.75rem;
   }
   .dialogue-face {
     width: 44px;
@@ -378,13 +498,13 @@ body.game-page {
   z-index: 26;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.85rem;
   width: min(26rem, calc(100vw - 2rem));
-  padding: 0.7rem 0.8rem 0.7rem 0.9rem;
-  border: 3px solid var(--ink);
-  border-radius: 12px;
-  background: var(--paper);
-  box-shadow: 0 4px 0 var(--ink), 0 12px 30px rgba(20, 12, 16, 0.3);
+  padding: 0.75rem 0.8rem 0.75rem 0.9rem;
+  border: 2px solid var(--dusk-deep);
+  border-radius: 10px;
+  background: var(--dusk);
+  box-shadow: 0 4px 0 var(--dusk-deep), 0 14px 30px rgba(8, 12, 32, 0.4);
   transform: translateX(-50%);
 }
 #catch-card.is-showing {
@@ -405,19 +525,20 @@ body.game-page {
 #catch-title {
   font-family: var(--font-pixel);
   font-size: 1.05rem;
-  color: var(--ink);
+  color: var(--lamp-glow);
 }
 #catch-text {
-  font-size: 0.92rem;
+  font-size: 0.94rem;
 }
 #catch-close {
   flex: none;
   align-self: flex-start;
   width: 32px;
   height: 32px;
-  border: 2px solid var(--ink);
+  border: 2px solid rgba(253, 243, 220, 0.55);
   border-radius: 8px;
-  background: #fff;
+  background: transparent;
+  color: var(--paper);
   font-weight: 700;
   cursor: pointer;
 }
@@ -425,7 +546,7 @@ body.game-page {
 /* ---------- Touch drag control (phones) ----------
    Created by src/ui/TouchDragControl.js. Sizes come from the constants at
    the top of that file (--circle-size, --thumb-size). Deliberately clean and
-   modern, not pixel-art. */
+   modern, not pixel-art; the thumb glows lamplight. */
 .touch-drag {
   position: fixed;
   left: 0;
@@ -438,7 +559,7 @@ body.game-page {
   background: rgba(255, 255, 255, 0.12);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  box-shadow: 0 0 0 1px rgba(91, 66, 245, 0.12), 0 6px 24px rgba(20, 12, 16, 0.18);
+  box-shadow: 0 6px 24px rgba(20, 31, 70, 0.22);
   pointer-events: none; /* touches go to the game container, not to this */
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.9);
@@ -460,10 +581,12 @@ body.game-page {
   margin: calc(var(--thumb-size, 48px) / -2) 0 0 calc(var(--thumb-size, 48px) / -2);
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.35));
-  box-shadow: 0 0 14px rgba(91, 66, 245, 0.55), 0 2px 8px rgba(20, 12, 16, 0.25); /* accent glow */
+  box-shadow: 0 0 16px rgba(253, 190, 83, 0.6), 0 2px 8px rgba(20, 31, 70, 0.25); /* lamplight glow */
 }
 
-/* ---------- Panel ---------- */
+/* =====================================================================
+   PANELS — dusk header, parchment body (comfortable to read).
+   ===================================================================== */
 #panel-backdrop {
   position: fixed;
   inset: 0;
@@ -472,7 +595,11 @@ body.game-page {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgba(20, 12, 16, 0.55);
+  background: rgba(20, 31, 70, 0.6);
+  animation: backdrop-in 0.18s ease-out;
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
 }
 #panel {
   display: flex;
@@ -480,20 +607,15 @@ body.game-page {
   width: 100%;
   max-width: 720px;
   max-height: calc(100dvh - 2rem);
-  border: 4px solid var(--ink);
-  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid var(--dusk-deep);
+  border-radius: 12px;
   background: var(--paper);
-  box-shadow: 0 6px 0 var(--ink), 0 24px 60px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 6px 0 var(--dusk-deep), 0 28px 70px rgba(8, 12, 32, 0.5);
   animation: panel-in 0.18s ease-out;
 }
 @keyframes panel-in {
   from { transform: translateY(12px) scale(0.98); opacity: 0; }
-}
-#panel-backdrop {
-  animation: backdrop-in 0.18s ease-out;
-}
-@keyframes backdrop-in {
-  from { opacity: 0; }
 }
 /* Closing: fade and drop slightly (see Panel.js) */
 #panel-backdrop.is-closing {
@@ -509,42 +631,46 @@ body.game-page {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 1rem 0.65rem 1.25rem;
-  border-bottom: 3px solid var(--ink);
-  background: var(--wood-light);
-  border-radius: 10px 10px 0 0;
+  padding: 0.85rem 0.85rem 0.85rem 1.35rem;
+  background: var(--dusk);
+  box-shadow: inset 0 -3px 0 var(--lamp); /* a lamplit edge between chrome and reading */
 }
 .panel-header h2 {
   margin: 0;
   font-family: var(--font-pixel);
-  font-size: 1.35rem;
-  line-height: 1.2;
-  color: var(--ink);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--paper);
 }
 .panel-close {
   flex: none;
   width: 44px;
   height: 44px;
-  border: 2px solid var(--ink);
+  border: 2px solid rgba(253, 243, 220, 0.55);
   border-radius: 8px;
-  background: var(--paper);
-  color: var(--ink);
+  background: transparent;
+  color: var(--paper);
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
 }
+.panel-close:hover {
+  border-color: var(--paper);
+  background: #23366f;
+}
 .panel-body {
-  padding: 1rem 1.25rem 1.25rem;
+  padding: 1.25rem 1.35rem 1.4rem;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 .panel-body h3 {
-  margin: 1.25rem 0 0.4rem;
+  margin: 1.4rem 0 0.4rem;
   font-family: var(--font-pixel);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
 }
 .panel-body h4 {
-  margin: 1rem 0 0.3rem;
+  margin: 1.1rem 0 0.3rem;
 }
 .panel-body > :first-child {
   margin-top: 0;
@@ -555,32 +681,13 @@ body.game-page {
   align-items: center;
   justify-content: space-between;
   gap: 0.6rem;
-  padding: 0.75rem 1.25rem;
-  border-top: 3px dashed rgba(63, 38, 49, 0.3);
+  padding: 0.85rem 1.35rem;
+  /* fence-post rule on top */
+  background: radial-gradient(circle, rgba(63, 38, 49, 0.45) 1.4px, transparent 1.9px) 0 0 / 11px 4px repeat-x;
 }
 .panel-footer p {
   margin: 0;
-  font-weight: 600;
-}
-
-/* NPC dialogue */
-.dialogue {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-}
-.dialogue-portrait {
-  flex: none;
-  width: 64px;
-  height: 64px;
-  border: 3px solid var(--ink);
-  border-radius: 8px;
-  background: var(--paper-2) no-repeat 0 0;
-  background-size: 128px 64px; /* 2 frames, show the first */
-  image-rendering: pixelated;
-}
-.dialogue p {
-  margin: 0 0 0.6rem;
+  font-weight: 700;
 }
 
 .noscript {
@@ -598,7 +705,7 @@ body.game-page {
   .hud-btn,
   .hud-otw,
   .hud-location {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     padding: 0.3em 0.6em;
   }
   .hud-right {
@@ -616,7 +723,7 @@ body.game-page {
     max-height: calc(100dvh - 1rem);
   }
   .panel-body {
-    padding: 0.9rem 1rem 1rem;
+    padding: 1rem 1.05rem 1.1rem;
   }
 }
 @media (max-width: 480px) {

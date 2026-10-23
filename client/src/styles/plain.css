@@ -1,95 +1,131 @@
 /* =====================================================================
-   PLAIN VIEW — a calm, readable page in the village's own materials:
-   parchment paper, ink text, wooden plank dividers. The pixel-font name
-   is the one bold element; everything else stays quiet and legible.
+   PLAIN VIEW — "Surveyed at dusk" (docs/design/ui-direction.md)
+   A dusk header with the survey plate (the same identity as the game's
+   loading screen), then a calm parchment reading column. Sections are
+   separated by a row of fence posts, the divider from the plate's key.
    ===================================================================== */
 
 body.plain-page {
   --text: #2b1d24;
-  --text-muted: #5e4852; /* 7.0:1 on parchment */
+  --text-muted: #5e4852; /* 7.5:1 on parchment */
   background: var(--paper);
-  /* faint paper grain, drawn with two soft gradients (no image needed) */
-  background-image:
-    radial-gradient(circle at 15% 10%, rgba(234, 165, 108, 0.12), transparent 40%),
-    radial-gradient(circle at 85% 60%, rgba(132, 198, 105, 0.1), transparent 45%);
-  background-attachment: fixed;
   font-size: 1.0625rem;
   line-height: 1.6;
 }
 
 .wrap {
   width: 100%;
-  max-width: 46rem; /* ~68 characters per line */
+  max-width: 46rem; /* about 68 characters per line */
   margin: 0 auto;
   padding-inline: 1.25rem;
 }
 
-/* ---------- Header ---------- */
+/* ---------- Header: the hero ---------- */
 .plain-header {
-  padding-block: 3.5rem 0.5rem;
+  background: var(--dusk);
+}
+.plain-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) 1.25rem;
 }
 .plain-header h1 {
   margin: 0;
   font-family: var(--font-pixel);
-  font-size: clamp(3rem, 11vw, 5.25rem);
+  font-size: clamp(3rem, 8vw, 5.25rem);
   font-weight: 700;
-  line-height: 0.95;
-  color: var(--ink);
-  letter-spacing: 0.01em;
-  /* a wooden "shadow" like a carved sign */
-  text-shadow: 3px 3px 0 var(--wood-light);
+  line-height: 0.92;
+  color: var(--paper);
+  text-shadow: 0 5px 0 var(--dusk-deep);
 }
 .plain-header .lead {
-  margin: 0.9rem 0 0.4rem;
-  max-width: 34rem;
-  font-size: 1.2rem;
+  margin: 1rem 0 0;
+  font-size: 1.25rem;
   font-weight: 700;
+  line-height: 1.3;
+}
+.plain-header .open-to-work {
+  margin: 1rem 0 0;
+  color: var(--lamp-glow);
+}
+.plain-header .open-to-work strong {
+  color: var(--lamp);
+}
+.plain-header .btn-row {
+  margin-top: 1.5rem;
+}
+.plain-header .btn-primary,
+.plain-header .btn-ghost,
+.plain-header .btn-disabled {
+  box-shadow: 0 3px 0 var(--dusk-deep);
+}
+.plain-header .btn-disabled {
+  background: transparent;
+  border-color: rgba(253, 243, 220, 0.45);
+  color: #c9cee6;
+}
+.plain-game-link {
+  margin: 1rem 0 0;
+  font-size: 0.95rem;
+}
+.plain-plate {
+  margin: 0;
+}
+.plain-plate img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #33467f;
+  border-radius: 3px;
+  box-shadow: 0 24px 60px rgba(8, 12, 32, 0.5);
 }
 
+/* ---------- Section navigation (sticky) ---------- */
 .plain-nav {
   position: sticky;
   top: 0;
   z-index: 5;
+  background: var(--paper);
+  box-shadow: inset 0 -3px 0 var(--lamp);
+}
+.plain-nav .wrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1.4rem;
-  margin-top: 1.75rem;
-  padding: 0.7rem 0;
-  background: var(--paper);
-  border-bottom: 3px solid var(--ink);
+  gap: 0.15rem 1.5rem;
+  padding-block: 0.75rem;
 }
 .plain-nav a {
   color: var(--ink);
   font-weight: 700;
   text-decoration: none;
-  text-underline-offset: 0.25em;
 }
 .plain-nav a:hover {
   text-decoration: underline;
   text-decoration-color: var(--wood);
-  text-decoration-thickness: 2px;
 }
 
-/* ---------- Sections, separated by a wooden plank ---------- */
+/* ---------- Sections ---------- */
 .plain-section {
-  padding-block: 2.25rem 0.5rem;
+  padding-block: 2.5rem 0.5rem;
   scroll-margin-top: 3.5rem;
 }
+/* A row of fence posts between sections. */
 .plain-section + .plain-section::before {
   content: '';
   display: block;
-  height: 10px;
-  margin-bottom: 2.25rem;
-  border: 2px solid var(--ink);
-  border-radius: 3px;
-  background:
-    linear-gradient(90deg, transparent 0 22%, var(--wood) 22% calc(22% + 2px), transparent 0 64%, var(--wood) 64% calc(64% + 2px), transparent 0),
-    var(--wood-light);
+  height: 4px;
+  margin-bottom: 2.5rem;
+  background: radial-gradient(circle, rgba(63, 38, 49, 0.55) 1.4px, transparent 1.9px) 0 50% / 11px 4px repeat-x;
 }
 .plain-section h2 {
   margin: 0 0 1rem;
   font-family: var(--font-pixel);
-  font-size: 1.9rem;
+  font-size: 2rem;
+  font-weight: 700;
   line-height: 1.1;
   color: var(--ink);
 }
@@ -103,29 +139,24 @@ body.plain-page {
 
 /* Projects: a list with clear hierarchy, not a grid of identical cards */
 .project {
-  padding-block: 1.25rem;
-  border-top: 2px dashed rgba(63, 38, 49, 0.25);
+  padding-block: 1.4rem;
+}
+.project + .project {
+  background: radial-gradient(circle, rgba(63, 38, 49, 0.3) 1.1px, transparent 1.6px) 0 0 / 9px 3px repeat-x;
 }
 .project:first-of-type {
-  border-top: 0;
   padding-top: 0;
 }
 .project h3 {
   margin: 0 0 0.2rem;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
 }
 
-/* Buttons on this page: same shape as the game, a little lighter */
 .plain-page .btn {
   min-height: 42px;
-  border-width: 2px;
-  box-shadow: 0 2px 0 var(--ink);
-}
-.plain-page .btn-game {
-  background: var(--paper-2);
 }
 .plain-page .about-photo {
-  border-radius: 10px;
+  border-radius: 6px;
 }
 
 .plain-footer {
@@ -134,12 +165,34 @@ body.plain-page {
   font-size: 0.95rem;
 }
 
+@media (max-width: 860px) {
+  .plain-hero {
+    grid-template-columns: 1fr;
+  }
+  .plain-plate {
+    order: -1;
+  }
+  .plain-plate img {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: 58% 62%;
+  }
+}
+
 @media print {
-  body.plain-page {
+  .plain-header {
     background: #fff;
   }
+  .plain-header h1,
+  .plain-header .lead,
+  .plain-header .open-to-work,
+  .plain-header .open-to-work strong {
+    color: var(--ink);
+    text-shadow: none;
+  }
+  .plain-plate,
   .plain-nav,
-  .btn-game {
+  .plain-game-link {
     display: none;
   }
   .plain-section {

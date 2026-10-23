@@ -70,7 +70,8 @@ export const palette = {
   storm: '#3a4560',
   fog: '#e8eef5',
 
-  // The portfolio's UI accent (from the old React site)
+  // UI accent of the old React site (no longer used by the redesign, which
+  // uses lamplight 'yellow' as its one accent; kept for reference)
   accent: '#5b42f5',
 }
 

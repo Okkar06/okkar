@@ -75,8 +75,9 @@ function chipList(items) {
 export function renderOpenToWork(about) {
   const job = about.openToWork
   if (!job || !job.isOpen) return ''
+  // Shown as a lit lantern: the village's sign that someone is home.
   let html = '<div class="open-to-work">'
-  html += '<span class="open-dot" aria-hidden="true"></span>'
+  html += '<span class="lantern" aria-hidden="true"></span>'
   html += '<span><strong>Open to work:</strong> ' + escapeHtml(job.targetRole.toLowerCase())
   html += ' roles in ' + escapeHtml(job.location) + '</span>'
   html += '</div>'
