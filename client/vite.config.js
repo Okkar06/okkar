@@ -47,6 +47,8 @@ function portfolioHtml(isDev) {
         const contactModule = await freshImport('src/data/contact.js')
         const siteModule = await freshImport('src/data/site.js')
         const pageModule = await freshImport('src/ui/plainPage.js')
+        const htmlModule = await freshImport('src/ui/sectionsHtml.js')
+        const escapeHtml = htmlModule.escapeHtml
 
         const data = {
           about: aboutModule.about,
@@ -60,12 +62,32 @@ function portfolioHtml(isDev) {
         const site = siteModule.site
         const description = pageModule.renderMetaDescription(data.about)
 
+        const siteUrl = site.url.replace(/\/$/, '')
+
+        // Structured data so search engines understand this is a person's portfolio.
+        const sameAs = []
+        if (!htmlModule.isMissing(data.contact.githubUrl)) sameAs.push(data.contact.githubUrl)
+        if (!htmlModule.isMissing(data.contact.linkedinUrl)) sameAs.push(data.contact.linkedinUrl)
+        const personJson = JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Person',
+          name: data.about.name,
+          jobTitle: data.about.openToWork.targetRole,
+          description: description,
+          url: siteUrl + '/',
+          image: siteUrl + '/' + data.about.photo,
+          address: { '@type': 'PostalAddress', addressLocality: data.about.location },
+          alumniOf: data.about.education.school,
+          sameAs: sameAs,
+        }).replace(/</g, '\\u003c')
+
         // Simple find-and-replace of the placeholders in the HTML files.
         let result = html
-        result = result.split('{{SITE_TITLE}}').join(site.title)
-        result = result.split('{{SITE_DESCRIPTION}}').join(description)
-        result = result.split('{{SITE_URL}}').join(site.url.replace(/\/$/, ''))
-        result = result.split('{{OG_IMAGE}}').join(site.url.replace(/\/$/, '') + '/' + site.ogImage)
+        result = result.split('{{SITE_TITLE}}').join(escapeHtml(site.title))
+        result = result.split('{{SITE_DESCRIPTION}}').join(escapeHtml(description))
+        result = result.split('{{SITE_URL}}').join(escapeHtml(siteUrl))
+        result = result.split('{{OG_IMAGE}}').join(escapeHtml(siteUrl + '/' + site.ogImage))
+        result = result.split('<!--PERSON_JSON_LD-->').join('<script type="application/ld+json">' + personJson + '</script>')
         result = result.split('<!--PLAIN_VIEW-->').join(pageModule.renderPlainPage(data, ctx))
         result = result.split('<!--GAME_INTRO-->').join(pageModule.renderGameIntro(data, ctx))
         return result

@@ -14,6 +14,7 @@ import { openSection, showNpcPage } from './ui/sections.js'
 import { closePanel } from './ui/Panel.js'
 import { setupHud, showToast } from './ui/Hud.js'
 import { startTour, goToNextStop, endTour } from './ui/QuickTour.js'
+import { setupTouchControls } from './ui/TouchControls.js'
 import { contact } from './data/contact.js'
 
 // Phones/tablets get touch-specific hints and controls.
@@ -29,6 +30,7 @@ const hud = document.getElementById('hud')
 const hudHint = document.getElementById('hud-hint')
 
 setupHud()
+if (isTouch) setupTouchControls()
 
 // ---------------------------------------------------------------------
 //  Loading progress

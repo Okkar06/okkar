@@ -34,9 +34,10 @@ export const projects = [
       'A full-stack spa management system with appointment booking, member care packages, ' +
       'vouchers and revenue analytics.',
     problem: 'TODO: describe the problem Cleo Spa had (who used it, what was slow or manual before).',
+    // TODO: confirm these features and add 2-3 specifics (what was hardest, what you're proud of).
     whatIBuilt:
       'Appointment booking, member care packages, vouchers and revenue analytics, ' +
-      'deployed through an Azure CI/CD pipeline. TODO: confirm and add 2-3 key features.',
+      'deployed through an Azure CI/CD pipeline.',
     myRole: 'TODO: describe your role (solo or team? which parts did you own?)',
     stack: ['React 19', 'TypeScript', 'PostgreSQL', 'Azure CI/CD'],
     screenshots: [

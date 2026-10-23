@@ -428,6 +428,18 @@ body.game-page {
     padding: 0.9rem 1rem 1rem;
   }
 }
+@media (max-width: 480px) {
+  .hud-long {
+    display: none;
+  }
+  .hud-right {
+    flex-wrap: nowrap;
+    gap: 0.3rem;
+  }
+  .hud-right .hud-btn {
+    padding: 0.3em 0.35em;
+  }
+}
 @media (max-width: 420px) {
   #interact-prompt {
     left: auto;

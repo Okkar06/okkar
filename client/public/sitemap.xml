@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Update these URLs if you deploy somewhere other than Render (see src/data/site.js). -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://okkar.onrender.com/</loc></url>
+  <url><loc>https://okkar.onrender.com/plain.html</loc></url>
+</urlset>
