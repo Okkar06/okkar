@@ -34,6 +34,8 @@ npm run dev
   (`server.host: true` in `vite.config.js` is what makes this work in Codespaces.)
 - Game page: `/` · Plain view: `/plain.html`
 - Add `?time=night` (or `day`, `dusk`, `dawn`) to the URL to preview the day/night tint.
+- Ambient sound (wind + birds) is generated in code by `src/ui/AmbientSound.js`. It is off by default;
+  the "Sound" button in the HUD toggles it and the choice is remembered per browser.
 - In dev mode, `TODO` text is highlighted in yellow so you can find what's left to fill in.
   On the built site, TODOs are hidden or shown as "Details coming soon".
 - In the browser console (dev only), `window.game` is the Phaser game, e.g.
@@ -147,7 +149,7 @@ client/
     entities/           Player.js (movement + animation)
     ui/                 HTML side: Panel.js (pop-up), sections.js (what each place opens),
                         sectionsHtml.js (HTML builders shared by panels and plain view),
-                        plainPage.js, Hud.js, QuickTour.js, TouchControls.js
+                        plainPage.js, Hud.js, QuickTour.js, TouchControls.js, AmbientSound.js
     utils/              state.js (shared state + tiny event bus), constants.js (speeds, tiles, zoom)
     styles/             base.css (shared), game.css, plain.css
 server/                 Express + Prisma API from the old portfolio (unchanged). In production it

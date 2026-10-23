@@ -15,6 +15,7 @@ import { closePanel } from './ui/Panel.js'
 import { setupHud, showToast } from './ui/Hud.js'
 import { startTour, goToNextStop, endTour } from './ui/QuickTour.js'
 import { setupTouchControls } from './ui/TouchControls.js'
+import { setupAmbientSound, restoreSoundChoice } from './ui/AmbientSound.js'
 import { contact } from './data/contact.js'
 
 // Phones/tablets get touch-specific hints and controls.
@@ -28,9 +29,11 @@ const enterButton = document.getElementById('enter-btn')
 const introTourButton = document.getElementById('intro-tour-btn')
 const hud = document.getElementById('hud')
 const hudHint = document.getElementById('hud-hint')
+const soundButton = document.getElementById('sound-btn')
 
 setupHud()
 if (isTouch) setupTouchControls()
+setupAmbientSound(soundButton)
 
 // ---------------------------------------------------------------------
 //  Loading progress
@@ -57,6 +60,7 @@ function enterVillage() {
   loadingScreen.classList.add('is-hidden')
   hud.hidden = false
   hudHint.hidden = false
+  restoreSoundChoice(soundButton) // turn sound back on if the visitor chose that last time
   bus.emit('game:start')
 }
 enterButton.addEventListener('click', enterVillage)
