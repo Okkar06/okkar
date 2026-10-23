@@ -25,8 +25,9 @@ import {
   updateCurrentZone,
   setupInteraction,
   moveToZone,
-  addDayNightTint,
 } from './sceneHelpers.js'
+import { DayNight } from '../systems/DayNight.js'
+import { WeatherSystem } from '../systems/WeatherSystem.js'
 import { addAmbientLife } from './ambient.js'
 import { convertTileProps, addDetails, addShadow, addBlocker } from '../systems/Decorations.js'
 import { placeItems } from '../systems/Furniture.js'
@@ -49,7 +50,7 @@ export class VillageScene extends Phaser.Scene {
     const extraTiles = map.addTilesetImage('extras', 'tiles-extras')
     const allTiles = [townTiles, extraTiles]
 
-    map.createLayer('Ground', allTiles, 0, 0).setDepth(DEPTH.ground)
+    const groundLayer = map.createLayer('Ground', allTiles, 0, 0).setDepth(DEPTH.ground)
     // The lake: water tiles are solid, the dock tiles are not.
     const waterLayer = map.createLayer('Water', allTiles, 0, 0).setDepth(DEPTH.ground + 0.5)
     waterLayer.setCollisionByProperty({ collides: true })
@@ -144,10 +145,20 @@ export class VillageScene extends Phaser.Scene {
     const fishingZone = findZoneByName(this.zones, 'fishing')
     this.fishing = fishingZone ? new Fishing(this, this.player, fishingZone, this.water) : null
 
-    const period = addDayNightTint(this, worldWidth, worldHeight)
-    // Lamps and windows: off by day, half-on at dawn/dusk, fully on at night.
-    const darknessByPeriod = { day: 0, dawn: 0.35, dusk: 0.6, night: 1 }
-    this.lightSystem.setDarkness(darknessByPeriod[period] || 0)
+    // Day/night tint and weather. Lamps and windows light up when it's
+    // dark OR gloomy (whichever is darker).
+    const scene2 = this
+    let timeDarkness = 0
+    let weatherDarkness = 0
+    function updateLamps() { scene2.lightSystem.setDarkness(Math.max(timeDarkness, weatherDarkness)) }
+    this.dayNight = new DayNight(this, worldWidth, worldHeight, function (amount) { timeDarkness = amount; updateLamps() })
+    this.weather = new WeatherSystem(this, {
+      worldWidth: worldWidth,
+      worldHeight: worldHeight,
+      groundLayer: groundLayer,
+      water: this.water,
+      onDarkness: function (amount) { weatherDarkness = amount; updateLamps() },
+    })
     addAmbientLife(this, worldWidth, worldHeight)
 
     // ----- 7. Quick tour travel requests -----

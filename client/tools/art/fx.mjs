@@ -63,7 +63,25 @@ function particles() {
   const ember = new PixelCanvas(1, 1)
   ember.set(0, 0, 'yellow')
 
+  // Puddles that appear on the paths when it rains (flat, no outline).
+  const puddleA = new PixelCanvas(16, 7)
+  puddleA.ellipse(7.5, 3, 7.5, 3, 'waterDeep', 150)
+  puddleA.ellipse(7, 2.6, 6, 2.2, 'water', 170)
+  puddleA.hline(4, 2, 4, 'waterLight')
+  puddleA.set(10, 3, 'waterFoam')
+  const puddleB = new PixelCanvas(11, 5)
+  puddleB.ellipse(5, 2, 5, 2, 'waterDeep', 150)
+  puddleB.ellipse(5, 2, 4, 1.4, 'water', 170)
+  puddleB.hline(3, 1, 3, 'waterLight')
+
+  // A little splash where a raindrop lands.
+  const splash = new PixelCanvas(5, 3)
+  splash.art(0, 0, ['w...w', '.w.w.', '..f..'], { w: 'waterFoam', f: 'white' })
+
   return [
+    { name: 'puddle_a', canvas: puddleA },
+    { name: 'puddle_b', canvas: puddleB },
+    { name: 'p_splash', canvas: splash },
     { name: 'p_rain', canvas: rain },
     { name: 'p_snow', canvas: snow },
     { name: 'p_petal', canvas: petal },

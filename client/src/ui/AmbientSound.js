@@ -12,6 +12,8 @@ let audio = null // the AudioContext, created on the first click
 let master = null
 let birdTimer = null
 let isOn = false
+let rainVolume = null // gain node for the rain hiss
+let rainLevel = 0 // 0 = dry, 1 = heavy rain (set by the weather)
 
 export function setupAmbientSound(button) {
   function updateButton() {
@@ -62,6 +64,7 @@ function start() {
     master.gain.value = MASTER_VOLUME
     master.connect(audio.destination)
     startWind()
+    startRain()
   }
   audio.resume()
   isOn = true
@@ -113,6 +116,59 @@ function startWind() {
 }
 
 // ---------------------------------------------------------------------
+//  Rain: higher-pitched noise whose volume follows the weather.
+// ---------------------------------------------------------------------
+function noiseSource(seconds) {
+  const buffer = audio.createBuffer(1, audio.sampleRate * seconds, audio.sampleRate)
+  const samples = buffer.getChannelData(0)
+  for (let i = 0; i < samples.length; i++) samples[i] = Math.random() * 2 - 1
+  const source = audio.createBufferSource()
+  source.buffer = buffer
+  return source
+}
+
+function startRain() {
+  const noise = noiseSource(2)
+  noise.loop = true
+  const filter = audio.createBiquadFilter()
+  filter.type = 'bandpass'
+  filter.frequency.value = 2400
+  filter.Q.value = 0.6
+  rainVolume = audio.createGain()
+  rainVolume.gain.value = rainLevel * 0.9
+  noise.connect(filter)
+  filter.connect(rainVolume)
+  rainVolume.connect(master)
+  noise.start()
+}
+
+// Called when the weather changes (works even while muted; you'll hear
+// it as soon as sound is switched on).
+export function setRainLevel(level) {
+  rainLevel = level
+  if (rainVolume) rainVolume.gain.setTargetAtTime(level * 0.9, audio.currentTime, 1.2)
+}
+
+// A distant rumble for thunderstorms (silent when sound is off).
+export function playThunder() {
+  if (!audio || !isOn) return
+  const noise = noiseSource(3)
+  const filter = audio.createBiquadFilter()
+  filter.type = 'lowpass'
+  filter.frequency.value = 160
+  const volume = audio.createGain()
+  const now = audio.currentTime
+  volume.gain.setValueAtTime(0.0001, now)
+  volume.gain.exponentialRampToValueAtTime(1.4, now + 0.25)
+  volume.gain.exponentialRampToValueAtTime(0.0001, now + 2.8)
+  noise.connect(filter)
+  filter.connect(volume)
+  volume.connect(master)
+  noise.start(now)
+  noise.stop(now + 3)
+}
+
+// ---------------------------------------------------------------------
 //  Birds: 2-4 quick rising chirps every few seconds (daytime only).
 // ---------------------------------------------------------------------
 function scheduleBird() {
@@ -121,7 +177,7 @@ function scheduleBird() {
   birdTimer = setTimeout(function () {
     if (!isOn) return
     const hour = new Date().getHours()
-    if (hour >= 6 && hour < 19) chirpSeries()
+    if (hour >= 6 && hour < 19 && rainLevel === 0) chirpSeries() // birds hide in the rain
     scheduleBird()
   }, wait)
 }

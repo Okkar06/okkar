@@ -6,14 +6,13 @@
 
 import Phaser from 'phaser'
 import { DEPTH } from '../utils/constants.js'
+import { currentPeriod } from '../systems/DayNight.js'
 
 export function addAmbientLife(scene, worldWidth, worldHeight) {
   // Respect visitors who prefer less motion.
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-  const hour = new Date().getHours()
-  const params = new URLSearchParams(window.location.search)
-  const isNight = params.get('time') === 'night' || (!params.get('time') && (hour >= 20 || hour < 6))
+  const isNight = currentPeriod() === 'night'
 
   const colors = isNight ? [0xfff59d, 0xfdbe53] : [0xffffff, 0xfdbe53, 0xf28462, 0x76e4ff]
   const count = isNight ? 14 : 7

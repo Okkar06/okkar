@@ -196,31 +196,3 @@ export function moveToZone(scene, player, zone, onArrive) {
     },
   })
 }
-
-// ---------------------------------------------------------------------
-//  Day / night tint based on the visitor's local time.
-//  Add ?time=night (or day, dusk, dawn) to the URL to preview it.
-// ---------------------------------------------------------------------
-export function addDayNightTint(scene, worldWidth, worldHeight) {
-  const params = new URLSearchParams(window.location.search)
-  let period = params.get('time')
-  if (!period) {
-    const hour = new Date().getHours()
-    if (hour >= 20 || hour < 6) period = 'night'
-    else if (hour >= 18) period = 'dusk'
-    else if (hour < 8) period = 'dawn'
-    else period = 'day'
-  }
-
-  let color = 0x000000
-  let alpha = 0
-  if (period === 'night') { color = 0x1b2a5c; alpha = 0.3 }
-  if (period === 'dusk') { color = 0xff8a3d; alpha = 0.14 }
-  if (period === 'dawn') { color = 0xffc58a; alpha = 0.1 }
-  if (alpha === 0) return period
-
-  // One big see-through rectangle over the world, but UNDER the lights,
-  // so windows and lamps glow through the night tint.
-  scene.add.rectangle(0, 0, worldWidth, worldHeight, color, alpha).setOrigin(0, 0).setDepth(DEPTH.light - 1)
-  return period
-}

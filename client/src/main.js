@@ -15,7 +15,9 @@ import { closePanel } from './ui/Panel.js'
 import { setupHud, showToast } from './ui/Hud.js'
 import { startTour, goToNextStop, endTour } from './ui/QuickTour.js'
 import { setupTouchDragControl } from './ui/TouchDragControl.js'
-import { setupAmbientSound, restoreSoundChoice } from './ui/AmbientSound.js'
+import { setupAmbientSound, restoreSoundChoice, setRainLevel } from './ui/AmbientSound.js'
+import { weather, startWeather, cycleWeather, weatherLabel } from './systems/weatherState.js'
+import { weatherIcon } from './ui/icons.js'
 import { contact } from './data/contact.js'
 
 // Phones/tablets get touch-specific hints and controls.
@@ -34,6 +36,23 @@ const soundButton = document.getElementById('sound-btn')
 setupHud()
 setupTouchDragControl() // phones only: drag anywhere on the map to walk
 setupAmbientSound(soundButton)
+
+// ---------------------------------------------------------------------
+//  Weather button: cycles the weather; the icon shows the current one.
+// ---------------------------------------------------------------------
+const weatherButton = document.getElementById('weather-btn')
+function showWeather(key) {
+  weatherButton.innerHTML = weatherIcon(key)
+  weatherButton.setAttribute('aria-label', 'Change the weather (now: ' + weatherLabel(key).toLowerCase() + ')')
+  setRainLevel(key === 'storm' ? 1 : key === 'rain' ? 0.5 : 0)
+}
+weatherButton.addEventListener('click', function () {
+  const next = cycleWeather()
+  showToast('Weather: ' + weatherLabel(next), 2500)
+})
+bus.on('weather:change', showWeather)
+startWeather()
+showWeather(weather.current)
 
 // ---------------------------------------------------------------------
 //  Loading progress
