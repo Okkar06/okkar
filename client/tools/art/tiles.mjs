@@ -117,5 +117,7 @@ export function tiles() {
     { name: 'soil_b', canvas: soil(8) },
     { name: 'cobble_a', canvas: cobble(2) },
     { name: 'cobble_b', canvas: cobble(6) },
+    // Fully transparent but solid: keeps the player out of the deep forest edge.
+    { name: 'invisible_wall', canvas: new PixelCanvas(16, 16), solid: true },
   ]
 }

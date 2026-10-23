@@ -35,6 +35,8 @@ export class WaterSystem {
       otherFrame[frame1] = frame0
       if (match[1] === 'c') this.centreGids = [frame0, frame1]
     }
+    this.waterLayer = waterLayer
+    this.otherFrame = otherFrame
     this.animatedTiles = []
     const T = TILE_SIZE
     for (let y = 0; y < waterLayer.layer.height; y++) {
@@ -67,6 +69,12 @@ export class WaterSystem {
     this.createBubbles()
     this.createFish()
     this.createDragonflies()
+  }
+
+  // Is (x, y) open water (not land, not the dock)? Used to aim the fishing cast.
+  isOpenWater(x, y) {
+    const tile = this.waterLayer.getTileAtWorldXY(x, y)
+    return Boolean(tile) && this.otherFrame[tile.index] !== undefined
   }
 
   randomWaterSpot(inner) {

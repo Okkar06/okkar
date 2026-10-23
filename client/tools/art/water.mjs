@@ -114,23 +114,43 @@ function sandTile(cls) {
   return c
 }
 
-// Dock planks run across the dock; posts on the outer side.
+// Dock planks run across the dock; posts on the outer sides.
+// side: 'l' (left edge), 'r' (right edge) or 'c' (middle of a wide platform)
 function dockTile(side, end) {
   const c = new PixelCanvas(16, 16)
   c.rect(0, 0, 16, 16, 'water')
-  c.rect(side === 'l' ? 2 : 0, 0, 14, end ? 14 : 16, 'woodLight')
-  for (let y = 0; y < (end ? 14 : 16); y += 4) {
-    c.hline(side === 'l' ? 2 : 0, y, 14, 'woodHi')
-    c.hline(side === 'l' ? 2 : 0, y + 3, 14, 'wood')
+  const x0 = side === 'l' ? 2 : 0
+  const w = side === 'c' ? 16 : 14
+  const h = end ? 14 : 16
+  c.rect(x0, 0, w, h, 'woodLight')
+  for (let y = 0; y < h; y += 4) {
+    c.hline(x0, y, w, 'woodHi')
+    c.hline(x0, y + 3, w, 'wood')
   }
-  const postX = side === 'l' ? 1 : 14
-  c.rect(postX, 2, 2, 3, 'woodDark') // posts
-  c.rect(postX, 10, 2, 3, 'woodDark')
-  c.vline(side === 'l' ? 2 : 15, 0, end ? 14 : 16, 'woodDark') // edge shadow
+  if (side !== 'c') {
+    const postX = side === 'l' ? 1 : 14
+    c.rect(postX, 2, 2, 3, 'woodDark') // posts
+    c.rect(postX, 10, 2, 3, 'woodDark')
+    c.vline(side === 'l' ? 2 : 15, 0, h, 'woodDark') // edge shadow
+  }
   if (end) {
-    c.hline(side === 'l' ? 2 : 0, 14, 14, 'woodDark')
-    c.hline(side === 'l' ? 2 : 0, 15, 14, 'waterDeep')
+    c.hline(x0, 14, w, 'woodDark')
+    c.hline(x0, 15, w, 'waterDeep')
   }
+  return c
+}
+
+// A little rowboat moored at the harbour (flat on the water).
+function rowboat() {
+  const c = new PixelCanvas(30, 14)
+  c.ellipse(14.5, 7, 13.5, 5.5, 'wood')
+  c.ellipse(14.5, 6.5, 11.5, 4, 'woodLight')
+  c.ellipse(14.5, 7, 9, 2.6, 'woodDark') // inside of the hull
+  c.rect(9, 4, 2, 6, 'woodLight') // seats
+  c.rect(19, 4, 2, 6, 'woodLight')
+  c.hline(5, 11, 20, 'woodDark')
+  c.outline()
+  c.hline(4, 13, 22, 'waterFoam') // a line of foam along the hull
   return c
 }
 
@@ -148,6 +168,8 @@ export function tiles() {
   list.push({ name: 'dock_r', canvas: dockTile('r', false) })
   list.push({ name: 'dock_end_l', canvas: dockTile('l', true) })
   list.push({ name: 'dock_end_r', canvas: dockTile('r', true) })
+  list.push({ name: 'dock_c', canvas: dockTile('c', false) })
+  list.push({ name: 'dock_end_c', canvas: dockTile('c', true) })
   return list
 }
 
@@ -269,6 +291,7 @@ export function sprites() {
     { name: 'fish_green', canvas: fish('grassMid', 'grassHi', 'grassDark') },
     { name: 'fish_pink', canvas: fish('pink', 'white', 'purple') },
     { name: 'dock_stool', canvas: dockStool() },
+    { name: 'rowboat', canvas: rowboat() },
     { name: 'bucket', canvas: bucket() },
   ]
 }

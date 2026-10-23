@@ -149,9 +149,8 @@ export class VillageScene extends Phaser.Scene {
     setupCamera(this, this.player, worldWidth, worldHeight)
     const scene = this
     setupInteraction(this, this.player, this.zones, function (zone) { scene.interact(zone) })
-    // The fishing mini-game at the end of the dock.
-    const fishingZone = findZoneByName(this.zones, 'fishing')
-    this.fishing = fishingZone ? new Fishing(this, this.player, fishingZone, this.water) : null
+    // The fishing mini-game: works anywhere on the harbour (zones named 'fishing').
+    this.fishing = findZoneByName(this.zones, 'fishing') ? new Fishing(this, this.player, this.water) : null
 
     // Day/night tint and weather. Lamps and windows light up when it's
     // dark OR gloomy (whichever is darker).

@@ -44,6 +44,14 @@ const TILE_PROPS = {
 //   shadow: shadow sprite name, if any
 //   sway:  animation key for wind sway
 const DETAIL_TYPES = {
+  // Trees: only the trunk is solid, so you can walk behind the crown.
+  tree_oak_a: { frame: 'tree_oak_a', solid: { w: 8, h: 5 }, shadow: 'tree_shadow' },
+  tree_oak_b: { frame: 'tree_oak_b', solid: { w: 8, h: 5 }, shadow: 'tree_shadow' },
+  tree_oak_c: { frame: 'tree_oak_c', solid: { w: 8, h: 5 }, shadow: 'tree_shadow' },
+  tree_autumn: { frame: 'tree_autumn', solid: { w: 8, h: 5 }, shadow: 'tree_shadow' },
+  tree_pine_a: { frame: 'tree_pine_a', solid: { w: 6, h: 4 }, shadow: 'shadow' },
+  tree_pine_b: { frame: 'tree_pine_b', solid: { w: 6, h: 4 }, shadow: 'shadow' },
+  rowboat: { frame: 'rowboat', flat: true, bob: true },
   tallgrass_a: { frame: 'tallgrass_a_0', sway: 'sway_a' },
   tallgrass_b: { frame: 'tallgrass_b_0', sway: 'sway_b' },
   flower_pink: { frame: 'flower_pink', flat: true },
@@ -216,6 +224,10 @@ export function addDetails(scene, objects, blockers) {
     } else if (config.sway && animate) {
       // Start at a random point so the grass doesn't sway in sync.
       sprite.play({ key: config.sway, startFrame: Math.floor(Math.random() * 2), delay: Math.random() * 1500 })
+    }
+    if (config.bob && animate) {
+      // Rock gently on the water.
+      scene.tweens.add({ targets: sprite, y: y + 1, angle: 1.5, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' })
     }
     if (config.shadow) addShadow(scene, x, y - 1, config.shadow)
     if (config.solid) addBlocker(scene, blockers, x, y, config.solid.w, config.solid.h)

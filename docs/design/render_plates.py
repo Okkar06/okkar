@@ -146,7 +146,7 @@ def render_plan(S):
         for x in range(W):
             if not lake[y][x]:
                 continue
-            best = 99.0
+            best = 3.5  # open water far from any shore (incl. past the map edge)
             for yy in range(max(0, y - 6), min(H, y + 7)):
                 for xx in range(max(0, x - 8), min(W, x + 9)):
                     if not lake[yy][xx]:
@@ -168,7 +168,10 @@ def render_plan(S):
                     x0, y0 = int(fx - 0.5), int(fy - 0.5)
                     tx, ty = fx - 0.5 - x0, fy - 0.5 - y0
                     def dv(a, b):
-                        if 0 <= a < W and 0 <= b < H and lake[b][a]:
+                        # Beyond the map edge the lake carries on: use the nearest cell inside.
+                        a = min(max(a, 0), W - 1)
+                        b = min(max(b, 0), H - 1)
+                        if lake[b][a]:
                             return dist[b][a]
                         return 0.0
                     v = (dv(x0, y0) * (1 - tx) * (1 - ty) + dv(x0 + 1, y0) * tx * (1 - ty)
@@ -237,9 +240,24 @@ def render_plan(S):
             elif k in DOORS:
                 light(cx(x), cy(y) + 4 * u, 2 * u, 12 * u, 0.5)
 
+    # Trees from the Details layer: circles for broadleaf, triangles for pines
+    # (the cartographer's conifer symbol). Drawn top-down so lower trees overlap.
+    tree_objects = [o for o in layers['Details']['objects'] if o['type'].startswith('tree_')]
+    tree_objects.sort(key=lambda o: o['y'])
+    for obj in tree_objects:
+        x, y = obj['x'] * S / 16, (obj['y'] - 12) * S / 16
+        if obj['type'].startswith('tree_pine'):
+            r = (8 if obj['type'] == 'tree_pine_a' else 6.5) * u
+            d.polygon([(x, y - r * 1.2), (x - r, y + r * 0.8), (x + r, y + r * 0.8)], fill=TREE, outline=TREE_RIM)
+        else:
+            r = (10 if obj['type'] in ('tree_oak_a', 'tree_oak_c') else 8.5) * u
+            d.ellipse([x - r, y - r, x + r, y + r], fill=TREE, outline=TREE_RIM, width=max(1, round(u)))
+
     # Details: lamps, fountain; props as small marks.
     for obj in layers['Details']['objects']:
         x, y = obj['x'] * S / 16, obj['y'] * S / 16
+        if obj['type'] == 'rowboat':
+            d.ellipse([x - 11 * u, y - 10 * u, x + 11 * u, y - 2 * u], outline=FENCE, width=max(1, round(u)))
         if obj['type'] == 'lamppost':
             light(x, y - 14 * u, 2.2 * u, 26 * u, 0.9)
         elif obj['type'] == 'fountain':

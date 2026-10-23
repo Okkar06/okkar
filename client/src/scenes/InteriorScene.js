@@ -49,8 +49,12 @@ export class InteriorScene extends Phaser.Scene {
       const z = room.interactables[i]
       this.zones.push(makeZone(z.name, z.section, z.label, z.x * T, z.y * T, z.w * T, z.h * T))
     }
+    // The door zone covers the last floor row AND the doorway itself, and
+    // walking down through the doorway takes you outside (see update()).
     const exitY = (room.height - 2) * T
-    this.zones.push(makeZone('exit', 'exit', 'Go back outside', (built.exitX - 1) * T, exitY + 4, 3 * T, T - 4))
+    this.zones.push(makeZone('exit', 'exit', 'Go back outside', (built.exitX - 1) * T, exitY + 4, 3 * T, 2 * T - 4))
+    this.doorwayY = (room.height - 1) * T + 4 // feet below this line = stepped out of the door
+    this.leaving = false
 
     // ----- 4. Player (starts at the door), camera, input -----
     this.player = new Player(this, built.exitX * T + T / 2, exitY + 2)
@@ -88,6 +92,8 @@ export class InteriorScene extends Phaser.Scene {
 
   // Back to the village, standing at `zoneName` (default: this building's door).
   leave(zoneName, onArrive) {
+    if (this.leaving) return
+    this.leaving = true
     const scene = this
     this.player.setVelocity(0, 0)
     this.cameras.main.fadeOut(200, 0, 0, 0)
@@ -100,5 +106,7 @@ export class InteriorScene extends Phaser.Scene {
     this.player.update()
     const scene = this
     updateCurrentZone(this.zones, this.player, function (zone) { scene.interact(zone) })
+    // Walked out through the doorway: go outside.
+    if (this.player.y + 6 > this.doorwayY) this.leave(this.roomKey, null)
   }
 }

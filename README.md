@@ -14,7 +14,7 @@ for anyone who just wants to read. Both pages share one set of data files, so yo
 | Market stall | Education and experience | `client/src/data/experience.js` |
 | Mailbox | Contact + "Open to work" | `client/src/data/contact.js` |
 | Pip, the welcome villager | First-visit guide, hints | `client/src/data/guide.js` |
-| Fishing dock (easter egg) | Fun facts and skill tags | `client/src/data/funFacts.js` |
+| Harbour on the lake (easter egg: fish from anywhere on it) | Fun facts and skill tags | `client/src/data/funFacts.js` |
 | Furniture, porches, chimneys… | Decoration layout | `client/src/data/decor.js` |
 
 Always on screen: **Résumé**, **Contact me**, **Quick tour**, **Projects**, **Plain view**, the **Open to work**

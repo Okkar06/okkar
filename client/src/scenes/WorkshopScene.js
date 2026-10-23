@@ -88,7 +88,10 @@ export class WorkshopScene extends Phaser.Scene {
 
     // The workbench holds the project catalogue (a list of everything).
     this.zones.push(makeZone('catalogue', 'projects', 'Read the project catalogue', 1 * T, (roomHeight - 2) * T, 3 * T, T))
-    this.zones.push(makeZone('exit', 'exit', 'Go back outside', (built.exitX - 1) * T, (roomHeight - 2) * T + 4, 3 * T, T - 4))
+    // Door zone covers the last floor row and the doorway; walking through the doorway leaves.
+    this.zones.push(makeZone('exit', 'exit', 'Go back outside', (built.exitX - 1) * T, (roomHeight - 2) * T + 4, 3 * T, 2 * T - 4))
+    this.doorwayY = (roomHeight - 1) * T + 4
+    this.leaving = false
 
     // ----- 4. Player, camera, input -----
     this.player = new Player(this, built.exitX * T + T / 2, (roomHeight - 2) * T + 2)
@@ -126,6 +129,8 @@ export class WorkshopScene extends Phaser.Scene {
 
   // Go back to the village, standing at `zoneName` (default: the workshop door).
   leave(zoneName, onArrive) {
+    if (this.leaving) return
+    this.leaving = true
     const scene = this
     this.player.setVelocity(0, 0)
     this.cameras.main.fadeOut(200, 0, 0, 0)
@@ -138,5 +143,7 @@ export class WorkshopScene extends Phaser.Scene {
     this.player.update()
     const scene = this
     updateCurrentZone(this.zones, this.player, function (zone) { scene.interact(zone) })
+    // Walked out through the doorway: go outside.
+    if (this.player.y + 6 > this.doorwayY) this.leave('workshop', null)
   }
 }

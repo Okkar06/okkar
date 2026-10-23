@@ -35,7 +35,6 @@ const K = {
   dirtInnerTL: 39, dirtInnerTR: 40, dirtInnerBR: 41, dirtInnerBL: 42,
   beehive: 94, well: 104, log: 106, pot: 107, barrel: 130, waterBarrel: 131,
 }
-const TREES = [K.treeSmallGreen, K.treeRoundGreen, K.treeSmallGreen, K.treeRoundGreen, K.treeSmallOrange, K.treeRoundOrange, K.treeOrange]
 
 // Kenney tiles that are solid (the Tiled property collides=true).
 const KENNEY_SOLID = new Set(
@@ -106,37 +105,34 @@ for (let x = 0; x < W; x++) {
   decor[CLIFF_ROW + 1][x] = extra(x % 4 === 2 ? 'cliff_bottom_b' : 'cliff_bottom_a')
 }
 reserve(0, 0, W - 1, CLIFF_ROW + 1)
-for (let y = 0; y < CLIFF_ROW; y++) {
-  for (let x = 0; x < W; x++) {
-    if ((x + y) % 2 === 0 || random() < 0.35) decor[y][x] = town(TREES[Math.floor(random() * TREES.length)])
-  }
-}
-function forestFloor(x, y) {
-  ground[y][x] = extra((x * 7 + y * 3) % 5 === 0 ? 'forest_floor_b' : 'forest_floor_a')
-}
-for (let y = 0; y < CLIFF_ROW; y++) for (let x = 0; x < W; x++) forestFloor(x, y)
-function treeLine(x0, y0, x1, y1, density) {
+// Where trees may grow. They're planted later (step 6b) at natural,
+// irregular spacing so the canopies overlap like a real forest.
+const forest = grid(false)
+function forestArea(x0, y0, x1, y1) {
   for (let y = y0; y <= y1; y++) {
     for (let x = x0; x <= x1; x++) {
       if (!inMap(x, y)) continue
-      if (decor[y][x]) continue
-      if (random() < density) {
-        decor[y][x] = town(TREES[Math.floor(random() * TREES.length)])
-        forestFloor(x, y) // darker floor only under trees: an organic edge
-      }
+      forest[y][x] = true
       reserved[y][x] = true
     }
   }
 }
-treeLine(0, 6, 1, H - 1, 0.95) // west edge
-treeLine(2, 6, 2, H - 1, 0.55)
-treeLine(W - 2, 6, W - 1, H - 1, 0.95) // east edge
-treeLine(W - 3, 6, W - 3, H - 1, 0.55)
-treeLine(0, H - 2, W - 1, H - 1, 0.95) // south edge
-treeLine(3, H - 3, W - 4, H - 3, 0.45)
-treeLine(31, 7, 32, 12, 0.7) // between the crop field and the workshop
-treeLine(3, 28, 7, 32, 0.6) // south-west grove
-treeLine(16, 24, 18, 27, 0.5) // beside the south road
+forestArea(0, 0, W - 1, CLIFF_ROW - 1) // the forest above the cliff
+forestArea(0, 6, 2, H - 1) // west edge
+forestArea(W - 3, 6, W - 1, H - 1) // east edge
+forestArea(0, H - 3, W - 1, H - 1) // south edge
+forestArea(31, 7, 32, 12) // between the crop field and the workshop
+forestArea(3, 28, 7, 32) // south-west grove
+forestArea(16, 25, 18, 28) // beside the south road
+
+// An invisible wall along the outer two tiles keeps the player out of the
+// deep forest (trees there are scenery). The lake replaces it later where
+// the water reaches the edge of the map.
+for (let y = 6; y < H; y++) {
+  for (let x = 0; x < W; x++) {
+    if (x < 2 || x >= W - 2 || y >= H - 2) decor[y][x] = extra('invisible_wall')
+  }
+}
 
 // ---------------------------------------------------------------------
 //  3. Buildings (walls in Decor = solid, roofs in Above = walk-behind)
@@ -274,22 +270,29 @@ fenceRow(19, 3, 8, 44, 45, 46, null) // a fence behind the market stall
 // ---------------------------------------------------------------------
 const lake = grid(false)
 const dock = grid(false)
-for (let y = 26; y <= 34; y++) {
-  for (let x = 28; x <= 45; x++) {
-    const wobble = Math.sin(x * 1.3) * 0.08 + Math.cos(y * 2.1 + x) * 0.06
-    const dx = (x - 37) / 7.3
-    const dy = (y - 30.2) / 2.75
+// A big lake in the south-east that carries on past the edge of the map.
+for (let y = 25; y < H; y++) {
+  for (let x = 25; x < W; x++) {
+    const wobble = Math.sin(x * 1.1) * 0.07 + Math.cos(y * 1.9 + x * 0.6) * 0.05
+    const dx = (x - 38.5) / 10.5
+    const dy = (y - 32.6) / 5.8
     if (dx * dx + dy * dy <= 1 + wobble) lake[y][x] = true
   }
 }
-const DOCK = { x: 35, top: 28, end: 31 } // two tiles wide: x and x+1
-for (let y = DOCK.top; y <= DOCK.end; y++) {
-  for (let x = DOCK.x; x <= DOCK.x + 1; x++) { lake[y][x] = true; dock[y][x] = true }
+// The harbour: a pier from the beach out to a wide T-shaped platform.
+const DOCK = { pierX: 35, top: 27, platformY: 29, platformX0: 33, platformX1: 38, bottom: 30 }
+for (let y = DOCK.top; y <= DOCK.bottom; y++) {
+  for (let x = DOCK.platformX0; x <= DOCK.platformX1; x++) {
+    const onPier = y < DOCK.platformY && (x === DOCK.pierX || x === DOCK.pierX + 1)
+    const onPlatform = y >= DOCK.platformY
+    if (onPier || onPlatform) { lake[y][x] = true; dock[y][x] = true }
+  }
 }
 
 // Autotile class for a cell inside `region` (same rules as the dirt paths).
-function classify(region, x, y) {
-  const inside = function (cx, cy) { return inMap(cx, cy) && region[cy][cx] }
+// edgeInside: treat cells beyond the map edge as inside (the lake carries on).
+function classify(region, x, y, edgeInside) {
+  const inside = function (cx, cy) { return inMap(cx, cy) ? region[cy][cx] : Boolean(edgeInside) }
   const n = inside(x, y - 1), s = inside(x, y + 1), e = inside(x + 1, y), w = inside(x - 1, y)
   if (!n && !w) return 'nw'
   if (!n && !e) return 'ne'
@@ -317,15 +320,17 @@ for (let y = 0; y < H; y++) {
 for (let y = 0; y < H; y++) {
   for (let x = 0; x < W; x++) {
     if (!shore[y][x]) continue
-    decor[y][x] = 0 // no trees in the lake or on the beach
+    decor[y][x] = 0 // no trees or walls in the lake or on the beach
+    forest[y][x] = false
     reserved[y][x] = true
-    ground[y][x] = extra('sand_' + (lake[y][x] ? 'c' : classify(shore, x, y)))
+    ground[y][x] = extra('sand_' + (lake[y][x] ? 'c' : classify(shore, x, y, true)))
     if (!lake[y][x]) continue
     if (dock[y][x]) {
-      const side = x === DOCK.x ? 'l' : 'r'
-      water[y][x] = extra((y === DOCK.end ? 'dock_end_' : 'dock_') + side)
+      const isDock = function (cx, cy) { return inMap(cx, cy) && dock[cy][cx] }
+      const side = !isDock(x - 1, y) ? 'l' : !isDock(x + 1, y) ? 'r' : 'c'
+      water[y][x] = extra((isDock(x, y + 1) ? 'dock_' : 'dock_end_') + side)
     } else {
-      water[y][x] = extra('water_' + classify(lake, x, y) + '_0')
+      water[y][x] = extra('water_' + classify(lake, x, y, true) + '_0')
     }
   }
 }
@@ -372,7 +377,9 @@ const interactables = [
   obj('market', 6 * T, 23 * T, 4 * T, 28, { section: 'experience', label: 'Visit the market stall' }),
   obj('mailbox', 34 * T, 22 * T, 3 * T, 3 * T, { section: 'contact', label: 'Check the mailbox' }),
   obj('npc', 25 * T, 23 * T, 3 * T, 3 * T, { section: 'npc', label: 'Talk to Pip' }),
-  obj('fishing', DOCK.x * T, DOCK.end * T, 2 * T, T, { section: 'fishing', label: 'Fish from the dock' }),
+  // Fishing works anywhere on the harbour: the platform and the pier.
+  obj('fishing', DOCK.platformX0 * T, DOCK.platformY * T, (DOCK.platformX1 - DOCK.platformX0 + 1) * T, 2 * T, { section: 'fishing', label: 'Cast a line' }),
+  obj('fishing', DOCK.pierX * T, (DOCK.top + 1) * T, 2 * T, (DOCK.platformY - DOCK.top - 1) * T, { section: 'fishing', label: 'Cast a line' }),
 ]
 
 const areas = [
@@ -422,24 +429,29 @@ for (let y = FIELD.y0; y <= FIELD.y1; y++) {
   }
 }
 
-// Lakeside: reeds on the beach, lily pads on the water, rocks, the dock.
+// Lakeside: reeds on the beach, lily pads on the water, rocks, the harbour.
+function nearDock(x, y, distance) {
+  for (let j = -distance; j <= distance; j++) for (let i = -distance; i <= distance; i++) if (inMap(x + i, y + j) && dock[y + j][x + i]) return true
+  return false
+}
 for (let y = 0; y < H; y++) {
   for (let x = 0; x < W; x++) {
     if (shore[y][x] && !lake[y][x]) {
       let touchesWater = false
       for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) if (inMap(x + i, y + j) && lake[y + j][x + i] && !dock[y + j][x + i]) touchesWater = true
-      const nearDock = Math.abs(x - DOCK.x - 0.5) < 2.5 && y <= DOCK.top
-      if (touchesWater && !nearDock && random() < 0.45) details.push(point('', 'reeds', x * T + 4 + Math.floor(random() * 8), y * T + 12))
-      else if (!nearDock && random() < 0.12) details.push(point('', random() < 0.5 ? 'stone_s' : 'pebbles', x * T + 8, y * T + 10))
-    } else if (lake[y][x] && !dock[y][x] && Math.abs(x - DOCK.x - 0.5) > 2 && random() < 0.13) {
+      if (touchesWater && !nearDock(x, y, 1) && random() < 0.45) details.push(point('', 'reeds', x * T + 4 + Math.floor(random() * 8), y * T + 12))
+      else if (!nearDock(x, y, 1) && random() < 0.12) details.push(point('', random() < 0.5 ? 'stone_s' : 'pebbles', x * T + 8, y * T + 10))
+    } else if (lake[y][x] && !dock[y][x] && !nearDock(x, y, 2) && random() < 0.15) {
       details.push(point('', random() < 0.3 ? 'lily_flower' : 'lily_pad', x * T + 8, y * T + 10))
     }
   }
 }
-details.push(point('', 'dock_stool', DOCK.x * T + 8, DOCK.end * T + 12))
-details.push(point('', 'bucket', (DOCK.x + 1) * T + 10, (DOCK.end - 1) * T + 10))
-details.push(point('', 'signpost', 31 * T + 8, 26 * T + 14, { label: 'Fishing dock' }))
-details.push(point('', 'bench', 41 * T, 26 * T + 12))
+details.push(point('', 'dock_stool', (DOCK.platformX0 + 1) * T + 8, DOCK.bottom * T + 10))
+details.push(point('', 'bucket', (DOCK.platformX1 - 1) * T + 6, DOCK.platformY * T + 10))
+details.push(point('', 'lamppost', DOCK.platformX0 * T + 8, DOCK.platformY * T + 12))
+details.push(point('', 'rowboat', (DOCK.platformX1 + 1) * T + 14, DOCK.bottom * T + 8))
+details.push(point('', 'signpost', 31 * T + 8, 26 * T + 14, { label: 'Harbour: fishing' }))
+details.push(point('', 'bench', 41 * T, 26 * T + 4))
 
 // Fence details: ivy, flowers at the base, a bird on a post (variety!).
 for (let i = 0; i < fenceMiddles.length; i++) {
@@ -485,6 +497,44 @@ for (let attempt = 0; attempt < 400 && placed < 70; attempt++) {
     details.push(point('', cluster.types[Math.floor(random() * cluster.types.length)], Math.round(px), Math.round(py)))
   }
   placed++
+}
+
+// ---------------------------------------------------------------------
+//  6b. Trees: thrown at random positions inside the forest areas and kept
+//  only if no other tree is too close ("Poisson-disk" style). The result
+//  is irregular, overlapping canopies instead of a tidy grid.
+// ---------------------------------------------------------------------
+const TREE_TYPES = [
+  ['tree_oak_a', 3], ['tree_oak_b', 3], ['tree_oak_c', 2.5],
+  ['tree_pine_a', 2], ['tree_pine_b', 2], ['tree_autumn', 1.2],
+]
+let treeWeight = 0
+for (let i = 0; i < TREE_TYPES.length; i++) treeWeight += TREE_TYPES[i][1]
+function pickTree() {
+  let r = random() * treeWeight
+  for (let i = 0; i < TREE_TYPES.length; i++) {
+    r -= TREE_TYPES[i][1]
+    if (r <= 0) return TREE_TYPES[i][0]
+  }
+  return TREE_TYPES[0][0]
+}
+const trees = []
+const MIN_TREE_DISTANCE = 15 // pixels between trunks: crowns (28-34 px wide) overlap
+for (let attempt = 0; attempt < 9000; attempt++) {
+  const px = Math.round(random() * (W * T + 12) - 6)
+  const py = Math.round(random() * (H * T) + 4)
+  const tx = Math.max(0, Math.min(W - 1, Math.floor(px / T)))
+  const ty = Math.floor((py - 2) / T)
+  if (!inMap(tx, ty) || !forest[ty][tx]) continue
+  let tooClose = false
+  for (let i = 0; i < trees.length && !tooClose; i++) {
+    const dx = trees[i].x - px
+    const dy = (trees[i].y - py) * 1.3 // a little more room up/down than sideways
+    if (dx * dx + dy * dy < MIN_TREE_DISTANCE * MIN_TREE_DISTANCE) tooClose = true
+  }
+  if (tooClose) continue
+  trees.push({ x: px, y: py })
+  details.push(point('', pickTree(), px, py))
 }
 
 // ---------------------------------------------------------------------

@@ -22,6 +22,7 @@ export const palette = {
   grass: '#84c669',
   grassMid: '#65a556',
   grassDark: '#479f4a',
+  pineDark: '#2f6b45', // added: pine needles in shade (between grassDark and ink)
 
   // Wood (fences, furniture, floors)
   woodHi: '#fcbc8f',
