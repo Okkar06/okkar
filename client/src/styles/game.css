@@ -177,6 +177,11 @@ body.game-page {
   align-items: center;
   gap: 0.45em;
 }
+/* Buttons whose label is split into spans (for the short phone labels)
+   must not get the flex gap between the pieces. */
+.hud-right .hud-btn {
+  gap: 0;
+}
 .hud-location {
   font-family: var(--font-pixel);
   font-size: 0.95rem;

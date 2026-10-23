@@ -5,7 +5,7 @@
 // =====================================================================
 
 import Phaser from 'phaser'
-import { PLAYER_SPEED } from '../utils/constants.js'
+import { PLAYER_SPEED, DEPTH } from '../utils/constants.js'
 import { state, canPlayerMove } from '../utils/state.js'
 import { getMoveVector } from '../ui/TouchDragControl.js'
 
@@ -33,6 +33,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.stuckFrames = 0
     // If the player tapped a building, remember it so it opens on arrival.
     this.pendingZone = null
+
+    // A soft shadow that follows the player's feet.
+    this.shadow = scene.add.image(x, y, 'decor', 'shadow').setDepth(DEPTH.groundDetail)
+    this.updateDepth()
+  }
+
+  // Lower on screen = drawn in front (y-sorting), and keep the shadow under the feet.
+  updateDepth() {
+    this.setDepth(DEPTH.world + this.y + 8)
+    this.shadow.setPosition(this.x + 1, this.y + 7)
+  }
+
+  destroy(fromScene) {
+    if (this.shadow) this.shadow.destroy()
+    super.destroy(fromScene)
   }
 
   // Walk towards a point in the world (used by tap-to-move).
@@ -46,7 +61,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   update() {
     // During the quick tour a tween moves the player, so do nothing here.
     if (state.touring) {
-      this.setDepth(10 + this.y + 8)
+      this.updateDepth()
       return
     }
 
@@ -111,7 +126,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setFrame(0)
     }
 
-    // Things lower on the screen are drawn in front.
-    this.setDepth(10 + this.y + 8)
+    this.updateDepth()
   }
 }

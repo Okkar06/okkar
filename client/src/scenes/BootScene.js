@@ -7,6 +7,7 @@
 import Phaser from 'phaser'
 import { ASSETS } from '../utils/constants.js'
 import { bus } from '../utils/state.js'
+import { createDecorAnimations } from '../systems/Decorations.js'
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -25,6 +26,13 @@ export class BootScene extends Phaser.Scene {
     // Tilesets (Kenney "Tiny Town" and "Tiny Dungeon", CC0)
     this.load.image('tiles-town', ASSETS + 'tilesets/tiny-town.png')
     this.load.image('tiles-dungeon', ASSETS + 'tilesets/tiny-dungeon.png')
+    // Generated tiles (cliffs, water, floors...) — see tools/build-art.mjs
+    this.load.image('tiles-extras', ASSETS + 'tilesets/extras.png')
+    // The same Kenney town image again, cut into 16x16 frames, so trees and
+    // barrels can be turned into depth-sorted sprites.
+    this.load.spritesheet('town', ASSETS + 'tilesets/tiny-town.png', { frameWidth: 16, frameHeight: 16 })
+    // All generated sprites in one atlas (one download, one texture)
+    this.load.atlas('decor', ASSETS + 'atlas/decor.png', ASSETS + 'atlas/decor.json')
 
     // The village map, made in Tiled and exported as JSON
     this.load.tilemapTiledJSON('village-map', ASSETS + 'maps/village.json')
@@ -56,7 +64,22 @@ export class BootScene extends Phaser.Scene {
       repeat: -1,
     })
 
-    bus.emit('load:complete')
-    this.scene.start('VillageScene')
+    createDecorAnimations(this)
+
+    // Wait (briefly) for the pixel font so signs don't flash in a fallback font.
+    const scene = this
+    let started = false
+    function startVillage() {
+      if (started) return
+      started = true
+      bus.emit('load:complete')
+      scene.scene.start('VillageScene')
+    }
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load('32px "Pixelify Sans"').then(startVillage, startVillage)
+      setTimeout(startVillage, 1500) // never wait longer than this
+    } else {
+      startVillage()
+    }
   }
 }

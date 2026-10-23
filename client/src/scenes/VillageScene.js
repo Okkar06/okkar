@@ -1,18 +1,21 @@
 // =====================================================================
 //  VILLAGE SCENE
 //  The main map. Everything about the layout comes from the Tiled file
-//  public/assets/maps/village.json:
-//    - "Ground" and "Decor" tile layers (Decor tiles with the custom
-//      property collides=true are solid)
-//    - "Props" objects: sprites like the mailbox (property: sprite)
-//    - "Interactables" objects: zones that open a panel (property: section)
+//  public/assets/maps/village.json (two tilesets: "tiny-town", "extras"):
+//    - "Ground" tiles: grass, dirt paths (never solid)
+//    - "Decor" tiles: walls, cliffs, fences, trees... (collides=true = solid).
+//      Trees and barrels become depth-sorted sprites (systems/Decorations.js)
+//    - "Above" tiles: roofs, drawn OVER the player so you can walk behind
+//    - "Details" objects: tall grass, flowers, signposts, lamps (by type)
+//    - "Props" objects: bigger sprites like the mailbox (property: sprite)
+//    - "Interactables" objects: zones that open something (property: section)
 //    - "Areas" objects: names shown in the HUD ("Village Square")
 //    - "Spawn" object: where the player starts
 // =====================================================================
 
 import Phaser from 'phaser'
 import { Player } from '../entities/Player.js'
-import { getTiledProperty } from '../utils/constants.js'
+import { getTiledProperty, DEPTH } from '../utils/constants.js'
 import { bus } from '../utils/state.js'
 import { openSection } from '../ui/sections.js'
 import {
@@ -25,6 +28,7 @@ import {
   addDayNightTint,
 } from './sceneHelpers.js'
 import { addAmbientLife } from './ambient.js'
+import { convertTileProps, addDetails, addShadow, addBlocker } from '../systems/Decorations.js'
 
 export class VillageScene extends Phaser.Scene {
   constructor() {
@@ -35,34 +39,45 @@ export class VillageScene extends Phaser.Scene {
   create(data) {
     // ----- 1. Build the map from the Tiled JSON -----
     const map = this.make.tilemap({ key: 'village-map' })
-    // 'tiny-town' must match the tileset name inside Tiled.
-    const tiles = map.addTilesetImage('tiny-town', 'tiles-town')
-    map.createLayer('Ground', tiles, 0, 0).setDepth(0)
-    const decorLayer = map.createLayer('Decor', tiles, 0, 0).setDepth(1)
-    decorLayer.setCollisionByProperty({ collides: true })
+    // The first names must match the tileset names inside Tiled.
+    const townTiles = map.addTilesetImage('tiny-town', 'tiles-town')
+    const extraTiles = map.addTilesetImage('extras', 'tiles-extras')
+    const allTiles = [townTiles, extraTiles]
+
+    map.createLayer('Ground', allTiles, 0, 0).setDepth(DEPTH.ground)
+    const decorLayer = map.createLayer('Decor', allTiles, 0, 0).setDepth(DEPTH.decor)
+    map.createLayer('Above', allTiles, 0, 0).setDepth(DEPTH.above)
 
     const worldWidth = map.widthInPixels
     const worldHeight = map.heightInPixels
     this.physics.world.setBounds(0, 0, worldWidth, worldHeight)
 
-    // ----- 2. Props (mailbox, notice board, stall, villager) -----
+    // Solid boxes for everything that isn't a solid tile.
     const blockers = []
+
+    // Trees, barrels... become depth-sorted sprites; the rest stays a tile.
+    convertTileProps(this, decorLayer, blockers)
+    decorLayer.setCollisionByProperty({ collides: true })
+
+    // Tall grass, flowers, stones, signposts, lamps...
+    this.lights = addDetails(this, map.getObjectLayer('Details').objects, blockers)
+
+    // ----- 2. Props (mailbox, notice board, stall, villager) -----
     const propObjects = map.getObjectLayer('Props').objects
     for (let i = 0; i < propObjects.length; i++) {
       const obj = propObjects[i]
       const key = getTiledProperty(obj, 'sprite', '')
       const centerX = obj.x + obj.width / 2
-      const centerY = obj.y + obj.height / 2
+      const bottomY = obj.y + obj.height
 
-      const sprite = this.add.sprite(centerX, centerY, key, 0)
-      sprite.setDepth(10 + obj.y + obj.height) // lower on screen = drawn in front
+      const sprite = this.add.sprite(centerX, bottomY, key, 0).setOrigin(0.5, 1)
+      sprite.setDepth(DEPTH.world + bottomY) // lower on screen = drawn in front
       if (key === 'npc') sprite.play('npc-idle')
+      addShadow(this, centerX, bottomY - 1, obj.width >= 32 ? 'shadow_l' : 'shadow')
 
       // An invisible solid box at the bottom of the prop (its "feet").
       const bodyHeight = getTiledProperty(obj, 'bodyHeight', obj.height)
-      const blocker = this.add.zone(centerX, obj.y + obj.height - bodyHeight / 2, obj.width - 2, bodyHeight)
-      this.physics.add.existing(blocker, true) // true = static (never moves)
-      blockers.push(blocker)
+      addBlocker(this, blockers, centerX, bottomY, obj.width - 2, bodyHeight)
     }
 
     // ----- 3. Interaction zones -----
@@ -92,7 +107,7 @@ export class VillageScene extends Phaser.Scene {
     let startX = spawn.x
     let startY = spawn.y
     if (data && data.spawnAt) {
-      // Coming back from the Workshop (or the quick tour): stand at that door.
+      // Coming back from a building (or the quick tour): stand at that door.
       const zone = findZoneByName(this.zones, data.spawnAt)
       if (zone) {
         startX = zone.rect.centerX
@@ -127,18 +142,23 @@ export class VillageScene extends Phaser.Scene {
   // What happens when the player presses E inside a zone.
   interact(zone) {
     if (zone.section === 'workshop') {
-      this.enterWorkshop()
+      this.enterBuilding('WorkshopScene')
+      return
+    }
+    if (zone.section === 'house') {
+      openSection('about') // the house interior arrives in the next step
       return
     }
     openSection(zone.section)
   }
 
-  enterWorkshop() {
+  // Fade out and switch to an interior scene.
+  enterBuilding(sceneKey) {
     const scene = this
     this.player.setVelocity(0, 0)
     this.cameras.main.fadeOut(200, 0, 0, 0)
     this.cameras.main.once('camerafadeoutcomplete', function () {
-      scene.scene.start('WorkshopScene')
+      scene.scene.start(sceneKey)
     })
   }
 

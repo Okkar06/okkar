@@ -3,6 +3,17 @@
 
 export const EXTRAS_COLUMNS = 8
 
-export const EXTRAS = {}
+export const EXTRAS = {
+  "cliff_top_a": 0,
+  "cliff_top_b": 1,
+  "cliff_bottom_a": 2,
+  "cliff_bottom_b": 3,
+  "forest_floor_a": 4,
+  "forest_floor_b": 5,
+  "soil_a": 6,
+  "soil_b": 7,
+  "cobble_a": 8,
+  "cobble_b": 9
+}
 
-export const EXTRAS_SOLID = []
+export const EXTRAS_SOLID = ["cliff_top_a","cliff_top_b","cliff_bottom_a","cliff_bottom_b"]
