@@ -14,12 +14,31 @@ import { state, bus, canPlayerMove } from '../utils/state.js'
 // ---------------------------------------------------------------------
 export function setupCamera(scene, player, worldWidth, worldHeight) {
   const camera = scene.cameras.main
-  camera.setBounds(0, 0, worldWidth, worldHeight)
   camera.startFollow(player, true, 0.2, 0.2)
   camera.setRoundPixels(true)
 
   function applyZoom() {
-    camera.setZoom(pickZoom(scene.scale.width, scene.scale.height))
+    const zoom = pickZoom(scene.scale.width, scene.scale.height)
+    camera.setZoom(zoom)
+
+    // Keep the camera inside the map. If the map is smaller than the
+    // screen (e.g. a small Workshop on a wide monitor), widen the bounds
+    // equally on both sides so the room sits in the middle.
+    const viewWidth = scene.scale.width / zoom
+    const viewHeight = scene.scale.height / zoom
+    let boundsX = 0
+    let boundsY = 0
+    let boundsWidth = worldWidth
+    let boundsHeight = worldHeight
+    if (worldWidth < viewWidth) {
+      boundsX = (worldWidth - viewWidth) / 2
+      boundsWidth = viewWidth
+    }
+    if (worldHeight < viewHeight) {
+      boundsY = (worldHeight - viewHeight) / 2
+      boundsHeight = viewHeight
+    }
+    camera.setBounds(boundsX, boundsY, boundsWidth, boundsHeight)
   }
   applyZoom()
 

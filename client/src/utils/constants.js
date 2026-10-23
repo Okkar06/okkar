@@ -14,7 +14,7 @@ export const ASSETS = import.meta.env.BASE_URL + 'assets/'
 // Frame numbers in public/assets/tilesets/tiny-dungeon.png (12 columns, starting at 0).
 // Used to build the Workshop interior in code.
 export const DUNGEON_TILES = {
-  floor: [48, 48, 48, 49, 50, 51],
+  floor: [48, 48, 48, 48, 48, 49],
   wall: 40,
   wallTop: 28,
   door: 46,

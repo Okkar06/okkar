@@ -10,6 +10,9 @@
 import './styles/base.css'
 import './styles/game.css'
 import { state, bus } from './utils/state.js'
+import { openSection, showNpcPage } from './ui/sections.js'
+import { closePanel } from './ui/Panel.js'
+import { setupHud } from './ui/Hud.js'
 
 // Phones/tablets get touch-specific hints and controls.
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
@@ -21,7 +24,8 @@ const loadingStatus = document.getElementById('loading-status')
 const enterButton = document.getElementById('enter-btn')
 const hud = document.getElementById('hud')
 const hudHint = document.getElementById('hud-hint')
-const hudLocation = document.getElementById('hud-location')
+
+setupHud()
 
 // ---------------------------------------------------------------------
 //  Loading progress
@@ -33,9 +37,6 @@ bus.on('load:complete', function () {
   loadingFill.style.width = '100%'
   loadingStatus.textContent = 'The village is ready.'
   enterButton.disabled = false
-})
-bus.on('location', function (name) {
-  hudLocation.textContent = name
 })
 
 // ---------------------------------------------------------------------
@@ -50,6 +51,32 @@ function enterVillage() {
   bus.emit('game:start')
 }
 enterButton.addEventListener('click', enterVillage)
+
+// ---------------------------------------------------------------------
+//  One click handler for every button with data-action / data-open-project,
+//  wherever it is (HUD, panels, loading screen).
+// ---------------------------------------------------------------------
+document.addEventListener('click', function (event) {
+  const target = event.target.closest('[data-action], [data-open-project], [data-npc-page]')
+  if (!target) return
+
+  if (target.dataset.openProject) {
+    openSection('project', { projectId: target.dataset.openProject })
+    return
+  }
+  if (target.dataset.npcPage) {
+    showNpcPage(Number(target.dataset.npcPage))
+    return
+  }
+
+  const action = target.dataset.action
+  if (action === 'contact') openSection('contact')
+  if (action === 'projects') openSection('projects')
+  if (action === 'go-workshop') {
+    closePanel()
+    bus.emit('travel', { zone: 'workshop', onArrive: null })
+  }
+})
 
 // ---------------------------------------------------------------------
 //  Load Phaser and the game code (a separate, lazy-loaded file)
