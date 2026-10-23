@@ -1,0 +1,151 @@
+/* =====================================================================
+   PLAIN VIEW — a normal scrollable page.
+   Reuses the old portfolio's look: soft lavender background, violet
+   accent, Syne headings, Inter body text, glassy white cards.
+   ===================================================================== */
+
+body.plain-page {
+  --text: #08081e;
+  --text-muted: #4a4a78;
+  --ink: #08081e;
+  background:
+    radial-gradient(ellipse at 18% 8%, rgba(91, 66, 245, 0.13) 0%, transparent 45%),
+    radial-gradient(ellipse at 82% 60%, rgba(91, 66, 245, 0.08) 0%, transparent 42%),
+    linear-gradient(170deg, #f4f4ff 0%, #e6e3f8 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+/* ---------- Header ---------- */
+.plain-header {
+  padding: 3rem 0 1rem;
+}
+.eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.plain-header h1 {
+  margin: 0.4rem 0 0.3rem;
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: clamp(2.5rem, 8vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(125deg, #08081e 0%, rgba(91, 66, 245, 0.9) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.plain-header .lead {
+  margin: 0 0 0.6rem;
+  font-size: 1.15rem;
+  color: var(--text-muted);
+}
+
+.plain-nav {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin-top: 1.5rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(8, 8, 30, 0.1);
+}
+.plain-nav a {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+.plain-nav a:hover {
+  color: var(--accent);
+}
+
+/* Old-portfolio "glass card" */
+.card {
+  margin: 1.25rem 0;
+  padding: 1.5rem;
+  border: 1px solid rgba(80, 80, 160, 0.13);
+  border-radius: 18px;
+  background: linear-gradient(148deg, rgba(255, 255, 255, 0.96) 0%, rgba(224, 220, 255, 0.88) 100%);
+  box-shadow: 0 1px 0 #fff inset, 0 8px 28px rgba(60, 50, 120, 0.12);
+}
+
+section {
+  scroll-margin-top: 1rem;
+}
+section > h2,
+.card > h2 {
+  margin: 0 0 0.75rem;
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+#projects > h2 {
+  margin-top: 2.5rem;
+}
+.project h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+.card h3 {
+  margin-top: 1.25rem;
+}
+.card h4 {
+  margin: 1rem 0 0.3rem;
+}
+
+/* Buttons: same shapes as the game, softer colours for this page */
+.plain-page .btn {
+  border-width: 1px;
+  border-color: rgba(8, 8, 30, 0.2);
+  border-radius: 999px;
+  box-shadow: none;
+}
+.plain-page .btn:hover {
+  border-color: var(--accent);
+  box-shadow: 0 10px 24px -12px rgba(91, 66, 245, 0.6);
+}
+.plain-page .btn-primary {
+  border-color: var(--accent);
+}
+.plain-page .btn-game {
+  background: #84c669;
+  border-color: #3f2631;
+  color: #3f2631;
+}
+.plain-page .about-photo {
+  border: 0;
+  border-radius: 14px;
+}
+
+.plain-footer {
+  padding-block: 2rem 3rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+@media print {
+  body.plain-page {
+    background: #fff;
+  }
+  .plain-nav,
+  .btn-game {
+    display: none;
+  }
+  .card {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

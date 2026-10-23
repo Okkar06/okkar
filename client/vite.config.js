@@ -98,6 +98,8 @@ export default defineConfig(({ command }) => {
       // Phaser is one big file (~1.2 MB, ~340 KB gzipped). It is only loaded
       // on the game page, after the loading screen text is already visible.
       chunkSizeWarningLimit: 1600,
+      // Bundled JS/CSS go to dist/static (public/assets keeps the game art).
+      assetsDir: 'static',
       rollupOptions: {
         input: {
           main: path.join(rootDir, 'index.html'),

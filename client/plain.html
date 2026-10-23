@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO. The {{...}} values are filled from src/data at build time (see vite.config.js). -->
+    <title>{{SITE_TITLE}}</title>
+    <meta name="description" content="{{SITE_DESCRIPTION}}" />
+    <link rel="canonical" href="{{SITE_URL}}/plain.html" />
+    <meta name="theme-color" content="#5b42f5" />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content="{{SITE_TITLE}}" />
+    <meta property="og:description" content="{{SITE_DESCRIPTION}}" />
+    <meta property="og:url" content="{{SITE_URL}}/plain.html" />
+    <meta property="og:image" content="{{OG_IMAGE}}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="/Code-Slash--Streamline-Bootstrap.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body class="plain-page">
+    <!--
+      Everything below is generated from src/data at build time
+      (src/ui/plainPage.js). It is real HTML: no JavaScript needed to read it.
+    -->
+    <!--PLAIN_VIEW-->
+
+    <script type="module" src="/src/plain.js"></script>
+  </body>
+</html>

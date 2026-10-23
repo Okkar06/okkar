@@ -1,0 +1,339 @@
+/* =====================================================================
+   BASE STYLES — shared by the game page (panels) and the plain view.
+   Colours are CSS variables; each page can override them.
+   ===================================================================== */
+
+:root {
+  /* Pixel-village palette (sampled from the Kenney tiles) */
+  --ink: #3f2631;           /* outlines / dark text */
+  --paper: #fdf3dc;         /* parchment panels */
+  --paper-2: #f6e3bd;
+  --wood: #bd6c4a;
+  --wood-light: #eaa56c;
+  --wood-dark: #763b36;
+  --leaf: #47a04a;
+
+  /* Carried over from the old portfolio */
+  --accent: #5b42f5;
+  --accent-soft: rgba(91, 66, 245, 0.1);
+  --open: #10b981;
+
+  --text: #2b1d24;
+  --text-muted: #6b5560;
+  --radius: 10px;
+
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-pixel: 'Pixelify Sans', ui-monospace, 'Courier New', monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* The `hidden` attribute must always win over display:flex etc. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0 0.35em;
+  border: 1px solid currentColor;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+
+/* Visible only to keyboard users when focused */
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 1000;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  min-height: 44px; /* comfortable for thumbs */
+  padding: 0.55em 1.1em;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: 600 0.95rem/1.2 var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--ink);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 var(--ink);
+}
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--ink);
+  color: #fff;
+}
+.btn-disabled,
+.btn:disabled {
+  background: #ece6e9;
+  color: var(--text-muted);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+/* ---------- Open to work badge ---------- */
+.open-to-work {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0.5rem 0;
+  padding: 0.35em 0.85em;
+  border: 2px solid var(--open);
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #065f46;
+  font-size: 0.92rem;
+}
+.open-dot {
+  flex: none;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: var(--open);
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  animation: open-pulse 2s infinite;
+}
+@keyframes open-pulse {
+  70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* ---------- Content blocks (panels + plain view) ---------- */
+.lead {
+  font-size: 1.08rem;
+  font-weight: 600;
+}
+.muted {
+  color: var(--text-muted);
+}
+.small {
+  font-size: 0.85rem;
+}
+mark.todo {
+  background: #fff3a3;
+  color: #7a4b00;
+  padding: 0 0.25em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.chip {
+  padding: 0.2em 0.7em;
+  border: 1px solid rgba(63, 38, 49, 0.25);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.about {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+.about-photo {
+  flex: none;
+  width: 140px;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  object-fit: cover;
+  aspect-ratio: 3 / 4;
+}
+.about-text p:first-child {
+  margin-top: 0;
+}
+
+.facts,
+.project-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1rem;
+  margin: 0.75rem 0;
+}
+.facts dt,
+.project-facts dt {
+  font-weight: 700;
+}
+.facts dd,
+.project-facts dd {
+  margin: 0;
+}
+
+.skill-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.skill-group h4 {
+  margin: 0 0 0.25rem;
+}
+
+.timeline-item {
+  padding-left: 1rem;
+  border-left: 3px solid var(--wood-light);
+  margin-bottom: 1rem;
+}
+.timeline-item h4 {
+  margin: 0;
+}
+.timeline-item p {
+  margin: 0.2rem 0;
+}
+
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+.shots img {
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+}
+
+.variant {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 2px dashed var(--wood-light);
+  border-radius: 8px;
+}
+.variant h4 {
+  margin: 0 0 0.25rem;
+}
+.variant p {
+  margin: 0.25rem 0;
+}
+
+.project-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.project-item {
+  padding: 0.9rem 0;
+  border-bottom: 2px dashed rgba(63, 38, 49, 0.2);
+}
+.project-item:last-child {
+  border-bottom: 0;
+}
+.project-item h4 {
+  margin: 0 0 0.2rem;
+  font-size: 1.05rem;
+}
+.project-item p {
+  margin: 0.2rem 0;
+}
+.project-item .btn-row {
+  margin-top: 0.6rem;
+}
+
+.contact-list {
+  padding: 0;
+  list-style: none;
+}
+.contact-list li {
+  margin: 0.4rem 0;
+  word-break: break-word;
+}
+.contact-label {
+  display: inline-block;
+  min-width: 5.5em;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .about {
+    flex-direction: column;
+  }
+  .about-photo {
+    width: 120px;
+  }
+  .facts,
+  .project-facts {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+  .facts dd,
+  .project-facts dd {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
