@@ -1,5 +1,7 @@
 .trae/
-.claude/
+# Local Claude settings are private, but project skills are shared.
+.claude/*
+!.claude/skills/
 .env
 node_modules/
 dist/

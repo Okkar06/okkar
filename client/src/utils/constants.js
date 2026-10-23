@@ -4,6 +4,20 @@
 
 export const TILE_SIZE = 16
 
+// Drawing order, lowest first (see the game-polish skill).
+// Things in the "world" band add their feet y, so lower = in front.
+export const DEPTH = {
+  ground: 0, // grass, paths, water
+  decor: 1, // flat decor tiles, fences
+  groundDetail: 2, // puddles, ripples, rugs, things lying flat
+  world: 10, // + feet y: player, NPC, trees, props, furniture
+  above: 5000, // roofs and canopies the player walks behind
+  light: 6000, // glows from windows, lamps, fire
+  weather: 7000, // rain, snow, fog, petals
+  tint: 8000, // day/night and weather colour overlays
+  worldUi: 9000, // guide arrow, "!" bubble, name labels
+}
+
 // How fast the player walks, in pixels per second.
 export const PLAYER_SPEED = 80
 
