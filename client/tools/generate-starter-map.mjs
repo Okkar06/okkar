@@ -227,7 +227,46 @@ prop(43, 10, K.log)
 prop(42, 12, K.barrel)
 prop(5, 21, K.waterBarrel)
 prop(12, 22, K.barrel)
-prop(36, 21, K.pot)
+prop(41, 22, K.pot)
+
+// ---------------------------------------------------------------------
+//  5b. Fences around every plot, with gates where the paths go.
+//  Kenney fence pieces: top row 44 (left) 45 (middle) 46 (right),
+//  sides 56 (left) / 58 (right), bottom row 68 (left) 69 (middle) 70 (right).
+//  The pieces next to a gate are "end" pieces (70 before, 68 after).
+// ---------------------------------------------------------------------
+const fenceMiddles = [] // middle pieces, so some can get vines/flowers later
+function fenceRow(y, x0, x1, left, middle, right, gate) {
+  for (let x = x0; x <= x1; x++) {
+    if (gate && x >= gate[0] && x <= gate[1]) continue // the gap
+    let tile = middle
+    if (x === x0) tile = left
+    else if (x === x1) tile = right
+    else if (gate && x === gate[0] - 1) tile = right // end before the gap
+    else if (gate && x === gate[1] + 1) tile = left // start after the gap
+    decor[y][x] = town(tile)
+    reserved[y][x] = true
+    if (tile === middle) fenceMiddles.push({ x: x, y: y })
+  }
+}
+function fenceSide(x, y0, y1, piece, topEnd) {
+  for (let y = y0; y <= y1; y++) {
+    decor[y][x] = town(y === y0 && topEnd ? 47 : piece)
+    reserved[y][x] = true
+  }
+}
+// options: { top: true/false, gate: [fromX, toX] in the bottom row }
+function fencePlot(x0, y0, x1, y1, options) {
+  if (options.top !== false) fenceRow(y0, x0, x1, 44, 45, 46, null)
+  fenceSide(x0, y0 + 1, y1 - 1, 56, options.top === false)
+  fenceSide(x1, y0 + 1, y1 - 1, 58, options.top === false)
+  fenceRow(y1, x0, x1, 68, 69, 70, options.gate)
+}
+fencePlot(5, 7, 15, 15, { gate: [10, 11] }) // Okkar's house garden
+fencePlot(33, 7, 44, 15, { gate: [38, 39] }) // workshop yard
+fencePlot(36, 21, 42, 24, { top: false, gate: [38, 39] }) // post office front yard
+fencePlot(17, 6, 30, 11, { gate: [23, 24] }) // crop field
+fenceRow(19, 3, 8, 44, 45, 46, null) // a fence behind the market stall
 
 // Reserve the lake (added later), building fronts and other key spots.
 reserve(29, 26, 45, 34) // lakeside
@@ -287,6 +326,14 @@ const spawn = [point('player_spawn', '', 24 * T, 31 * T + 8)]
 
 // Signposts with labels, lamps and benches (placed by hand).
 const details = [
+  // Garden beds inside the house plot, and a lantern post at each gate
+  point('', 'flower_patch', 6 * T + 10, 13 * T + 10),
+  point('', 'flower_patch', 7 * T + 12, 14 * T + 8),
+  point('', 'flower_patch', 13 * T + 6, 13 * T + 12),
+  point('', 'bush_berry', 6 * T + 8, 9 * T + 12),
+  point('', 'tallgrass_a', 14 * T + 4, 14 * T + 12),
+  point('', 'lamppost', 9 * T + 6, 15 * T + 14),
+  point('', 'lamppost', 40 * T + 10, 15 * T + 14),
   point('', 'signpost', 13 * T, 16 * T + 14, { label: 'House: about me' }),
   point('', 'signpost', 41 * T, 16 * T + 14, { label: 'Workshop: projects' }),
   point('', 'signpost', 12 * T, 25 * T + 14, { label: 'Market: education' }),
@@ -310,6 +357,15 @@ for (let y = FIELD.y0; y <= FIELD.y1; y++) {
     if (type === 'crop_sunflower' && x % 2 === 1) continue
     details.push(point('', type, x * T + 8, y * T + 13))
   }
+}
+
+// Fence details: ivy, flowers at the base, a bird on a post (variety!).
+for (let i = 0; i < fenceMiddles.length; i++) {
+  const f = fenceMiddles[i]
+  const roll = random()
+  if (roll < 0.14) details.push(point('', 'fence_vine', f.x * T + 8, f.y * T + 12))
+  else if (roll < 0.3) details.push(point('', 'fence_flowers', f.x * T + 8, f.y * T + 17))
+  else if (roll < 0.34) details.push(point('', 'bird', f.x * T + 8, f.y * T + 5))
 }
 
 // Clustered random details on free grass.

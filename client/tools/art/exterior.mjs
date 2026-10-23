@@ -250,8 +250,51 @@ function chalkboard() {
   return c.outline()
 }
 
+// ---------------------------------------------------------------------
+//  Fence details (drawn on top of Kenney's fence tiles for variety)
+// ---------------------------------------------------------------------
+function fenceVine() {
+  const c = new PixelCanvas(16, 12)
+  c.art(1, 1, [
+    'gg.hg....gh..',
+    '.gggg..ggg.g.',
+    '..g.gg.g.gg..',
+    '..h..g...g...',
+    '.....gg..h...',
+    '......g......',
+  ], { g: 'grassMid', h: 'grassHi' })
+  c.set(4, 6, 'pink')
+  c.set(10, 3, 'pink')
+  return c.outline('grassDark')
+}
+
+function fenceFlowers() {
+  const c = new PixelCanvas(16, 9)
+  c.art(1, 1, [
+    '..p......y....',
+    '.pcp..g.yoy...',
+    '..p..ggg.y..w.',
+    '.ggg.g.gggg.wc',
+    'gggggggggggggg',
+  ], { p: 'pink', c: 'yellow', y: 'yellow', o: 'orange', w: 'white', g: 'grassMid' })
+  return c.outline('grassDark')
+}
+
+// A little bluebird; frame 1 has its head down (pecking).
+function bird(frame) {
+  const c = new PixelCanvas(8, 7)
+  c.art(1, frame === 0 ? 1 : 2, frame === 0
+    ? ['..bb..', '.bbwy.', 'bbbb..', '.oo...']
+    : ['......', '.bbb..', 'bbbwy.', '.oo...'], { b: 'blue', w: 'white', y: 'yellow', o: 'orange' })
+  return c.outline()
+}
+
 export function sprites() {
   return [
+    { name: 'fence_vine', canvas: fenceVine() },
+    { name: 'fence_flowers', canvas: fenceFlowers() },
+    { name: 'bird_0', canvas: bird(0) },
+    { name: 'bird_1', canvas: bird(1) },
     { name: 'chimney', canvas: chimney() },
     { name: 'flowerbox', canvas: flowerBox() },
     { name: 'doormat', canvas: doormat() },

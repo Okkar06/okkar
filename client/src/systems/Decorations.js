@@ -63,6 +63,9 @@ const DETAIL_TYPES = {
   lamppost: { frame: 'lamppost', solid: { w: 4, h: 3 }, shadow: 'shadow_s', light: true },
   bench: { frame: 'bench', solid: { w: 22, h: 4 }, shadow: 'shadow_l' },
   fountain: { frame: 'fountain_0', anim: 'fountain', solid: { w: 30, h: 10 }, shadow: 'shadow_l' },
+  fence_vine: { frame: 'fence_vine', raise: 1 },
+  fence_flowers: { frame: 'fence_flowers' },
+  bird: { frame: 'bird_0', anim: 'bird_peck', raise: 2 },
   crop_sprout: { frame: 'crop_sprout' },
   crop_cabbage: { frame: 'crop_cabbage' },
   crop_carrot: { frame: 'crop_carrot' },
@@ -111,6 +114,19 @@ export function makeLabel(scene, x, y, text, depth, maxWidth) {
 
 // Animations for decorations: wind sway for tall grass, the fountain spray.
 export function createDecorAnimations(scene) {
+  if (!scene.anims.exists('bird_peck')) {
+    // Mostly still, with a quick peck now and then.
+    scene.anims.create({
+      key: 'bird_peck',
+      frames: [
+        { key: 'decor', frame: 'bird_0', duration: 2200 },
+        { key: 'decor', frame: 'bird_1', duration: 180 },
+        { key: 'decor', frame: 'bird_0', duration: 300 },
+        { key: 'decor', frame: 'bird_1', duration: 180 },
+      ],
+      repeat: -1,
+    })
+  }
   if (!scene.anims.exists('fountain')) {
     scene.anims.create({
       key: 'fountain',
@@ -183,7 +199,7 @@ export function addDetails(scene, objects, blockers) {
     const y = Math.round(obj.y) // the object's point = where its feet touch the ground
 
     const sprite = scene.add.sprite(x, y, 'decor', config.frame).setOrigin(0.5, 1)
-    sprite.setDepth(config.flat ? DEPTH.groundDetail : DEPTH.world + y)
+    sprite.setDepth(config.flat ? DEPTH.groundDetail : DEPTH.world + y + (config.raise || 0))
 
     if (config.anim && animate) sprite.play(config.anim)
     if (config.sway === 'sway_sunflower' && animate) {
