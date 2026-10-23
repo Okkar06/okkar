@@ -5,12 +5,12 @@
 // =====================================================================
 
 import { state, bus } from '../utils/state.js'
+import { isTouchDevice } from './TouchDragControl.js'
 
 const locationElement = document.getElementById('hud-location')
 const promptButton = document.getElementById('interact-prompt')
 const toastElement = document.getElementById('toast')
 
-const isTouch = document.documentElement.classList.contains('is-touch')
 
 export function setupHud() {
   // Location name, e.g. "Village Square"
@@ -35,7 +35,8 @@ function updatePrompt() {
     promptButton.hidden = true
     return
   }
-  if (isTouch) {
+  // Phones have no E key, so the prompt itself is the button to tap.
+  if (isTouchDevice()) {
     promptButton.textContent = 'Tap to open: ' + zone.label
   } else {
     promptButton.innerHTML = '<kbd>E</kbd>'

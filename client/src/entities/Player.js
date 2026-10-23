@@ -1,12 +1,13 @@
 // =====================================================================
 //  PLAYER
-//  Moves with WASD / arrow keys, the on-screen joystick (phones), or by
-//  tapping/clicking a spot on the map ("tap to move").
+//  Moves with WASD / arrow keys, the floating drag control on phones
+//  (src/ui/TouchDragControl.js), or by clicking a spot on the map.
 // =====================================================================
 
 import Phaser from 'phaser'
 import { PLAYER_SPEED } from '../utils/constants.js'
 import { state, canPlayerMove } from '../utils/state.js'
+import { getMoveVector } from '../ui/TouchDragControl.js'
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
@@ -59,10 +60,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       if (this.keys.up.isDown || this.keys.w.isDown) dy = -1
       if (this.keys.down.isDown || this.keys.s.isDown) dy = 1
 
-      // 2. Joystick (only if the keyboard isn't being used)
+      // 2. Touch drag control (only if the keyboard isn't being used).
+      //    Its length is 0..1, so a short drag walks slowly.
       if (dx === 0 && dy === 0) {
-        dx = state.touch.x
-        dy = state.touch.y
+        const touchMove = getMoveVector()
+        dx = touchMove.x
+        dy = touchMove.y
       }
 
       // Any manual input cancels tap-to-move.

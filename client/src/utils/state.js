@@ -11,7 +11,6 @@ export const state = {
   started: false,       // has the visitor pressed "Enter the village"?
   panelOpen: false,     // is an HTML panel covering the game?
   touring: false,       // is the quick tour moving the player?
-  touch: { x: 0, y: 0 }, // joystick direction, each value from -1 to 1
   currentZone: null,    // the interactable the player is standing in (or null)
 }
 

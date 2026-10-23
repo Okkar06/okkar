@@ -14,7 +14,7 @@ import { openSection, showNpcPage } from './ui/sections.js'
 import { closePanel } from './ui/Panel.js'
 import { setupHud, showToast } from './ui/Hud.js'
 import { startTour, goToNextStop, endTour } from './ui/QuickTour.js'
-import { setupTouchControls } from './ui/TouchControls.js'
+import { setupTouchDragControl } from './ui/TouchDragControl.js'
 import { setupAmbientSound, restoreSoundChoice } from './ui/AmbientSound.js'
 import { contact } from './data/contact.js'
 
@@ -32,7 +32,7 @@ const hudHint = document.getElementById('hud-hint')
 const soundButton = document.getElementById('sound-btn')
 
 setupHud()
-if (isTouch) setupTouchControls()
+setupTouchDragControl() // phones only: drag anywhere on the map to walk
 setupAmbientSound(soundButton)
 
 // ---------------------------------------------------------------------

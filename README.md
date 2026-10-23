@@ -149,7 +149,7 @@ client/
     entities/           Player.js (movement + animation)
     ui/                 HTML side: Panel.js (pop-up), sections.js (what each place opens),
                         sectionsHtml.js (HTML builders shared by panels and plain view),
-                        plainPage.js, Hud.js, QuickTour.js, TouchControls.js, AmbientSound.js
+                        plainPage.js, Hud.js, QuickTour.js, TouchDragControl.js, AmbientSound.js
     utils/              state.js (shared state + tiny event bus), constants.js (speeds, tiles, zoom)
     styles/             base.css (shared), game.css, plain.css
 server/                 Express + Prisma API from the old portfolio (unchanged). In production it

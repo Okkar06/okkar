@@ -122,9 +122,11 @@ export function setupInteraction(scene, player, zones, onInteract) {
     if (canPlayerMove() && state.currentZone) onInteract(state.currentZone)
   }
 
-  // Tap / click the map to walk there. Tapping a building walks to its
-  // door and opens it on arrival.
+  // Click the map to walk there. Clicking a building walks to its door and
+  // opens it on arrival. Touches are skipped: on phones a touch starts the
+  // drag control instead (src/ui/TouchDragControl.js).
   scene.input.on('pointerdown', function (pointer) {
+    if (pointer.wasTouch) return
     if (!canPlayerMove()) return
     const x = pointer.worldX
     const y = pointer.worldY
