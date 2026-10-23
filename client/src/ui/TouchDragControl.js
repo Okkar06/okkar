@@ -70,7 +70,7 @@ export function setupTouchDragControl() {
   gameRoot.addEventListener('pointerdown', function (event) {
     if (event.pointerType === 'mouse') return // desktop mouse keeps click-to-move
     if (activePointerId !== null) return // already following another finger
-    if (!state.started || state.panelOpen) return
+    if (!state.started || state.panelOpen || state.dialogueOpen) return
 
     activePointerId = event.pointerId
     // Keep receiving this finger's moves even if it slides off the canvas.
@@ -133,6 +133,7 @@ export function setupTouchDragControl() {
 
   // If a panel opens mid-drag (e.g. the quick tour), let go cleanly.
   bus.on('panel:open', release)
+  bus.on('dialogue:open', release)
 
   setupSecondFingerTaps()
 }

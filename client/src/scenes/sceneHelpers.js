@@ -177,6 +177,20 @@ export function moveToZone(scene, player, zone, onArrive) {
   state.touring = true
   player.target = null
   player.body.enable = false // glide through obstacles during the tour
+
+  // A sparkle trail behind the player while gliding to the next stop.
+  let trail = null
+  if (!reduceMotion) {
+    trail = scene.add.particles(0, 0, 'decor', {
+      frame: 'sparkle',
+      lifespan: 600,
+      frequency: 60,
+      scale: { start: 0.8, end: 0 },
+      alpha: { start: 1, end: 0 },
+      follow: player,
+      followOffset: { x: 0, y: 4 },
+    }).setDepth(DEPTH.worldUi)
+  }
   player.anims.play('player-walk', true)
   player.setFlipX(targetX < player.x)
 
@@ -192,6 +206,10 @@ export function moveToZone(scene, player, zone, onArrive) {
       player.anims.stop()
       player.setFrame(0)
       state.touring = false
+      if (trail) {
+        trail.stop()
+        scene.time.delayedCall(700, function () { trail.destroy() })
+      }
       if (onArrive) onArrive()
     },
   })

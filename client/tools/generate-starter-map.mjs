@@ -337,7 +337,7 @@ reserve(33, 7, 44, 15) // workshop plot
 reserve(35, 19, 42, 24) // post office plot
 reserve(5, 19, 11, 25) // market stall
 reserve(20, 11, 25, 15) // notice board
-reserve(21, 26, 27, 32) // spawn + villager
+reserve(21, 22, 28, 27) // spawn + villager
 
 // ---------------------------------------------------------------------
 //  6. Objects: props, interactables, areas, spawn, details
@@ -362,7 +362,7 @@ const props = [
   obj('noticeboard', 22 * T, 12 * T, 32, 32, { sprite: 'noticeboard', bodyHeight: 14 }),
   obj('market', 6 * T, 20 * T, 48, 48, { sprite: 'stall', bodyHeight: 20 }),
   obj('mailbox', 35 * T, 23 * T, 16, 16, { sprite: 'mailbox', bodyHeight: 6 }),
-  obj('npc', 26 * T, 29 * T, 16, 16, { sprite: 'npc', bodyHeight: 8 }),
+  obj('npc', 26 * T, 24 * T, 16, 16, { sprite: 'npc', bodyHeight: 8 }),
 ]
 
 const interactables = [
@@ -371,7 +371,7 @@ const interactables = [
   obj('noticeboard', 21 * T, 14 * T, 4 * T, 20, { section: 'skills', label: 'Read the skills board' }),
   obj('market', 6 * T, 23 * T, 4 * T, 28, { section: 'experience', label: 'Visit the market stall' }),
   obj('mailbox', 34 * T, 22 * T, 3 * T, 3 * T, { section: 'contact', label: 'Check the mailbox' }),
-  obj('npc', 25 * T, 28 * T, 3 * T, 3 * T, { section: 'npc', label: 'Talk to Pip' }),
+  obj('npc', 25 * T, 23 * T, 3 * T, 3 * T, { section: 'npc', label: 'Talk to Pip' }),
   obj('fishing', DOCK.x * T, DOCK.end * T, 2 * T, T, { section: 'fishing', label: 'Fish from the dock' }),
 ]
 
@@ -385,7 +385,7 @@ const areas = [
   obj('South Road', 16 * T, 23 * T, 12 * T, 13 * T),
 ]
 
-const spawn = [point('player_spawn', '', 24 * T, 31 * T + 8)]
+const spawn = [point('player_spawn', '', 24 * T, 25 * T + 8)]
 
 // Signposts with labels, lamps and benches (placed by hand).
 const details = [
@@ -407,7 +407,7 @@ const details = [
   point('', 'lamppost', 30 * T + 8, 15 * T + 2),
   point('', 'lamppost', 17 * T + 8, 22 * T + 2),
   point('', 'lamppost', 30 * T + 8, 22 * T + 2),
-  point('', 'lamppost', 25 * T + 8, 30 * T + 14),
+  point('', 'lamppost', 22 * T + 8, 26 * T + 14),
   point('', 'bench', 20 * T, 22 * T + 12),
   point('', 'bench', 27 * T + 8, 22 * T + 12),
 ]

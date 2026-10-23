@@ -10,6 +10,7 @@
 export const state = {
   started: false,       // has the visitor pressed "Enter the village"?
   panelOpen: false,     // is an HTML panel covering the game?
+  dialogueOpen: false,  // is Pip talking (dialogue box open)?
   touring: false,       // is the quick tour moving the player?
   currentZone: null,    // the interactable the player is standing in (or null)
   promptOverride: null, // custom prompt text (e.g. 'Reel it in!' while fishing)
@@ -17,7 +18,7 @@ export const state = {
 
 // Can the player move right now?
 export function canPlayerMove() {
-  return state.started && !state.panelOpen && !state.touring
+  return state.started && !state.panelOpen && !state.dialogueOpen && !state.touring
 }
 
 // ---------------------------------------------------------------------

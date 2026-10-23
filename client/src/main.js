@@ -10,14 +10,15 @@
 import './styles/base.css'
 import './styles/game.css'
 import { state, bus } from './utils/state.js'
-import { openSection, showNpcPage } from './ui/sections.js'
+import { openSection } from './ui/sections.js'
 import { closePanel } from './ui/Panel.js'
 import { setupHud, showToast } from './ui/Hud.js'
 import { startTour, goToNextStop, endTour } from './ui/QuickTour.js'
 import { setupTouchDragControl } from './ui/TouchDragControl.js'
 import { setupAmbientSound, restoreSoundChoice, setRainLevel } from './ui/AmbientSound.js'
 import { weather, startWeather, cycleWeather, weatherLabel } from './systems/weatherState.js'
-import { weatherIcon } from './ui/icons.js'
+import { weatherIcon, helpIcon } from './ui/icons.js'
+import { startGuideOnEnter, playFullGuide } from './ui/Guide.js'
 import { contact } from './data/contact.js'
 
 // Phones/tablets get touch-specific hints and controls.
@@ -54,6 +55,11 @@ bus.on('weather:change', showWeather)
 startWeather()
 showWeather(weather.current)
 
+// Help button: Pip explains everything again.
+const helpButton = document.getElementById('help-btn')
+helpButton.innerHTML = helpIcon()
+helpButton.addEventListener('click', playFullGuide)
+
 // ---------------------------------------------------------------------
 //  Loading progress
 // ---------------------------------------------------------------------
@@ -82,6 +88,11 @@ function enterVillage() {
   restoreSoundChoice(soundButton) // turn sound back on if the visitor chose that last time
   bus.emit('game:start')
 }
+
+// Pip's welcome starts once the loading screen has faded away.
+enterButton.addEventListener('click', function () {
+  setTimeout(startGuideOnEnter, 500)
+})
 enterButton.addEventListener('click', enterVillage)
 
 // "Quick tour" on the loading screen: enter, then start the tour.
@@ -104,15 +115,11 @@ function openResume() {
 //  wherever it is (HUD, panels, loading screen).
 // ---------------------------------------------------------------------
 document.addEventListener('click', function (event) {
-  const target = event.target.closest('[data-action], [data-open-project], [data-npc-page]')
+  const target = event.target.closest('[data-action], [data-open-project]')
   if (!target) return
 
   if (target.dataset.openProject) {
     openSection('project', { projectId: target.dataset.openProject })
-    return
-  }
-  if (target.dataset.npcPage) {
-    showNpcPage(Number(target.dataset.npcPage))
     return
   }
 

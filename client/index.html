@@ -66,12 +66,14 @@
         <button type="button" id="sound-btn" class="hud-btn" aria-pressed="false">Sound off</button>
         <!-- Weather: cycles clear / rain / storm / mist / petals / snow. Icon set by main.js -->
         <button type="button" id="weather-btn" class="hud-btn hud-icon-btn" aria-label="Change the weather (now: clear skies)" title="Change the weather"></button>
+        <!-- Help: Pip explains everything again -->
+        <button type="button" id="help-btn" class="hud-btn hud-icon-btn" aria-label="Help: replay the guide" title="Help"></button>
       </div>
       <nav class="hud-right" aria-label="Quick links">
         <button type="button" class="hud-btn hud-btn-primary" data-action="resume">Résumé</button>
         <!-- .hud-long parts are hidden on narrow phones to save space -->
         <button type="button" class="hud-btn" data-action="contact">Contact<span class="hud-long">&nbsp;me</span></button>
-        <button type="button" class="hud-btn" data-action="tour"><span class="hud-long">Quick&nbsp;</span>tour</button>
+        <button type="button" class="hud-btn" data-action="tour"><span class="hud-long">Quick tour</span><span class="hud-short">Tour</span></button>
         <button type="button" class="hud-btn" data-action="projects">Projects</button>
         <a class="hud-btn" href="plain.html" aria-label="Plain view (skip the game)" title="Plain view (skip the game)">Plain<span class="hud-long">&nbsp;view</span></a>
       </nav>
@@ -84,6 +86,18 @@
 
     <!-- "Press E" prompt. It is a real button, so it can also be clicked/tapped. -->
     <button type="button" id="interact-prompt" hidden></button>
+
+    <!-- Pip's dialogue box (src/ui/DialogueBox.js) -->
+    <section id="dialogue" aria-labelledby="dialogue-name" hidden>
+      <div id="dialogue-portrait" class="dialogue-face" aria-hidden="true"></div>
+      <div class="dialogue-main">
+        <p id="dialogue-name" class="dialogue-name">Pip</p>
+        <p id="dialogue-text" class="dialogue-line" aria-hidden="true"></p>
+        <p id="dialogue-live" class="visually-hidden" aria-live="polite"></p>
+        <div id="dialogue-actions" class="dialogue-actions"></div>
+      </div>
+      <button type="button" id="dialogue-skip" class="dialogue-skip">Skip</button>
+    </section>
 
     <!-- What you caught while fishing (doesn't block the game) -->
     <div id="catch-card" role="status" aria-live="polite" hidden>

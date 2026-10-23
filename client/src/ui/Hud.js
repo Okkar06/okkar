@@ -23,6 +23,8 @@ export function setupHud() {
   bus.on('panel:open', updatePrompt)
   bus.on('panel:close', updatePrompt)
   bus.on('prompt:refresh', updatePrompt)
+  bus.on('dialogue:open', updatePrompt)
+  bus.on('dialogue:close', updatePrompt)
 
   // Clicking / tapping the prompt does the same as pressing E.
   promptButton.addEventListener('click', function () {
@@ -32,7 +34,7 @@ export function setupHud() {
 
 function updatePrompt() {
   const zone = state.currentZone
-  if (!zone || state.panelOpen || !state.started) {
+  if (!zone || state.panelOpen || state.dialogueOpen || !state.started) {
     promptButton.hidden = true
     return
   }

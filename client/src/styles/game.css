@@ -177,6 +177,11 @@ body.game-page {
   align-items: center;
   gap: 0.45em;
 }
+/* Short labels only show on narrow phones (see the 480px rule below). */
+.hud-short {
+  display: none;
+}
+
 /* Square icon-only buttons (weather, help) */
 .hud-icon-btn {
   justify-content: center;
@@ -276,6 +281,93 @@ body.game-page {
   color: var(--ink);
   font-weight: 600;
   box-shadow: 0 4px 0 var(--ink);
+}
+
+/* ---------- Pip's dialogue box ---------- */
+#dialogue {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  z-index: 35; /* above the HUD hint and prompt, below panels */
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  width: min(40rem, calc(100vw - 1.5rem));
+  padding: 0.9rem 1rem 0.9rem 0.9rem;
+  border: 4px solid var(--ink);
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: 0 5px 0 var(--ink), 0 18px 40px rgba(20, 12, 16, 0.35);
+  transform: translateX(-50%);
+  animation: dialogue-in 0.2s ease-out;
+}
+@keyframes dialogue-in {
+  from { transform: translate(-50%, 14px); opacity: 0; }
+}
+.dialogue-face {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper-2) no-repeat 0 0;
+  background-size: 128px 64px; /* 2 frames; show the first */
+  image-rendering: pixelated;
+}
+.dialogue-main {
+  flex: 1;
+  min-width: 0;
+}
+.dialogue-name {
+  display: inline-block;
+  margin: 0 0 0.3rem;
+  padding: 0.05em 0.6em;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-pixel);
+  font-size: 0.95rem;
+}
+.dialogue-line {
+  min-height: 3em; /* stops the box jumping while text types out */
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+.dialogue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+.dialogue-skip {
+  flex: none;
+  align-self: flex-start;
+  min-height: 36px;
+  padding: 0.25em 0.8em;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: 600 0.85rem/1 var(--font-body);
+  cursor: pointer;
+}
+.dialogue-skip:hover {
+  background: #fff;
+}
+@media (max-width: 480px) {
+  #dialogue {
+    gap: 0.6rem;
+    padding: 0.7rem;
+  }
+  .dialogue-face {
+    width: 44px;
+    height: 44px;
+    background-size: 88px 44px;
+  }
+  .dialogue-actions .btn {
+    flex: 1 1 auto;
+  }
 }
 
 /* ---------- Catch card (fishing) ---------- */
@@ -515,6 +607,9 @@ body.game-page {
 @media (max-width: 480px) {
   .hud-long {
     display: none;
+  }
+  .hud-short {
+    display: inline;
   }
   /* Phones: the location name gives way to the buttons. */
   .hud-location {

@@ -9,6 +9,7 @@ import { bus } from '../utils/state.js'
 import { openSection } from './sections.js'
 import { closePanel } from './Panel.js'
 import { showToast } from './Hud.js'
+import { closeDialogue, isDialogueOpen } from './DialogueBox.js'
 
 const stops = [
   // zone = object name in Tiled's "Interactables" layer; section = what to open there
@@ -20,6 +21,7 @@ const stops = [
 let currentStop = -1
 
 export function startTour() {
+  if (isDialogueOpen()) closeDialogue(false)
   currentStop = -1
   goToNextStop()
 }

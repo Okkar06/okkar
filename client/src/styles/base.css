@@ -70,6 +70,16 @@ kbd {
   line-height: 1.4;
 }
 
+/* Hidden visually, still read by screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* Visible only to keyboard users when focused */
 .skip-link {
   position: absolute;

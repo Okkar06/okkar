@@ -65,6 +65,9 @@ export class BootScene extends Phaser.Scene {
       repeat: -1,
     })
 
+    // Pip walking (same two frames as idle, faster).
+    this.anims.create({ key: 'npc-walk', frames: this.anims.generateFrameNumbers('npc', { start: 0, end: 1 }), frameRate: 7, repeat: -1 })
+
     createDecorAnimations(this)
     createGlowTexture(this)
 

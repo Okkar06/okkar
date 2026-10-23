@@ -35,6 +35,9 @@ import { LightSystem } from '../systems/Lights.js'
 import { villageDecor } from '../data/decor.js'
 import { WaterSystem } from '../systems/Water.js'
 import { Fishing } from '../systems/Fishing.js'
+import { WelcomeNpc } from '../entities/WelcomeNpc.js'
+import { GuideArrow } from '../systems/GuideArrow.js'
+import { talkToPip } from '../ui/Guide.js'
 
 export class VillageScene extends Phaser.Scene {
   constructor() {
@@ -88,9 +91,14 @@ export class VillageScene extends Phaser.Scene {
       const centerX = obj.x + obj.width / 2
       const bottomY = obj.y + obj.height
 
+      // Pip, the welcome villager, is a proper character (walks, has a name).
+      if (key === 'npc') {
+        this.npc = new WelcomeNpc(this, centerX, bottomY, blockers)
+        continue
+      }
+
       const sprite = this.add.sprite(centerX, bottomY, key, 0).setOrigin(0.5, 1)
       sprite.setDepth(DEPTH.world + bottomY) // lower on screen = drawn in front
-      if (key === 'npc') sprite.play('npc-idle')
       addShadow(this, centerX, bottomY - 1, obj.width >= 32 ? 'shadow_l' : 'shadow')
 
       // An invisible solid box at the bottom of the prop (its "feet").
@@ -161,7 +169,31 @@ export class VillageScene extends Phaser.Scene {
     })
     addAmbientLife(this, worldWidth, worldHeight)
 
-    // ----- 7. Quick tour travel requests -----
+    // ----- 7. Pip and the guide arrow -----
+    this.guideArrow = new GuideArrow(this, this.player, this.zones)
+    function onApproach(request) {
+      if (scene.npc) scene.npc.approach(scene.player, request.onArrive)
+    }
+    function onHome() { if (scene.npc) scene.npc.goHome() }
+    function onArrow(request) { scene.guideArrow.show(request.zone, request.seconds) }
+    // While Pip talks, look a little further down so the player and Pip
+    // stay visible above the dialogue box.
+    function onDialogueOpen() { scene.cameras.main.setFollowOffset(0, -scene.scale.height / scene.cameras.main.zoom / 5) }
+    function onDialogueClose() { scene.cameras.main.setFollowOffset(0, 0) }
+    bus.on('npc:approach', onApproach)
+    bus.on('npc:home', onHome)
+    bus.on('guide:arrow', onArrow)
+    bus.on('dialogue:open', onDialogueOpen)
+    bus.on('dialogue:close', onDialogueClose)
+    this.events.once('shutdown', function () {
+      bus.off('npc:approach', onApproach)
+      bus.off('npc:home', onHome)
+      bus.off('guide:arrow', onArrow)
+      bus.off('dialogue:open', onDialogueOpen)
+      bus.off('dialogue:close', onDialogueClose)
+    })
+
+    // ----- 8. Quick tour travel requests -----
     function onTravel(request) {
       const zone = findZoneByName(scene.zones, request.zone)
       if (zone) moveToZone(scene, scene.player, zone, request.onArrive)
@@ -179,6 +211,10 @@ export class VillageScene extends Phaser.Scene {
   interact(zone) {
     if (zone.section === 'workshop') {
       this.enterBuilding('WorkshopScene')
+      return
+    }
+    if (zone.section === 'npc') {
+      talkToPip()
       return
     }
     if (zone.section === 'fishing') {
@@ -202,9 +238,10 @@ export class VillageScene extends Phaser.Scene {
     })
   }
 
-  update() {
+  update(time) {
     this.player.update()
     if (this.fishing) this.fishing.update()
+    this.guideArrow.update(time)
     const scene = this
     updateCurrentZone(this.zones, this.player, function (zone) { scene.interact(zone) })
 

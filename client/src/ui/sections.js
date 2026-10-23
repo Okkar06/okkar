@@ -7,7 +7,6 @@
 //  openSection('skills')                     -> Notice board
 //  openSection('experience')                 -> Market stall
 //  openSection('contact')                    -> Mailbox
-//  openSection('npc')                        -> Villager dialogue
 //
 //  `options.footerHtml` lets the quick tour add its own buttons.
 // =====================================================================
@@ -75,11 +74,6 @@ export function openSection(section, options) {
     return
   }
 
-  if (section === 'npc') {
-    openNpcDialogue(0)
-    return
-  }
-
   console.warn('Unknown section: ' + section)
 }
 
@@ -115,39 +109,4 @@ function openProject(projectId, tourFooter) {
     html: renderProjectDetail(project, htmlContext),
     footerHtml: footer,
   })
-}
-
-// ---------------------------------------------------------------------
-//  The villager: a short dialogue, one page at a time.
-// ---------------------------------------------------------------------
-const npcLines = [
-  "Oh, hello there! Welcome to " + about.shortName + "'s village.",
-  about.shortName + ' is a full-stack developer studying ' + about.education.course + ' at ' +
-    about.education.school + ', looking for a ' + about.openToWork.targetRole.toLowerCase() +
-    ' role in ' + about.openToWork.location + '.',
-  'Short on time? Visit the Workshop first: the big stone building to the north-east. ' +
-    'Every project sits on its own shelf in there.',
-]
-
-function openNpcDialogue(page) {
-  const portrait = htmlContext.base + 'assets/sprites/npc.png'
-  let html = '<div class="dialogue">'
-  html += '<div class="dialogue-portrait" style="background-image:url(\'' + portrait + '\')" role="img" aria-label="Villager"></div>'
-  html += '<div><p>' + escapeHtml(npcLines[page]) + '</p>'
-  html += '<p class="muted small">' + (page + 1) + ' / ' + npcLines.length + '</p></div>'
-  html += '</div>'
-
-  let footer = ''
-  if (page < npcLines.length - 1) {
-    footer += '<button type="button" class="btn btn-primary" data-npc-page="' + (page + 1) + '">Next ▸</button>'
-  } else {
-    footer += '<button type="button" class="btn btn-primary" data-action="go-workshop">Take me to the Workshop</button>'
-    footer += '<button type="button" class="btn" data-action="tour">Quick tour</button>'
-  }
-
-  openPanel({ title: 'Villager', html: html, footerHtml: footer })
-}
-
-export function showNpcPage(page) {
-  openNpcDialogue(page)
 }
