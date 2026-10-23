@@ -12,7 +12,9 @@ import './styles/game.css'
 import { state, bus } from './utils/state.js'
 import { openSection, showNpcPage } from './ui/sections.js'
 import { closePanel } from './ui/Panel.js'
-import { setupHud } from './ui/Hud.js'
+import { setupHud, showToast } from './ui/Hud.js'
+import { startTour, goToNextStop, endTour } from './ui/QuickTour.js'
+import { contact } from './data/contact.js'
 
 // Phones/tablets get touch-specific hints and controls.
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
@@ -22,6 +24,7 @@ const loadingScreen = document.getElementById('loading-screen')
 const loadingFill = document.getElementById('loading-fill')
 const loadingStatus = document.getElementById('loading-status')
 const enterButton = document.getElementById('enter-btn')
+const introTourButton = document.getElementById('intro-tour-btn')
 const hud = document.getElementById('hud')
 const hudHint = document.getElementById('hud-hint')
 
@@ -37,6 +40,10 @@ bus.on('load:complete', function () {
   loadingFill.style.width = '100%'
   loadingStatus.textContent = 'The village is ready.'
   enterButton.disabled = false
+  introTourButton.disabled = false
+})
+bus.on('load:error', function (key) {
+  loadingStatus.textContent = 'Some game files did not load (' + key + '). The plain view has everything.'
 })
 
 // ---------------------------------------------------------------------
@@ -51,6 +58,21 @@ function enterVillage() {
   bus.emit('game:start')
 }
 enterButton.addEventListener('click', enterVillage)
+
+// "Quick tour" on the loading screen: enter, then start the tour.
+introTourButton.addEventListener('click', function () {
+  enterVillage()
+  setTimeout(startTour, 450) // wait for the loading screen to fade
+})
+
+// The Résumé button: open the PDF, or explain that it is coming soon.
+function openResume() {
+  if (__RESUME_AVAILABLE__) {
+    window.open(import.meta.env.BASE_URL + contact.resumePath, '_blank', 'noopener')
+  } else {
+    showToast('Résumé coming soon. Email ' + contact.email + " and I'll send you a copy.", 6000)
+  }
+}
 
 // ---------------------------------------------------------------------
 //  One click handler for every button with data-action / data-open-project,
@@ -70,6 +92,10 @@ document.addEventListener('click', function (event) {
   }
 
   const action = target.dataset.action
+  if (action === 'resume') openResume()
+  if (action === 'tour') startTour()
+  if (action === 'tour-next') goToNextStop()
+  if (action === 'tour-end') endTour()
   if (action === 'contact') openSection('contact')
   if (action === 'projects') openSection('projects')
   if (action === 'go-workshop') {
