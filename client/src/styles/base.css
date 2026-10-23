@@ -22,7 +22,8 @@
   --text-muted: #6b5560;
   --radius: 10px;
 
-  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Atkinson Hyperlegible: designed for maximum legibility (Braille Institute) */
+  --font-body: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-pixel: 'Pixelify Sans', ui-monospace, 'Courier New', monospace;
 }
 

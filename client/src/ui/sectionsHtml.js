@@ -77,8 +77,8 @@ export function renderOpenToWork(about) {
   if (!job || !job.isOpen) return ''
   let html = '<div class="open-to-work">'
   html += '<span class="open-dot" aria-hidden="true"></span>'
-  html += '<span><strong>Open to work</strong> · ' + escapeHtml(job.targetRole)
-  html += ' · ' + escapeHtml(job.location) + '</span>'
+  html += '<span><strong>Open to work:</strong> ' + escapeHtml(job.targetRole.toLowerCase())
+  html += ' roles in ' + escapeHtml(job.location) + '</span>'
   html += '</div>'
   return html
 }
@@ -242,7 +242,7 @@ export function renderExperience(education, work) {
     const e = education[i]
     html += '<div class="timeline-item">'
     html += '<h4>' + escapeHtml(e.course) + '</h4>'
-    html += '<p class="muted">' + escapeHtml(e.school) + ' · ' + escapeHtml(e.start) + ' – ' + escapeHtml(e.end) + '</p>'
+    html += '<p class="muted">' + escapeHtml(e.school) + ', ' + escapeHtml(e.start) + ' to ' + escapeHtml(e.end) + '</p>'
     if (e.highlights.length > 0) {
       html += '<p class="small">Relevant coursework and labs:</p><ul>'
       for (let j = 0; j < e.highlights.length; j++) {
@@ -260,7 +260,7 @@ export function renderExperience(education, work) {
       const w = work[i]
       html += '<div class="timeline-item">'
       html += '<h4>' + escapeHtml(w.role) + '</h4>'
-      html += '<p class="muted">' + escapeHtml(w.company) + ' · ' + escapeHtml(w.start) + ' – ' + escapeHtml(w.end) + '</p>'
+      html += '<p class="muted">' + escapeHtml(w.company) + ', ' + escapeHtml(w.start) + ' to ' + escapeHtml(w.end) + '</p>'
       html += '<ul>'
       for (let j = 0; j < w.highlights.length; j++) {
         html += '<li>' + escapeHtml(w.highlights[j]) + '</li>'

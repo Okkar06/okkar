@@ -489,6 +489,21 @@ body.game-page {
 @keyframes panel-in {
   from { transform: translateY(12px) scale(0.98); opacity: 0; }
 }
+#panel-backdrop {
+  animation: backdrop-in 0.18s ease-out;
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
+}
+/* Closing: fade and drop slightly (see Panel.js) */
+#panel-backdrop.is-closing {
+  opacity: 0;
+  transition: opacity 0.15s ease-in;
+}
+#panel-backdrop.is-closing #panel {
+  transform: translateY(8px) scale(0.98);
+  transition: transform 0.15s ease-in;
+}
 .panel-header {
   display: flex;
   align-items: center;

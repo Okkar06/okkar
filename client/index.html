@@ -24,7 +24,7 @@
     <link rel="icon" type="image/svg+xml" href="/Code-Slash--Streamline-Bootstrap.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet" />
   </head>
   <body class="game-page">
     <a class="skip-link" href="plain.html">Skip the game: open the plain portfolio</a>
@@ -45,11 +45,11 @@
         <div class="intro-actions">
           <button type="button" id="enter-btn" class="btn btn-primary btn-big" disabled>Enter the village</button>
           <button type="button" id="intro-tour-btn" class="btn btn-big" disabled>Quick tour (1 min)</button>
-          <a class="btn btn-plain btn-big" href="plain.html">Skip the game · plain view</a>
+          <a class="btn btn-plain btn-big" href="plain.html">Skip the game: plain view</a>
         </div>
         <p class="intro-controls">
-          <span class="only-desktop">Move with <kbd>WASD</kbd> / arrow keys or click the map · <kbd>E</kbd> to interact</span>
-          <span class="only-touch">Drag anywhere on the map to walk · tap the button that pops up to open things</span>
+          <span class="only-desktop">Move with <kbd>WASD</kbd> or the arrow keys (or click the map), and press <kbd>E</kbd> to interact.</span>
+          <span class="only-touch">Drag anywhere on the map to walk, and tap the button that pops up to open things.</span>
         </p>
         <p class="loading-hint">First visit? The server may take up to 30&nbsp;s to wake up.</p>
       </div>
@@ -59,7 +59,7 @@
     <header id="hud" hidden>
       <div class="hud-left">
         <span id="hud-location" class="hud-location">Okkar's Village</span>
-        <button type="button" class="hud-otw" data-action="contact" title="Open to work — contact me">
+        <button type="button" class="hud-otw" data-action="contact" title="Open to work: contact me">
           <span class="open-dot" aria-hidden="true"></span><span class="hud-otw-text">Open to work</span>
         </button>
         <!-- Ambient sound toggle (off by default). Label is set by src/ui/AmbientSound.js -->
@@ -80,7 +80,7 @@
     </header>
 
     <p id="hud-hint" hidden>
-      <span class="only-desktop"><kbd>WASD</kbd>/arrows or click to move · <kbd>E</kbd> to interact · <kbd>Esc</kbd> to close</span>
+      <span class="only-desktop"><kbd>WASD</kbd> to move, <kbd>E</kbd> to interact, <kbd>Esc</kbd> to close</span>
       <span class="only-touch">Drag anywhere to walk</span>
     </p>
 

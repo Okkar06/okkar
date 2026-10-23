@@ -8,6 +8,7 @@
 // =====================================================================
 
 import { state, bus } from '../utils/state.js'
+import { prefersReducedMotion } from '../utils/device.js'
 
 const backdrop = document.getElementById('panel-backdrop')
 const panel = document.getElementById('panel')
@@ -18,6 +19,7 @@ const closeButton = document.getElementById('panel-close')
 
 // Remember what had focus before the panel opened, to restore it after.
 let focusBeforeOpen = null
+let closingTimer = null
 
 export function openPanel(options) {
   titleElement.textContent = options.title
@@ -35,6 +37,8 @@ export function openPanel(options) {
   // Only remember focus the first time (panels can replace each other).
   if (!state.panelOpen) focusBeforeOpen = document.activeElement
 
+  clearTimeout(closingTimer) // re-opened while it was fading out
+  backdrop.classList.remove('is-closing')
   backdrop.hidden = false
   state.panelOpen = true
   bus.emit('panel:open')
@@ -45,9 +49,19 @@ export function openPanel(options) {
 
 export function closePanel() {
   if (!state.panelOpen) return
-  backdrop.hidden = true
-  bodyElement.innerHTML = ''
   state.panelOpen = false
+  // Fade out (150 ms), then hide. Instant with reduced motion.
+  if (prefersReducedMotion()) {
+    backdrop.hidden = true
+    bodyElement.innerHTML = ''
+  } else {
+    backdrop.classList.add('is-closing')
+    closingTimer = setTimeout(function () {
+      backdrop.hidden = true
+      backdrop.classList.remove('is-closing')
+      bodyElement.innerHTML = ''
+    }, 150)
+  }
   bus.emit('panel:close')
 
   if (focusBeforeOpen && focusBeforeOpen.focus && document.body.contains(focusBeforeOpen)) {

@@ -40,14 +40,14 @@ export function openSection(section, options) {
   const footer = opts.footerHtml || ''
 
   if (section === 'about') {
-    openPanel({ title: "Okkar's House — About me", html: renderAbout(about, contact, htmlContext), footerHtml: footer })
+    openPanel({ title: 'About me', html: renderAbout(about, contact, htmlContext), footerHtml: footer })
     return
   }
 
   if (section === 'projects') {
-    let intro = '<p class="muted">Each project also has its own shelf inside the Workshop.</p>'
+    let intro = '<p class="muted">' + projects.length + (projects.length === 1 ? ' project' : ' projects') + ', newest work first. Each one also has its own shelf inside the Workshop.</p>'
     openPanel({
-      title: 'Workshop — ' + projects.length + (projects.length === 1 ? ' project' : ' projects'),
+      title: 'Projects',
       html: intro + renderProjectList(projects, htmlContext),
       footerHtml: footer,
     })
@@ -60,17 +60,17 @@ export function openSection(section, options) {
   }
 
   if (section === 'skills') {
-    openPanel({ title: 'Notice board — Skills', html: renderSkills(skills), footerHtml: footer })
+    openPanel({ title: 'Skills', html: renderSkills(skills), footerHtml: footer })
     return
   }
 
   if (section === 'experience') {
-    openPanel({ title: 'Market stall — Education', html: renderExperience(education, work), footerHtml: footer })
+    openPanel({ title: 'Education', html: renderExperience(education, work), footerHtml: footer })
     return
   }
 
   if (section === 'contact') {
-    openPanel({ title: 'Mailbox — Contact me', html: renderContact(contact, about, htmlContext), footerHtml: footer })
+    openPanel({ title: 'Contact', html: renderContact(contact, about, htmlContext), footerHtml: footer })
     return
   }
 
@@ -93,7 +93,7 @@ function openProject(projectId, tourFooter) {
 
   let footer = tourFooter
   if (!footer) {
-    footer = '<button type="button" class="btn" data-action="projects">← All projects</button>'
+    footer = '<button type="button" class="btn" data-action="projects">All projects</button>'
     footer += '<span class="btn-row" style="margin:0">'
     if (index > 0) {
       footer += '<button type="button" class="btn" data-open-project="' + escapeHtml(projects[index - 1].id) + '">Previous</button>'

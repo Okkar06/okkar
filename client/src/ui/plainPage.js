@@ -28,7 +28,6 @@ export function renderPlainPage(data, ctx) {
   // ----- Header -----
   html += '<header class="plain-header">'
   html += '<div class="wrap">'
-  html += '<p class="eyebrow">Portfolio · ' + escapeHtml(about.location) + '</p>'
   html += '<h1>' + escapeHtml(about.name) + '</h1>'
   html += '<p class="lead">' + escapeHtml(about.headline) + '</p>'
   html += renderOpenToWork(about)
@@ -53,15 +52,15 @@ export function renderPlainPage(data, ctx) {
   html += '<main class="wrap">'
 
   // ----- About -----
-  html += '<section id="about" class="card"><h2>About me</h2>'
+  html += '<section id="about" class="plain-section"><h2>About me</h2>'
   html += renderAbout(about, contact, ctx)
   html += '</section>'
 
   // ----- Projects (one article per project, generated in a loop) -----
-  html += '<section id="projects"><h2>Projects</h2>'
+  html += '<section id="projects" class="plain-section"><h2>Projects</h2>'
   for (let i = 0; i < data.projects.length; i++) {
     const project = data.projects[i]
-    html += '<article class="card project" id="project-' + escapeHtml(project.id) + '">'
+    html += '<article class="project" id="project-' + escapeHtml(project.id) + '">'
     html += '<h3>' + escapeHtml(project.title) + '</h3>'
     html += renderProjectDetail(project, ctx)
     html += '</article>'
@@ -69,24 +68,24 @@ export function renderPlainPage(data, ctx) {
   html += '</section>'
 
   // ----- Skills -----
-  html += '<section id="skills" class="card"><h2>Skills</h2>'
+  html += '<section id="skills" class="plain-section"><h2>Skills</h2>'
   html += renderSkills(data.skills)
   html += '</section>'
 
   // ----- Education / experience -----
-  html += '<section id="education" class="card"><h2>Education &amp; experience</h2>'
+  html += '<section id="education" class="plain-section"><h2>Education &amp; experience</h2>'
   html += renderExperience(data.education, data.work)
   html += '</section>'
 
   // ----- Contact -----
-  html += '<section id="contact" class="card"><h2>Contact</h2>'
+  html += '<section id="contact" class="plain-section"><h2>Contact</h2>'
   html += renderContact(contact, about, ctx)
   html += '</section>'
 
   html += '</main>'
 
   html += '<footer class="plain-footer wrap">'
-  html += '<p>© ' + escapeHtml(about.name) + ' · <a href="./">Village version</a></p>'
+  html += '<p>© ' + escapeHtml(about.name) + '. Prefer something playful? <a href="./">Visit the village version</a>.</p>'
   html += '</footer>'
   return html
 }
@@ -106,19 +105,19 @@ export function renderGameIntro(data, ctx) {
   // A few project names so the page has real keywords even before the game loads.
   html += '<p class="intro-projects"><span>Projects:</span> '
   for (let i = 0; i < projects.length; i++) {
-    if (i > 0) html += ' · '
+    if (i > 0) html += i === projects.length - 1 ? ' and ' : ', '
     html += '<a href="plain.html#project-' + escapeHtml(projects[i].id) + '">' + escapeHtml(projects[i].title) + '</a>'
   }
   html += '</p>'
 
-  html += '<p class="intro-contact"><a href="mailto:' + escapeHtml(contact.email) + '">' + escapeHtml(contact.email) + '</a>'
+  html += '<ul class="intro-contact"><li><a href="mailto:' + escapeHtml(contact.email) + '">' + escapeHtml(contact.email) + '</a></li>'
   if (!isMissing(contact.linkedinUrl)) {
-    html += ' · <a href="' + escapeHtml(contact.linkedinUrl) + '" target="_blank" rel="noopener noreferrer">LinkedIn</a>'
+    html += '<li><a href="' + escapeHtml(contact.linkedinUrl) + '" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>'
   }
   if (!isMissing(contact.githubUrl)) {
-    html += ' · <a href="' + escapeHtml(contact.githubUrl) + '" target="_blank" rel="noopener noreferrer">GitHub</a>'
+    html += '<li><a href="' + escapeHtml(contact.githubUrl) + '" target="_blank" rel="noopener noreferrer">GitHub</a></li>'
   }
-  html += '</p>'
+  html += '</ul>'
   return html
 }
 

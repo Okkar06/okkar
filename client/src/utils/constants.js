@@ -25,23 +25,6 @@ export const PLAYER_SPEED = 80
 // so this also works when the site is hosted in a sub-folder.
 export const ASSETS = import.meta.env.BASE_URL + 'assets/'
 
-// Frame numbers in public/assets/tilesets/tiny-dungeon.png (12 columns, starting at 0).
-// Used to build the Workshop interior in code.
-export const DUNGEON_TILES = {
-  floor: [48, 48, 48, 48, 48, 49],
-  wall: 40,
-  wallTop: 28,
-  door: 46,
-  bookshelfTop: 63,
-  bookshelfBottom: 75,
-  banner: 29,
-  chest: 89,
-  barrel: 82,
-  table: 72,
-  anvil: 74,
-  ledger: 66,
-}
-
 // Pick a whole-number camera zoom that suits the screen size.
 // Whole numbers keep pixel art crisp (no blurry half pixels).
 export function pickZoom(screenWidth, screenHeight) {

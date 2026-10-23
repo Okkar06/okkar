@@ -1,139 +1,137 @@
 /* =====================================================================
-   PLAIN VIEW — a normal scrollable page.
-   Reuses the old portfolio's look: soft lavender background, violet
-   accent, Syne headings, Inter body text, glassy white cards.
+   PLAIN VIEW — a calm, readable page in the village's own materials:
+   parchment paper, ink text, wooden plank dividers. The pixel-font name
+   is the one bold element; everything else stays quiet and legible.
    ===================================================================== */
 
 body.plain-page {
-  --text: #08081e;
-  --text-muted: #4a4a78;
-  --ink: #08081e;
-  background:
-    radial-gradient(ellipse at 18% 8%, rgba(91, 66, 245, 0.13) 0%, transparent 45%),
-    radial-gradient(ellipse at 82% 60%, rgba(91, 66, 245, 0.08) 0%, transparent 42%),
-    linear-gradient(170deg, #f4f4ff 0%, #e6e3f8 100%);
+  --text: #2b1d24;
+  --text-muted: #5e4852; /* 7.0:1 on parchment */
+  background: var(--paper);
+  /* faint paper grain, drawn with two soft gradients (no image needed) */
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(234, 165, 108, 0.12), transparent 40%),
+    radial-gradient(circle at 85% 60%, rgba(132, 198, 105, 0.1), transparent 45%);
   background-attachment: fixed;
-  min-height: 100vh;
+  font-size: 1.0625rem;
+  line-height: 1.6;
 }
 
 .wrap {
   width: 100%;
-  max-width: 860px;
+  max-width: 46rem; /* ~68 characters per line */
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding-inline: 1.25rem;
 }
 
 /* ---------- Header ---------- */
 .plain-header {
-  padding: 3rem 0 1rem;
-}
-.eyebrow {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+  padding-block: 3.5rem 0.5rem;
 }
 .plain-header h1 {
-  margin: 0.4rem 0 0.3rem;
-  font-family: 'Syne', system-ui, sans-serif;
-  font-size: clamp(2.5rem, 8vw, 4.25rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  background: linear-gradient(125deg, #08081e 0%, rgba(91, 66, 245, 0.9) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: clamp(3rem, 11vw, 5.25rem);
+  font-weight: 700;
+  line-height: 0.95;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  /* a wooden "shadow" like a carved sign */
+  text-shadow: 3px 3px 0 var(--wood-light);
 }
 .plain-header .lead {
-  margin: 0 0 0.6rem;
-  font-size: 1.15rem;
-  color: var(--text-muted);
+  margin: 0.9rem 0 0.4rem;
+  max-width: 34rem;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 .plain-nav {
   position: sticky;
   top: 0;
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1.25rem;
-  margin-top: 1.5rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(8, 8, 30, 0.1);
+  gap: 0.25rem 1.4rem;
+  margin-top: 1.75rem;
+  padding: 0.7rem 0;
+  background: var(--paper);
+  border-bottom: 3px solid var(--ink);
 }
 .plain-nav a {
-  color: var(--text-muted);
-  font-weight: 600;
+  color: var(--ink);
+  font-weight: 700;
   text-decoration: none;
+  text-underline-offset: 0.25em;
 }
 .plain-nav a:hover {
-  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: var(--wood);
+  text-decoration-thickness: 2px;
 }
 
-/* Old-portfolio "glass card" */
-.card {
-  margin: 1.25rem 0;
-  padding: 1.5rem;
-  border: 1px solid rgba(80, 80, 160, 0.13);
-  border-radius: 18px;
-  background: linear-gradient(148deg, rgba(255, 255, 255, 0.96) 0%, rgba(224, 220, 255, 0.88) 100%);
-  box-shadow: 0 1px 0 #fff inset, 0 8px 28px rgba(60, 50, 120, 0.12);
+/* ---------- Sections, separated by a wooden plank ---------- */
+.plain-section {
+  padding-block: 2.25rem 0.5rem;
+  scroll-margin-top: 3.5rem;
+}
+.plain-section + .plain-section::before {
+  content: '';
+  display: block;
+  height: 10px;
+  margin-bottom: 2.25rem;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  background:
+    linear-gradient(90deg, transparent 0 22%, var(--wood) 22% calc(22% + 2px), transparent 0 64%, var(--wood) 64% calc(64% + 2px), transparent 0),
+    var(--wood-light);
+}
+.plain-section h2 {
+  margin: 0 0 1rem;
+  font-family: var(--font-pixel);
+  font-size: 1.9rem;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.plain-section h3 {
+  margin: 1.5rem 0 0.4rem;
+  font-size: 1.15rem;
+}
+.plain-section h4 {
+  margin: 1.1rem 0 0.3rem;
 }
 
-section {
-  scroll-margin-top: 1rem;
+/* Projects: a list with clear hierarchy, not a grid of identical cards */
+.project {
+  padding-block: 1.25rem;
+  border-top: 2px dashed rgba(63, 38, 49, 0.25);
 }
-section > h2,
-.card > h2 {
-  margin: 0 0 0.75rem;
-  font-family: 'Syne', system-ui, sans-serif;
-  font-size: 1.6rem;
-  font-weight: 800;
-}
-#projects > h2 {
-  margin-top: 2.5rem;
+.project:first-of-type {
+  border-top: 0;
+  padding-top: 0;
 }
 .project h3 {
-  margin: 0 0 0.25rem;
-  font-size: 1.25rem;
-}
-.card h3 {
-  margin-top: 1.25rem;
-}
-.card h4 {
-  margin: 1rem 0 0.3rem;
+  margin: 0 0 0.2rem;
+  font-size: 1.35rem;
 }
 
-/* Buttons: same shapes as the game, softer colours for this page */
+/* Buttons on this page: same shape as the game, a little lighter */
 .plain-page .btn {
-  border-width: 1px;
-  border-color: rgba(8, 8, 30, 0.2);
-  border-radius: 999px;
-  box-shadow: none;
-}
-.plain-page .btn:hover {
-  border-color: var(--accent);
-  box-shadow: 0 10px 24px -12px rgba(91, 66, 245, 0.6);
-}
-.plain-page .btn-primary {
-  border-color: var(--accent);
+  min-height: 42px;
+  border-width: 2px;
+  box-shadow: 0 2px 0 var(--ink);
 }
 .plain-page .btn-game {
-  background: #84c669;
-  border-color: #3f2631;
-  color: #3f2631;
+  background: var(--paper-2);
 }
 .plain-page .about-photo {
-  border: 0;
-  border-radius: 14px;
+  border-radius: 10px;
 }
 
 .plain-footer {
-  padding-block: 2rem 3rem;
+  padding-block: 2.5rem 3rem;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 @media print {
@@ -144,8 +142,7 @@ section > h2,
   .btn-game {
     display: none;
   }
-  .card {
-    box-shadow: none;
+  .plain-section {
     break-inside: avoid;
   }
 }

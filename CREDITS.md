@@ -2,25 +2,41 @@
 
 Everything below is free to use in a personal portfolio, including commercially.
 
-## Art
+## Third-party art
 
 | Asset | Used for | Author | Licence |
 |---|---|---|---|
-| [Tiny Town 1.1](https://kenney.nl/assets/tiny-town) | Village tiles: grass, paths, trees, houses, fences, well, barrels (`client/public/assets/tilesets/tiny-town.png`) | Kenney (kenney.nl) | [CC0 1.0 (public domain)](https://creativecommons.org/publicdomain/zero/1.0/) |
-| [Tiny Dungeon 1.0](https://kenney.nl/assets/tiny-dungeon) | Workshop interior tiles (`tiny-dungeon.png`), and the player and villager characters | Kenney (kenney.nl) | [CC0 1.0 (public domain)](https://creativecommons.org/publicdomain/zero/1.0/) |
-| `sprites/player.png`, `sprites/npc.png` | 2-frame walk/idle sheets | Made for this repo from Tiny Dungeon tiles 85 and 99 (second frame = body raised 1px) | CC0, same as the source |
-| `sprites/mailbox.png`, `sprites/noticeboard.png`, `sprites/stall.png` | Village props | Original placeholder pixel art made for this repo, using colours from the Tiny Town palette | Yours to use, change or replace |
-| `images/og-image.png` | Link preview image | Rendered from the starter village map + text | Yours to use, change or replace |
+| [Tiny Town 1.1](https://kenney.nl/assets/tiny-town) | Village tiles: grass, dirt paths, trees, houses and roofs, fences, well, barrels, beehives, logs (`client/public/assets/tilesets/tiny-town.png`) | Kenney (kenney.nl) | [CC0 1.0 (public domain)](https://creativecommons.org/publicdomain/zero/1.0/) |
+| [Tiny Dungeon 1.0](https://kenney.nl/assets/tiny-dungeon) | Source of the player and Pip characters (tiles 85 and 99) | Kenney (kenney.nl) | [CC0 1.0 (public domain)](https://creativecommons.org/publicdomain/zero/1.0/) |
 
 CC0 means no attribution is required, but crediting Kenney is a nice thing to do (this file does that).
+
+## Art made for this repo
+
+All of this was drawn for this project, either as small hand-drawn sprites or by code in
+`client/tools/art/*.mjs` (run `npm run art`), using only colours from `client/src/theme/palette.js`
+(sampled from the Kenney tiles so everything matches). It's yours to use, change or replace.
+
+| File | What's in it |
+|---|---|
+| `client/public/assets/sprites/player.png`, `npc.png` | 2-frame walk/idle sheets built from the Tiny Dungeon characters (second frame = body raised 1 px) |
+| `client/public/assets/sprites/mailbox.png`, `noticeboard.png`, `stall.png` | Village props |
+| `client/public/assets/atlas/decor.png` (+ `decor.json`) | ~110 generated sprites: shadows, tall grass, flowers, stones, stumps, crops, fountain, signposts, lamps, benches, fence ivy and flowers, a bluebird; chimneys, porches, doormats, flower boxes, lanterns, potted plants, market goods; all house and workshop furniture (bed, bookshelves, desk, laptop, mug, armchair, rug, fireplace and flames, frames, plants, lamps, string lights, sleeping cat, tool rack, blueprints, workbench, project models); lily pads, reeds, bubbles, fish and fish shadows, dragonflies, dock stool, bucket; weather particles (rain, splash, snow, petals, leaves, smoke) and puddles; guide arrow, sparkle, "!" bubble and bobber |
+| `client/public/assets/tilesets/extras.png` | Generated 16×16 tiles: cliff, forest floor, soil, cobbles, lake water (2 frames, 13 shore shapes), sand, dock planks, wood/stone floors, wallpaper and brick walls |
+| `client/public/images/og-image.png` | Link preview image, rendered from the starter village map plus text |
+| Runtime textures | The soft "glow" used for lights and fog is a radial gradient drawn in code (`src/systems/Lights.js`) |
+
+## Sound
+
+The ambient sound (wind, birdsong, rain and thunder) is synthesised in the browser with the Web Audio API
+(`client/src/ui/AmbientSound.js`). There are no audio files.
 
 ## Fonts (loaded from Google Fonts)
 
 | Font | Used for | Licence |
 |---|---|---|
-| [Inter](https://fonts.google.com/specimen/Inter) | Body text (game panels and plain view) | SIL Open Font License 1.1 |
-| [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) | Pixel-style headings in the game | SIL Open Font License 1.1 |
-| [Syne](https://fonts.google.com/specimen/Syne) | Headings on the plain view (from the old portfolio) | SIL Open Font License 1.1 |
+| [Atkinson Hyperlegible](https://fonts.google.com/specimen/Atkinson+Hyperlegible) | Body text in the game UI and plain view (designed by the Braille Institute for legibility) | SIL Open Font License 1.1 |
+| [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) | Pixel-style headings, signs and name plates | SIL Open Font License 1.1 |
 
 ## Code
 
@@ -31,6 +47,9 @@ CC0 means no attribution is required, but crediting Kenney is a nice thing to do
 
 ## Swapping the art
 
-- **Tiles**: replace `client/public/assets/tilesets/tiny-town.png` with another 16×16 tileset (12 columns × 11 rows keeps the existing map working), or build a new map in Tiled (see README).
-- **Characters**: replace `client/public/assets/sprites/player.png` / `npc.png` with any 32×16 PNG (two 16×16 frames side by side).
-- **Props**: replace the PNGs in `client/public/assets/sprites/` with images of the same size, or change the size and update the matching object in Tiled's "Props" layer.
+- **Kenney tiles**: replace `tiny-town.png` with another 16×16 tileset of the same layout (12 × 11), or
+  build a new map in Tiled (see README).
+- **Generated sprites**: edit the drawing code in `client/tools/art/` and run `npm run art`, or replace
+  a frame in the atlas with your own art of the same size.
+- **Characters**: replace `client/public/assets/sprites/player.png` / `npc.png` with any 32×16 PNG
+  (two 16×16 frames side by side).

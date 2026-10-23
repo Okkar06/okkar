@@ -57,8 +57,8 @@ function buildFooter(stopNumber) {
   html += '<span class="btn-row" style="margin:0">'
   html += '<button type="button" class="btn" data-action="tour-end">End tour</button>'
   if (stopNumber < stops.length - 1) {
-    html += '<button type="button" class="btn btn-primary" data-action="tour-next">Next: ' +
-      stops[stopNumber + 1].title + ' →</button>'
+    html += '<button type="button" class="btn btn-primary" data-action="tour-next">Next stop: ' +
+      stops[stopNumber + 1].title + '</button>'
   } else {
     html += '<button type="button" class="btn btn-primary" data-action="tour-end">Finish tour</button>'
   }

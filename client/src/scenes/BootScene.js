@@ -24,9 +24,8 @@ export class BootScene extends Phaser.Scene {
       bus.emit('load:error', file.key)
     })
 
-    // Tilesets (Kenney "Tiny Town" and "Tiny Dungeon", CC0)
+    // Tileset (Kenney "Tiny Town", CC0)
     this.load.image('tiles-town', ASSETS + 'tilesets/tiny-town.png')
-    this.load.image('tiles-dungeon', ASSETS + 'tilesets/tiny-dungeon.png')
     // Generated tiles (cliffs, water, floors...) — see tools/build-art.mjs
     this.load.image('tiles-extras', ASSETS + 'tilesets/extras.png')
     // The same Kenney town image again, cut into 16x16 frames, so trees and
