@@ -83,6 +83,16 @@
     <!-- "Press E" prompt. It is a real button, so it can also be clicked/tapped. -->
     <button type="button" id="interact-prompt" hidden></button>
 
+    <!-- What you caught while fishing (doesn't block the game) -->
+    <div id="catch-card" role="status" aria-live="polite" hidden>
+      <img id="catch-image" alt="" width="48" height="30" />
+      <div class="catch-text">
+        <p id="catch-title"></p>
+        <p id="catch-text"></p>
+      </div>
+      <button type="button" id="catch-close" aria-label="Close">✕</button>
+    </div>
+
     <!-- Short messages, e.g. "Résumé coming soon" -->
     <div id="toast" role="status" aria-live="polite" hidden></div>
 

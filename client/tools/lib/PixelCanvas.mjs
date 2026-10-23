@@ -132,10 +132,14 @@ export class PixelCanvas {
 
 // Small helper: a seeded random number generator, so generated art is
 // identical every time you run the tool.
+// (mulberry32: tiny, but its numbers are spread evenly between 0 and 1.)
 export function seededRandom(seed) {
   let s = seed >>> 0
   return function () {
-    s = (s * 1664525 + 1013904223) >>> 0
-    return s / 4294967296
+    s = (s + 0x6d2b79f5) >>> 0
+    let t = s
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
 }

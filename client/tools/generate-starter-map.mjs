@@ -54,6 +54,7 @@ function grid(value) {
 const ground = grid(0)
 const decor = grid(0)
 const above = grid(0)
+const water = grid(0) // the lake (its own layer, solid except the dock)
 const dirt = grid(false) // where the dirt paths go
 const reserved = grid(false) // cells no random detail may use
 
@@ -268,7 +269,68 @@ fencePlot(36, 21, 42, 24, { top: false, gate: [38, 39] }) // post office front y
 fencePlot(17, 6, 30, 11, { gate: [23, 24] }) // crop field
 fenceRow(19, 3, 8, 44, 45, 46, null) // a fence behind the market stall
 
-// Reserve the lake (added later), building fronts and other key spots.
+// ---------------------------------------------------------------------
+//  5c. The lake: an organic blob of water with a sand ring and a dock
+// ---------------------------------------------------------------------
+const lake = grid(false)
+const dock = grid(false)
+for (let y = 26; y <= 34; y++) {
+  for (let x = 28; x <= 45; x++) {
+    const wobble = Math.sin(x * 1.3) * 0.08 + Math.cos(y * 2.1 + x) * 0.06
+    const dx = (x - 37) / 7.3
+    const dy = (y - 30.2) / 2.75
+    if (dx * dx + dy * dy <= 1 + wobble) lake[y][x] = true
+  }
+}
+const DOCK = { x: 35, top: 28, end: 31 } // two tiles wide: x and x+1
+for (let y = DOCK.top; y <= DOCK.end; y++) {
+  for (let x = DOCK.x; x <= DOCK.x + 1; x++) { lake[y][x] = true; dock[y][x] = true }
+}
+
+// Autotile class for a cell inside `region` (same rules as the dirt paths).
+function classify(region, x, y) {
+  const inside = function (cx, cy) { return inMap(cx, cy) && region[cy][cx] }
+  const n = inside(x, y - 1), s = inside(x, y + 1), e = inside(x + 1, y), w = inside(x - 1, y)
+  if (!n && !w) return 'nw'
+  if (!n && !e) return 'ne'
+  if (!s && !w) return 'sw'
+  if (!s && !e) return 'se'
+  if (!n) return 'n'
+  if (!s) return 's'
+  if (!w) return 'w'
+  if (!e) return 'e'
+  if (!inside(x - 1, y - 1)) return 'inw'
+  if (!inside(x + 1, y - 1)) return 'ine'
+  if (!inside(x + 1, y + 1)) return 'ise'
+  if (!inside(x - 1, y + 1)) return 'isw'
+  return 'c'
+}
+
+// The sand ring = every non-water cell touching water (8 directions).
+const shore = grid(false) // sand OR water
+for (let y = 0; y < H; y++) {
+  for (let x = 0; x < W; x++) {
+    if (lake[y][x]) { shore[y][x] = true; continue }
+    for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) if (inMap(x + i, y + j) && lake[y + j][x + i]) shore[y][x] = true
+  }
+}
+for (let y = 0; y < H; y++) {
+  for (let x = 0; x < W; x++) {
+    if (!shore[y][x]) continue
+    decor[y][x] = 0 // no trees in the lake or on the beach
+    reserved[y][x] = true
+    ground[y][x] = extra('sand_' + (lake[y][x] ? 'c' : classify(shore, x, y)))
+    if (!lake[y][x]) continue
+    if (dock[y][x]) {
+      const side = x === DOCK.x ? 'l' : 'r'
+      water[y][x] = extra((y === DOCK.end ? 'dock_end_' : 'dock_') + side)
+    } else {
+      water[y][x] = extra('water_' + classify(lake, x, y) + '_0')
+    }
+  }
+}
+
+// Reserve the lake, building fronts and other key spots.
 reserve(29, 26, 45, 34) // lakeside
 reserve(5, 7, 15, 15) // house plot
 reserve(33, 7, 44, 15) // workshop plot
@@ -310,6 +372,7 @@ const interactables = [
   obj('market', 6 * T, 23 * T, 4 * T, 28, { section: 'experience', label: 'Visit the market stall' }),
   obj('mailbox', 34 * T, 22 * T, 3 * T, 3 * T, { section: 'contact', label: 'Check the mailbox' }),
   obj('npc', 25 * T, 28 * T, 3 * T, 3 * T, { section: 'npc', label: 'Talk to Pip' }),
+  obj('fishing', DOCK.x * T, DOCK.end * T, 2 * T, T, { section: 'fishing', label: 'Fish from the dock' }),
 ]
 
 const areas = [
@@ -358,6 +421,25 @@ for (let y = FIELD.y0; y <= FIELD.y1; y++) {
     details.push(point('', type, x * T + 8, y * T + 13))
   }
 }
+
+// Lakeside: reeds on the beach, lily pads on the water, rocks, the dock.
+for (let y = 0; y < H; y++) {
+  for (let x = 0; x < W; x++) {
+    if (shore[y][x] && !lake[y][x]) {
+      let touchesWater = false
+      for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) if (inMap(x + i, y + j) && lake[y + j][x + i] && !dock[y + j][x + i]) touchesWater = true
+      const nearDock = Math.abs(x - DOCK.x - 0.5) < 2.5 && y <= DOCK.top
+      if (touchesWater && !nearDock && random() < 0.45) details.push(point('', 'reeds', x * T + 4 + Math.floor(random() * 8), y * T + 12))
+      else if (!nearDock && random() < 0.12) details.push(point('', random() < 0.5 ? 'stone_s' : 'pebbles', x * T + 8, y * T + 10))
+    } else if (lake[y][x] && !dock[y][x] && Math.abs(x - DOCK.x - 0.5) > 2 && random() < 0.13) {
+      details.push(point('', random() < 0.3 ? 'lily_flower' : 'lily_pad', x * T + 8, y * T + 10))
+    }
+  }
+}
+details.push(point('', 'dock_stool', DOCK.x * T + 8, DOCK.end * T + 12))
+details.push(point('', 'bucket', (DOCK.x + 1) * T + 10, (DOCK.end - 1) * T + 10))
+details.push(point('', 'signpost', 31 * T + 8, 26 * T + 14, { label: 'Fishing dock' }))
+details.push(point('', 'bench', 41 * T, 26 * T + 12))
 
 // Fence details: ivy, flowers at the base, a bird on a post (variety!).
 for (let i = 0; i < fenceMiddles.length; i++) {
@@ -433,9 +515,10 @@ const extrasCount = Object.keys(EXTRAS).length
 const map = {
   compressionlevel: -1, type: 'map', version: '1.10', tiledversion: '1.10.2', orientation: 'orthogonal',
   renderorder: 'right-down', infinite: false, width: W, height: H, tilewidth: T, tileheight: T,
-  nextlayerid: 10, nextobjectid: nextId,
+  nextlayerid: 11, nextobjectid: nextId,
   layers: [
     tileLayer(1, 'Ground', ground),
+    tileLayer(9, 'Water', water),
     tileLayer(2, 'Decor', decor),
     tileLayer(3, 'Above', above),
     objectLayer(4, 'Details', details),

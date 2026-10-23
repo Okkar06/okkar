@@ -267,6 +267,58 @@ body.game-page {
   box-shadow: 0 4px 0 var(--ink);
 }
 
+/* ---------- Catch card (fishing) ---------- */
+#catch-card {
+  position: fixed;
+  left: 50%;
+  bottom: calc(6.5rem + env(safe-area-inset-bottom));
+  z-index: 26;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: min(26rem, calc(100vw - 2rem));
+  padding: 0.7rem 0.8rem 0.7rem 0.9rem;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 4px 0 var(--ink), 0 12px 30px rgba(20, 12, 16, 0.3);
+  transform: translateX(-50%);
+}
+#catch-card.is-showing {
+  animation: catch-in 0.25s ease-out;
+}
+@keyframes catch-in {
+  from { transform: translate(-50%, 12px); opacity: 0; }
+}
+#catch-image {
+  flex: none;
+  width: 48px;
+  height: 30px;
+  image-rendering: pixelated;
+}
+.catch-text p {
+  margin: 0;
+}
+#catch-title {
+  font-family: var(--font-pixel);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+#catch-text {
+  font-size: 0.92rem;
+}
+#catch-close {
+  flex: none;
+  align-self: flex-start;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 /* ---------- Touch drag control (phones) ----------
    Created by src/ui/TouchDragControl.js. Sizes come from the constants at
    the top of that file (--circle-size, --thumb-size). Deliberately clean and

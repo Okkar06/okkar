@@ -12,6 +12,7 @@ export const state = {
   panelOpen: false,     // is an HTML panel covering the game?
   touring: false,       // is the quick tour moving the player?
   currentZone: null,    // the interactable the player is standing in (or null)
+  promptOverride: null, // custom prompt text (e.g. 'Reel it in!' while fishing)
 }
 
 // Can the player move right now?

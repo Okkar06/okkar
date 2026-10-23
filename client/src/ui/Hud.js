@@ -22,6 +22,7 @@ export function setupHud() {
   bus.on('zone:change', updatePrompt)
   bus.on('panel:open', updatePrompt)
   bus.on('panel:close', updatePrompt)
+  bus.on('prompt:refresh', updatePrompt)
 
   // Clicking / tapping the prompt does the same as pressing E.
   promptButton.addEventListener('click', function () {
@@ -36,11 +37,13 @@ function updatePrompt() {
     return
   }
   // Phones have no E key, so the prompt itself is the button to tap.
+  // A system (like fishing) can temporarily replace the text.
+  const label = state.promptOverride || zone.label
   if (isTouchDevice()) {
-    promptButton.textContent = 'Tap to open: ' + zone.label
+    promptButton.textContent = state.promptOverride ? 'Tap: ' + label : 'Tap to ' + label.charAt(0).toLowerCase() + label.slice(1)
   } else {
     promptButton.innerHTML = '<kbd>E</kbd>'
-    promptButton.appendChild(document.createTextNode(zone.label))
+    promptButton.appendChild(document.createTextNode(label))
   }
   promptButton.hidden = false
 }

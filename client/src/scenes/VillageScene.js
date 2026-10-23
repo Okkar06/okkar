@@ -32,6 +32,8 @@ import { convertTileProps, addDetails, addShadow, addBlocker } from '../systems/
 import { placeItems } from '../systems/Furniture.js'
 import { LightSystem } from '../systems/Lights.js'
 import { villageDecor } from '../data/decor.js'
+import { WaterSystem } from '../systems/Water.js'
+import { Fishing } from '../systems/Fishing.js'
 
 export class VillageScene extends Phaser.Scene {
   constructor() {
@@ -48,6 +50,10 @@ export class VillageScene extends Phaser.Scene {
     const allTiles = [townTiles, extraTiles]
 
     map.createLayer('Ground', allTiles, 0, 0).setDepth(DEPTH.ground)
+    // The lake: water tiles are solid, the dock tiles are not.
+    const waterLayer = map.createLayer('Water', allTiles, 0, 0).setDepth(DEPTH.ground + 0.5)
+    waterLayer.setCollisionByProperty({ collides: true })
+    this.water = new WaterSystem(this, waterLayer, extraTiles.firstgid)
     const decorLayer = map.createLayer('Decor', allTiles, 0, 0).setDepth(DEPTH.decor)
     map.createLayer('Above', allTiles, 0, 0).setDepth(DEPTH.above)
 
@@ -127,12 +133,17 @@ export class VillageScene extends Phaser.Scene {
     }
     this.player = new Player(this, startX, startY)
     this.physics.add.collider(this.player, decorLayer)
+    this.physics.add.collider(this.player, waterLayer)
     this.physics.add.collider(this.player, blockers)
 
     // ----- 6. Camera, input, extras -----
     setupCamera(this, this.player, worldWidth, worldHeight)
     const scene = this
     setupInteraction(this, this.player, this.zones, function (zone) { scene.interact(zone) })
+    // The fishing mini-game at the end of the dock.
+    const fishingZone = findZoneByName(this.zones, 'fishing')
+    this.fishing = fishingZone ? new Fishing(this, this.player, fishingZone, this.water) : null
+
     const period = addDayNightTint(this, worldWidth, worldHeight)
     // Lamps and windows: off by day, half-on at dawn/dusk, fully on at night.
     const darknessByPeriod = { day: 0, dawn: 0.35, dusk: 0.6, night: 1 }
@@ -159,6 +170,10 @@ export class VillageScene extends Phaser.Scene {
       this.enterBuilding('WorkshopScene')
       return
     }
+    if (zone.section === 'fishing') {
+      if (this.fishing) this.fishing.action()
+      return
+    }
     if (zone.section === 'house') {
       this.enterBuilding('InteriorScene', { room: 'house' })
       return
@@ -178,6 +193,7 @@ export class VillageScene extends Phaser.Scene {
 
   update() {
     this.player.update()
+    if (this.fishing) this.fishing.update()
     const scene = this
     updateCurrentZone(this.zones, this.player, function (zone) { scene.interact(zone) })
 
