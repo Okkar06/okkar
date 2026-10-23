@@ -36,12 +36,15 @@ npm run dev
   If you miss it, open the **Ports** tab, find 5173 and click the globe icon.
   (`server.host: true` in `vite.config.js` is what makes this work in Codespaces.)
 - Game page: `/` · Plain view: `/plain.html`
-- Add `?time=night` (or `day`, `dusk`, `dawn`) to the URL to preview the day/night tint, and
+- The village has its own clock (shown in the HUD). It starts at your local time and a full day and
+  night pass in 12 minutes: sunrise, day, sunset, then night with lit lamps, fireflies and crickets.
+  Change the speed with `MINUTES_PER_SECOND` in `src/systems/gameClock.js`.
+- Add `?time=night` (or `day`, `dusk`, `dawn`, or an exact time like `21:30`) to the URL to start at that time, and
   `?weather=rain` (or `clear`, `storm`, `fog`, `petals`, `snow`) to start with a weather.
   You can combine them: `/?time=night&weather=rain`.
 - Pip's full welcome shows until it is finished or skipped once (remembered in localStorage).
   To see it again, press the **?** button, or clear site data.
-- Ambient sound (wind + birds) is generated in code by `src/ui/AmbientSound.js`. It is off by default;
+- Ambient sound (wind, birds by day, crickets at night) is generated in code by `src/ui/AmbientSound.js`. It is off by default;
   the "Sound" button in the HUD toggles it and the choice is remembered per browser.
 - In dev mode, `TODO` text is highlighted in yellow so you can find what's left to fill in.
   On the built site, TODOs are hidden or shown as "Details coming soon".

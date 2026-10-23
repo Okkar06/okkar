@@ -23,3 +23,17 @@ export function weatherIcon(key) {
 export function helpIcon() {
   return svg('<circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.3a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><path d="M12 17.6v.1"/>')
 }
+
+// Sun by day, moon by night (the HUD clock).
+export function sunIcon() {
+  return svg(WEATHER_ICONS.clear)
+}
+
+export function moonIcon() {
+  return svg('<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>')
+}
+
+// Sunrise / sunset: half a sun on the horizon.
+export function horizonIcon() {
+  return svg('<path d="M7.5 17a4.5 4.5 0 0 1 9 0"/><path d="M3 20.5h18M12 7v2.5M4.9 10.9l1.8 1.8M19.1 10.9l-1.8 1.8M2 17h2.5M19.5 17H22"/>')
+}

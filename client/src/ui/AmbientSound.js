@@ -1,9 +1,12 @@
 // =====================================================================
-//  AMBIENT SOUND — soft wind + the occasional bird chirp.
+//  AMBIENT SOUND — soft wind, birds by day and crickets at night
+//  (following the village clock).
 //  Made with the Web Audio API, so there are no audio files to download.
 //  Off by default (many visitors browse in a quiet office); the HUD
 //  button turns it on/off and the choice is remembered in this browser.
 // =====================================================================
+
+import { currentPeriod } from '../systems/gameClock.js'
 
 const STORAGE_KEY = 'village-sound'
 const MASTER_VOLUME = 0.12
@@ -169,15 +172,19 @@ export function playThunder() {
 }
 
 // ---------------------------------------------------------------------
-//  Birds: 2-4 quick rising chirps every few seconds (daytime only).
+//  Birds: 2-4 quick rising chirps every few seconds (daytime).
+//  Crickets: a soft trill of very short high notes (night).
 // ---------------------------------------------------------------------
 function scheduleBird() {
   clearTimeout(birdTimer)
   const wait = 3000 + Math.random() * 6000
   birdTimer = setTimeout(function () {
     if (!isOn) return
-    const hour = new Date().getHours()
-    if (hour >= 6 && hour < 19 && rainLevel === 0) chirpSeries() // birds hide in the rain
+    const period = currentPeriod()
+    if (rainLevel === 0) { // birds and crickets hide in the rain
+      if (period === 'day' || period === 'dawn') chirpSeries()
+      else if (period === 'night') cricketSeries()
+    }
     scheduleBird()
   }, wait)
 }
@@ -188,6 +195,28 @@ function chirpSeries() {
   for (let i = 0; i < count; i++) {
     chirp(audio.currentTime + i * 0.13, baseFrequency)
   }
+}
+
+function cricketSeries() {
+  const trills = 2 + Math.floor(Math.random() * 2)
+  for (let t = 0; t < trills; t++) {
+    // each trill is 4 tiny pulses at the same pitch
+    for (let i = 0; i < 4; i++) cricketPulse(audio.currentTime + t * 0.45 + i * 0.045)
+  }
+}
+
+function cricketPulse(startTime) {
+  const oscillator = audio.createOscillator()
+  oscillator.type = 'triangle'
+  oscillator.frequency.setValueAtTime(4400, startTime)
+  const volume = audio.createGain()
+  volume.gain.setValueAtTime(0.0001, startTime)
+  volume.gain.exponentialRampToValueAtTime(0.06, startTime + 0.008)
+  volume.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.03)
+  oscillator.connect(volume)
+  volume.connect(master)
+  oscillator.start(startTime)
+  oscillator.stop(startTime + 0.035)
 }
 
 function chirp(startTime, frequency) {

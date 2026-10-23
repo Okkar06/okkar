@@ -6,10 +6,13 @@
 
 import { state, bus } from '../utils/state.js'
 import { isTouchDevice } from './TouchDragControl.js'
+import { villageMinutes, currentPeriod, formatVillageTime } from '../systems/gameClock.js'
+import { sunIcon, moonIcon, horizonIcon } from './icons.js'
 
 const locationElement = document.getElementById('hud-location')
 const promptButton = document.getElementById('interact-prompt')
 const toastElement = document.getElementById('toast')
+const clockElement = document.getElementById('hud-clock')
 
 
 export function setupHud() {
@@ -30,6 +33,24 @@ export function setupHud() {
   promptButton.addEventListener('click', function () {
     bus.emit('interact')
   })
+
+  // The village clock (it keeps running inside houses too).
+  updateClock()
+  setInterval(updateClock, 1000)
+}
+
+const PERIOD_ICONS = { dawn: horizonIcon, day: sunIcon, dusk: horizonIcon, night: moonIcon }
+let shownTime = ''
+
+function updateClock() {
+  const text = formatVillageTime(villageMinutes())
+  if (text === shownTime) return // only touch the page when the time changes
+  shownTime = text
+  const period = currentPeriod()
+  // "7:40" + " pm" (the am/pm hides on the narrowest phones)
+  const parts = text.split(' ')
+  clockElement.innerHTML = PERIOD_ICONS[period]() + '<span>' + parts[0] + '<span class="clock-ampm"> ' + parts[1] + '</span></span>'
+  clockElement.dataset.period = period
 }
 
 function updatePrompt() {

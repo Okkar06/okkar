@@ -269,6 +269,7 @@ body.game-page {
   gap: 0.4rem;
 }
 .hud-location,
+.hud-clock,
 .hud-otw,
 .hud-btn {
   display: inline-flex;
@@ -302,6 +303,22 @@ body.game-page {
   font-weight: 500;
   font-size: 0.98rem;
   color: var(--lamp-glow);
+}
+/* Village clock: sun, half-sun or moon + "7:40 pm". A fixed width so
+   the HUD doesn't shuffle as the minutes tick by. */
+.hud-clock {
+  gap: 0.4em;
+  min-width: 6.6em;
+  font-family: var(--font-pixel);
+  font-weight: 500;
+  font-size: 0.98rem;
+  font-variant-numeric: tabular-nums;
+}
+.hud-clock svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--lamp);
 }
 .hud-otw .lantern {
   width: 0.6rem;
@@ -739,12 +756,35 @@ body.game-page {
   .hud-location {
     display: none;
   }
+  /* Phones: just the time (no sun/moon) and snugger pills, so the
+     first row still fits. */
+  .hud-left {
+    gap: 0.25rem;
+  }
+  .hud-clock,
+  .hud-otw,
+  .hud-left .hud-btn {
+    padding-left: 0.45em;
+    padding-right: 0.45em;
+  }
+  .hud-clock {
+    min-width: 0;
+    font-size: 0.85rem;
+  }
+  .hud-clock svg {
+    display: none;
+  }
   .hud-right {
     flex-wrap: nowrap;
     gap: 0.3rem;
   }
   .hud-right .hud-btn {
     padding: 0.3em 0.35em;
+  }
+}
+@media (max-width: 380px) {
+  .clock-ampm {
+    display: none;
   }
 }
 @media (max-width: 420px) {
