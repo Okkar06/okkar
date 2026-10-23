@@ -13,7 +13,17 @@ export const EXTRAS = {
   "soil_a": 6,
   "soil_b": 7,
   "cobble_a": 8,
-  "cobble_b": 9
+  "cobble_b": 9,
+  "floor_wood_a": 10,
+  "floor_wood_b": 11,
+  "floor_stone_a": 12,
+  "floor_stone_b": 13,
+  "wall_paper_top": 14,
+  "wall_paper": 15,
+  "wall_brick_top": 16,
+  "wall_brick": 17,
+  "wall_cap": 18,
+  "threshold": 19
 }
 
-export const EXTRAS_SOLID = ["cliff_top_a","cliff_top_b","cliff_bottom_a","cliff_bottom_b"]
+export const EXTRAS_SOLID = ["cliff_top_a","cliff_top_b","cliff_bottom_a","cliff_bottom_b","wall_paper_top","wall_paper","wall_brick_top","wall_brick","wall_cap"]

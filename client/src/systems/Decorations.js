@@ -92,14 +92,18 @@ export function addShadow(scene, x, y, size) {
 }
 
 // A small wooden name plate floating above a sign, door or shelf.
-export function makeLabel(scene, x, y, text, depth) {
-  const label = scene.add.text(x, y, text, {
+// `maxWidth` (world pixels) wraps long names onto two lines.
+export function makeLabel(scene, x, y, text, depth, maxWidth) {
+  const style = {
     fontFamily: '"Pixelify Sans", ui-monospace, monospace',
     fontSize: '32px',
     color: '#fdf3dc',
     backgroundColor: '#3f2631',
     padding: { x: 10, y: 3 },
-  })
+    align: 'center',
+  }
+  if (maxWidth) style.wordWrap = { width: maxWidth * 4 - 20 }
+  const label = scene.add.text(x, y, text, style)
   // Drawn 4x bigger then scaled down, so it stays crisp when the camera zooms in.
   label.setScale(0.25).setOrigin(0.5, 1).setDepth(depth === undefined ? DEPTH.worldUi : depth)
   return label

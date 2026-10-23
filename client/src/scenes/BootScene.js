@@ -8,6 +8,7 @@ import Phaser from 'phaser'
 import { ASSETS } from '../utils/constants.js'
 import { bus } from '../utils/state.js'
 import { createDecorAnimations } from '../systems/Decorations.js'
+import { createGlowTexture } from '../systems/Lights.js'
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -65,6 +66,12 @@ export class BootScene extends Phaser.Scene {
     })
 
     createDecorAnimations(this)
+    createGlowTexture(this)
+
+    // Interior animations: fire, the sleeping cat breathing, twinkling lights.
+    this.anims.create({ key: 'flame', frames: this.anims.generateFrameNames('decor', { prefix: 'flame_', start: 0, end: 2 }), frameRate: 8, repeat: -1 })
+    this.anims.create({ key: 'cat_breathe', frames: this.anims.generateFrameNames('decor', { prefix: 'cat_', start: 0, end: 1 }), frameRate: 0.8, repeat: -1, yoyo: true })
+    this.anims.create({ key: 'twinkle', frames: this.anims.generateFrameNames('decor', { prefix: 'string_lights_', start: 0, end: 1 }), frameRate: 1.2, repeat: -1 })
 
     // Wait (briefly) for the pixel font so signs don't flash in a fallback font.
     const scene = this

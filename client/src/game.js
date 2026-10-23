@@ -8,6 +8,7 @@ import Phaser from 'phaser'
 import { BootScene } from './scenes/BootScene.js'
 import { VillageScene } from './scenes/VillageScene.js'
 import { WorkshopScene } from './scenes/WorkshopScene.js'
+import { InteriorScene } from './scenes/InteriorScene.js'
 
 export function startGame(parentElementId) {
   return new Phaser.Game({
@@ -27,6 +28,6 @@ export function startGame(parentElementId) {
     },
     audio: { noAudio: true },
     banner: false,
-    scene: [BootScene, VillageScene, WorkshopScene],
+    scene: [BootScene, VillageScene, WorkshopScene, InteriorScene],
   })
 }

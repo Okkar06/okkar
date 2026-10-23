@@ -3,28 +3,28 @@
 //
 //  This room is built in code, NOT in Tiled, because its size depends
 //  on how many projects you have. For every project in
-//  src/data/projects.js we place one bookshelf with a name plate.
-//  Up to 4 shelves per row; more projects = more rows = a taller room.
-//  So adding a project to the data file automatically adds a shelf.
+//  src/data/projects.js we place one shelf with a little model on top
+//  and a name plate. Up to 4 shelves per row; more projects = more rows
+//  = a taller room. So adding a project automatically adds a shelf.
+//  Tool racks, blueprints and the workbench come from src/data/decor.js.
 // =====================================================================
 
 import Phaser from 'phaser'
 import { Player } from '../entities/Player.js'
-import { TILE_SIZE, DUNGEON_TILES } from '../utils/constants.js'
+import { TILE_SIZE, DEPTH } from '../utils/constants.js'
 import { bus } from '../utils/state.js'
 import { projects } from '../data/projects.js'
+import { rooms } from '../data/decor.js'
 import { openSection } from '../ui/sections.js'
-import {
-  setupCamera,
-  makeZone,
-  findZoneByName,
-  updateCurrentZone,
-  setupInteraction,
-  moveToZone,
-} from './sceneHelpers.js'
+import { buildRoom, addIndoorAtmosphere } from '../systems/RoomBuilder.js'
+import { placeItems } from '../systems/Furniture.js'
+import { LightSystem } from '../systems/Lights.js'
+import { addBlocker, addShadow, makeLabel } from '../systems/Decorations.js'
+import { setupCamera, makeZone, findZoneByName, updateCurrentZone, setupInteraction, moveToZone } from './sceneHelpers.js'
 
 const SHELVES_PER_ROW = 4
-const SHELF_SPACING = 4 // tiles from one shelf to the next (2 wide + 2 gap)
+const SHELF_SPACING = 4 // tiles from one shelf to the next
+const MODELS = ['model_house', 'model_rocket', 'model_robot', 'model_gear'] // one per shelf, repeating
 
 export class WorkshopScene extends Phaser.Scene {
   constructor() {
@@ -33,47 +33,21 @@ export class WorkshopScene extends Phaser.Scene {
 
   create() {
     const T = TILE_SIZE
+    const room = rooms.workshop
     const projectCount = projects.length
 
     // ----- 1. Work out the room size from the number of projects -----
     const shelfRows = Math.max(1, Math.ceil(projectCount / SHELVES_PER_ROW))
     const widestRow = Math.max(1, Math.min(projectCount, SHELVES_PER_ROW))
-    const roomWidth = Math.max(13, widestRow * SHELF_SPACING + 5) // in tiles
-    const roomHeight = 4 + shelfRows * 4 + 3
-    const doorX = Math.floor(roomWidth / 2)
+    const roomWidth = Math.max(14, widestRow * SHELF_SPACING + 5) // in tiles
+    const roomHeight = 3 + shelfRows * 4 + 4
 
-    // ----- 2. Create an empty tilemap and fill it with loops -----
-    const map = this.make.tilemap({ tileWidth: T, tileHeight: T, width: roomWidth, height: roomHeight })
-    const tiles = map.addTilesetImage('tiny-dungeon', 'tiles-dungeon', T, T, 0, 0)
-    const floorLayer = map.createBlankLayer('Floor', tiles).setDepth(0)
-    const wallLayer = map.createBlankLayer('Walls', tiles).setDepth(1)
-    const furnitureLayer = map.createBlankLayer('Furniture', tiles).setDepth(2)
+    const built = buildRoom(this, room, roomWidth, roomHeight)
+    this.physics.world.setBounds(0, 0, built.worldWidth, built.worldHeight)
+    const blockers = []
+    this.lightSystem = new LightSystem(this)
 
-    for (let y = 0; y < roomHeight; y++) {
-      for (let x = 0; x < roomWidth; x++) {
-        const isEdge = x === 0 || y === 0 || x === roomWidth - 1 || y === roomHeight - 1
-        const isBackWall = y === 1 // second row of the back wall
-        if (isEdge || isBackWall) {
-          wallLayer.putTileAt(DUNGEON_TILES.wall, x, y)
-        } else {
-          // Pick a floor tile "randomly" but the same every visit.
-          const pick = (x * 7 + y * 13) % DUNGEON_TILES.floor.length
-          floorLayer.putTileAt(DUNGEON_TILES.floor[pick], x, y)
-        }
-      }
-    }
-    // Banners along the back wall, and the exit door at the bottom.
-    for (let x = 2; x < roomWidth - 2; x += 3) {
-      wallLayer.putTileAt(DUNGEON_TILES.banner, x, 1)
-    }
-    wallLayer.putTileAt(DUNGEON_TILES.door, doorX, roomHeight - 1)
-
-    // A little clutter in the corners.
-    furnitureLayer.putTileAt(DUNGEON_TILES.barrel, 1, 2)
-    furnitureLayer.putTileAt(DUNGEON_TILES.chest, roomWidth - 2, 2)
-    furnitureLayer.putTileAt(DUNGEON_TILES.anvil, roomWidth - 2, roomHeight - 3)
-
-    // ----- 3. One shelf per project -----
+    // ----- 2. One shelf per project (in a loop) -----
     this.zones = []
     for (let i = 0; i < projectCount; i++) {
       const project = projects[i]
@@ -84,58 +58,43 @@ export class WorkshopScene extends Phaser.Scene {
       const shelvesInThisRow = Math.min(SHELVES_PER_ROW, projectCount - row * SHELVES_PER_ROW)
       const rowWidthInTiles = shelvesInThisRow * SHELF_SPACING - 2
       const startX = Math.floor((roomWidth - rowWidthInTiles) / 2)
-      const shelfX = startX + col * SHELF_SPACING
-      const shelfY = 3 + row * 4
+      const shelfX = (startX + col * SHELF_SPACING) * T + 7 // left edge in pixels
+      const shelfBottom = (4 + row * 4 + 1) * T // stands on row 4 (+4 per row)
 
-      // A bookshelf is 2 tiles wide and 2 tiles tall.
-      furnitureLayer.putTileAt(DUNGEON_TILES.bookshelfTop, shelfX, shelfY)
-      furnitureLayer.putTileAt(DUNGEON_TILES.bookshelfTop, shelfX + 1, shelfY)
-      furnitureLayer.putTileAt(DUNGEON_TILES.bookshelfBottom, shelfX, shelfY + 1)
-      furnitureLayer.putTileAt(DUNGEON_TILES.bookshelfBottom, shelfX + 1, shelfY + 1)
+      // The shelf, its shadow and its solid base
+      const shelf = this.add.image(shelfX, shelfBottom, 'decor', 'bookshelf_b').setOrigin(0, 1)
+      shelf.setDepth(DEPTH.world + shelfBottom)
+      addShadow(this, shelfX + shelf.width / 2, shelfBottom - 1, 'shadow')
+      addBlocker(this, blockers, shelfX + shelf.width / 2, shelfBottom, shelf.width - 2, 10)
 
-      // Name plate. Big font scaled down = crisp text at any zoom.
-      const shortTitle = project.title.split(' — ')[0]
-      const plate = this.add.text((shelfX + 1) * T, (shelfY + 2) * T + 1, shortTitle, {
-        fontFamily: 'monospace',
-        fontSize: '28px',
-        fontStyle: 'bold',
-        color: '#fdf3dc',
-        align: 'center',
-        backgroundColor: '#3f2631',
-        padding: { x: 6, y: 2 },
-        wordWrap: { width: 4 * T * 4 - 16 },
-      })
-      plate.setOrigin(0.5, 0).setScale(0.25).setDepth(5)
+      // A little model on top (house, rocket, robot, gear...)
+      const model = this.add.image(shelfX + shelf.width / 2, shelfBottom - shelf.height + 2, 'decor', MODELS[i % MODELS.length])
+      model.setOrigin(0.5, 1).setDepth(DEPTH.world + shelfBottom + 1)
+
+      // Name plate under the shelf
+      const plate = makeLabel(this, shelfX + shelf.width / 2, shelfBottom + 2, project.title.split(' — ')[0], DEPTH.world + shelfBottom + 2, 60)
+      plate.setOrigin(0.5, 0) // hang down from the shelf, so long names wrap downwards
 
       // Standing in front of the shelf opens the project.
       this.zones.push(makeZone(
-        'project-' + project.id, 'project', project.title,
-        (shelfX - 1) * T, (shelfY + 2) * T, 4 * T, T + 8, project.id
+        'project-' + project.id, 'project', 'Look at ' + project.title.split(' — ')[0],
+        shelfX - T, shelfBottom + 2, 3 * T, T + 10, project.id
       ))
     }
 
-    // ----- 4. The catalogue desk (list of all projects) and the exit -----
-    const deskX = 2
-    const deskY = roomHeight - 3
-    furnitureLayer.putTileAt(DUNGEON_TILES.table, deskX, deskY)
-    furnitureLayer.putTileAt(DUNGEON_TILES.ledger, deskX + 1, deskY)
-    this.zones.push(makeZone('catalogue', 'projects', 'Catalogue — all projects', (deskX - 1) * T, (deskY + 1) * T, 4 * T, T))
-    this.zones.push(makeZone('exit', 'exit', 'Door — back to the village', (doorX - 1) * T, (roomHeight - 2) * T + 4, 3 * T, T - 4))
+    // ----- 3. Tool racks, blueprints, the workbench... -----
+    placeItems(this, room.items, { roomWidth: roomWidth, roomHeight: roomHeight, blockers: blockers, lights: this.lightSystem, alwaysOn: true })
+    addIndoorAtmosphere(this, built.worldWidth, built.worldHeight)
 
-    // Walls and furniture are solid.
-    wallLayer.setCollisionByExclusion([-1])
-    furnitureLayer.setCollisionByExclusion([-1])
+    // The workbench holds the project catalogue (a list of everything).
+    this.zones.push(makeZone('catalogue', 'projects', 'Read the project catalogue', 1 * T, (roomHeight - 2) * T, 3 * T, T))
+    this.zones.push(makeZone('exit', 'exit', 'Go back outside', (built.exitX - 1) * T, (roomHeight - 2) * T + 4, 3 * T, T - 4))
 
-    // ----- 5. Player, camera, input -----
-    const worldWidth = roomWidth * T
-    const worldHeight = roomHeight * T
-    this.physics.world.setBounds(0, 0, worldWidth, worldHeight)
-    this.player = new Player(this, doorX * T + T / 2, (roomHeight - 2) * T - 4)
-    this.player.setFlipX(false)
-    this.physics.add.collider(this.player, wallLayer)
-    this.physics.add.collider(this.player, furnitureLayer)
-
-    setupCamera(this, this.player, worldWidth, worldHeight)
+    // ----- 4. Player, camera, input -----
+    this.player = new Player(this, built.exitX * T + T / 2, (roomHeight - 2) * T + 2)
+    this.physics.add.collider(this.player, built.wallLayer)
+    this.physics.add.collider(this.player, blockers)
+    setupCamera(this, this.player, built.worldWidth, built.worldHeight, { fitRoom: true })
     this.cameras.main.setBackgroundColor('#2a1d24')
     const scene = this
     setupInteraction(this, this.player, this.zones, function (zone) { scene.interact(zone) })
@@ -150,7 +109,7 @@ export class WorkshopScene extends Phaser.Scene {
     this.events.once('shutdown', function () { bus.off('travel', onTravel) })
 
     this.cameras.main.fadeIn(250, 0, 0, 0)
-    bus.emit('location', 'Workshop · ' + projectCount + (projectCount === 1 ? ' project' : ' projects'))
+    bus.emit('location', 'Workshop: ' + projectCount + (projectCount === 1 ? ' project' : ' projects'))
   }
 
   interact(zone) {

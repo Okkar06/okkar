@@ -5,6 +5,7 @@
 // =====================================================================
 
 import Phaser from 'phaser'
+import { DEPTH } from '../utils/constants.js'
 
 export function addAmbientLife(scene, worldWidth, worldHeight) {
   // Respect visitors who prefer less motion.
@@ -21,7 +22,7 @@ export function addAmbientLife(scene, worldWidth, worldHeight) {
     const x = Phaser.Math.Between(48, worldWidth - 48)
     const y = Phaser.Math.Between(48, worldHeight - 48)
     const color = colors[i % colors.length]
-    const bug = scene.add.rectangle(x, y, 2, 2, color).setDepth(99999)
+    const bug = scene.add.rectangle(x, y, 2, 2, color).setDepth(DEPTH.weather)
 
     // Wander to a nearby random spot, then back, forever.
     scene.tweens.add({

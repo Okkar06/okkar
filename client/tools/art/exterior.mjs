@@ -105,8 +105,164 @@ function fountain(frame) {
   return c
 }
 
+// ---------------------------------------------------------------------
+//  Cosy house exteriors
+// ---------------------------------------------------------------------
+function chimney() {
+  const c = new PixelCanvas(12, 17)
+  c.rect(2, 3, 8, 13, 'red') // bricks
+  for (let y = 4; y < 16; y += 3) {
+    c.hline(2, y, 8, 'redDark')
+    const offset = (y % 2 === 0) ? 4 : 6
+    c.vline(offset, y + 1, 2, 'redDark')
+  }
+  c.vline(2, 3, 13, 'redLight') // lit left side
+  c.rect(1, 1, 10, 2, 'stoneDark') // cap
+  c.hline(1, 1, 10, 'stone')
+  return c.outline()
+}
+
+function flowerBox() {
+  const c = new PixelCanvas(18, 9)
+  c.rect(1, 4, 16, 4, 'wood')
+  c.hline(1, 4, 16, 'woodLight')
+  c.hline(1, 7, 16, 'woodDark')
+  c.art(1, 1, [
+    '.p.y..p..y.p..y.',
+    'pcpyoypcpyoypcpy',
+    'gpgygg.pgygg.pgg',
+  ], { p: 'pink', c: 'yellow', y: 'yellow', o: 'orange', g: 'grassMid' })
+  return c.outline()
+}
+
+function doormat() {
+  const c = new PixelCanvas(16, 7)
+  c.rect(1, 1, 14, 5, 'red')
+  c.hline(1, 1, 14, 'redLight')
+  for (let x = 3; x < 14; x += 3) c.vline(x, 2, 3, 'cream')
+  c.hline(1, 5, 14, 'redDark')
+  return c.outline()
+}
+
+// A small wooden porch deck in front of the door (flat, walkable).
+function porch() {
+  const c = new PixelCanvas(50, 10)
+  c.rect(1, 1, 48, 7, 'woodLight')
+  for (let x = 1; x < 49; x += 6) c.vline(x, 1, 7, 'wood') // plank seams
+  c.hline(1, 1, 48, 'woodHi')
+  c.hline(1, 7, 48, 'wood')
+  c.hline(1, 8, 48, 'woodDark') // front edge in shadow
+  return c.outline()
+}
+
+function wallLantern() {
+  const c = new PixelCanvas(9, 13)
+  c.hline(1, 2, 4, 'slate') // bracket
+  c.vline(1, 1, 3, 'slate')
+  c.rect(3, 4, 5, 6, 'yellow') // glass
+  c.rect(4, 5, 2, 2, 'white')
+  c.hline(3, 3, 5, 'slate')
+  c.hline(3, 10, 5, 'slate')
+  c.vline(3, 4, 6, 'slate')
+  c.vline(7, 4, 6, 'slate')
+  return c.outline()
+}
+
+function pottedPlant() {
+  const c = new PixelCanvas(11, 14)
+  c.rect(2, 8, 7, 5, 'orange') // terracotta pot
+  c.vline(2, 8, 5, 'yellow')
+  c.hline(2, 12, 7, 'red')
+  c.hline(1, 8, 9, 'red')
+  c.ellipse(5, 5, 4, 3.5, 'grassMid') // leaves
+  c.ellipse(4, 4, 2, 1.6, 'grassHi')
+  c.set(7, 6, 'grassDark')
+  c.set(2, 6, 'grassDark')
+  return c.outline()
+}
+
+// ---------------------------------------------------------------------
+//  Market goods
+// ---------------------------------------------------------------------
+function crate() {
+  const c = new PixelCanvas(14, 14)
+  c.rect(1, 1, 12, 12, 'woodLight')
+  c.hline(1, 1, 12, 'woodHi')
+  c.hline(1, 6, 12, 'wood')
+  c.hline(1, 12, 12, 'wood')
+  c.vline(1, 1, 12, 'wood')
+  c.vline(12, 1, 12, 'woodDark')
+  for (let i = 0; i < 10; i++) c.set(2 + i, 2 + Math.floor(i / 2.5), 'wood') // diagonal brace
+  return c.outline()
+}
+
+function hangingGoods() {
+  const c = new PixelCanvas(20, 16)
+  c.hline(1, 1, 18, 'woodDark') // rope
+  // peppers and garlic hanging at different heights
+  const items = [[3, 'red', 7], [7, 'white', 5], [11, 'redBright', 8], [15, 'white', 6]]
+  for (let i = 0; i < items.length; i++) {
+    const x = items[i][0]
+    const len = items[i][2]
+    c.vline(x, 2, 2, 'grassDark')
+    c.rect(x - 1, 4, 3, len, items[i][1])
+    c.set(x, 4 + len, items[i][1] === 'white' ? 'cream' : 'redDark')
+    c.set(x - 1, 4, items[i][1] === 'white' ? 'paper' : 'redLight')
+  }
+  return c.outline()
+}
+
+function basket() {
+  const c = new PixelCanvas(14, 11)
+  c.rect(1, 5, 12, 5, 'woodLight')
+  for (let x = 2; x < 13; x += 2) c.vline(x, 5, 5, 'wood') // weave
+  c.hline(1, 9, 12, 'woodDark')
+  c.ellipse(4, 4, 2, 1.6, 'red') // apples
+  c.ellipse(8, 3.5, 2, 1.6, 'redBright')
+  c.ellipse(10.5, 4.5, 1.6, 1.4, 'grassHi')
+  c.set(3, 3, 'redLight')
+  c.set(7, 2, 'redLight')
+  return c.outline()
+}
+
+function sack() {
+  const c = new PixelCanvas(12, 13)
+  c.ellipse(5.5, 7.5, 5, 4.5, 'cream')
+  c.ellipse(4.5, 6.5, 2.5, 2.5, 'paper')
+  c.rect(4, 1, 4, 3, 'cream') // tied top
+  c.hline(3, 3, 6, 'sandDark')
+  c.hline(2, 11, 8, 'sandDark')
+  return c.outline()
+}
+
+function chalkboard() {
+  const c = new PixelCanvas(14, 18)
+  c.rect(2, 12, 2, 5, 'wood') // easel legs
+  c.rect(10, 12, 2, 5, 'wood')
+  c.rect(1, 1, 12, 11, 'navy')
+  c.hline(1, 1, 12, 'wood')
+  c.hline(1, 11, 12, 'wood')
+  c.vline(1, 1, 11, 'wood')
+  c.vline(12, 1, 11, 'wood')
+  c.hline(3, 4, 7, 'paper') // chalk "writing"
+  c.hline(3, 6, 5, 'paper')
+  c.hline(3, 8, 6, 'pink')
+  return c.outline()
+}
+
 export function sprites() {
   return [
+    { name: 'chimney', canvas: chimney() },
+    { name: 'flowerbox', canvas: flowerBox() },
+    { name: 'doormat', canvas: doormat() },
+    { name: 'porch', canvas: porch() },
+    { name: 'wall_lantern', canvas: wallLantern() },
+    { name: 'potted_plant', canvas: pottedPlant() },
+    { name: 'crate', canvas: crate() },
+    { name: 'hanging_goods', canvas: hangingGoods() },
+    { name: 'basket', canvas: basket() },
+    { name: 'sack', canvas: sack() },
+    { name: 'chalkboard', canvas: chalkboard() },
     { name: 'fountain_0', canvas: fountain(0) },
     { name: 'fountain_1', canvas: fountain(1) },
     { name: 'fountain_2', canvas: fountain(2) },

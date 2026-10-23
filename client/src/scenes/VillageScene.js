@@ -29,6 +29,9 @@ import {
 } from './sceneHelpers.js'
 import { addAmbientLife } from './ambient.js'
 import { convertTileProps, addDetails, addShadow, addBlocker } from '../systems/Decorations.js'
+import { placeItems } from '../systems/Furniture.js'
+import { LightSystem } from '../systems/Lights.js'
+import { villageDecor } from '../data/decor.js'
 
 export class VillageScene extends Phaser.Scene {
   constructor() {
@@ -60,7 +63,15 @@ export class VillageScene extends Phaser.Scene {
     decorLayer.setCollisionByProperty({ collides: true })
 
     // Tall grass, flowers, stones, signposts, lamps...
-    this.lights = addDetails(this, map.getObjectLayer('Details').objects, blockers)
+    const lampPositions = addDetails(this, map.getObjectLayer('Details').objects, blockers)
+
+    // Porches, flower boxes, chimneys, lanterns, market goods (src/data/decor.js)
+    this.lightSystem = new LightSystem(this)
+    placeItems(this, villageDecor, { blockers: blockers, lights: this.lightSystem })
+    for (let i = 0; i < lampPositions.length; i++) {
+      const lamp = lampPositions[i]
+      this.lightSystem.add({ x: lamp.x, y: lamp.y, radius: lamp.radius, intensity: 0.6, flicker: true })
+    }
 
     // ----- 2. Props (mailbox, notice board, stall, villager) -----
     const propObjects = map.getObjectLayer('Props').objects
@@ -122,7 +133,10 @@ export class VillageScene extends Phaser.Scene {
     setupCamera(this, this.player, worldWidth, worldHeight)
     const scene = this
     setupInteraction(this, this.player, this.zones, function (zone) { scene.interact(zone) })
-    addDayNightTint(this, worldWidth, worldHeight)
+    const period = addDayNightTint(this, worldWidth, worldHeight)
+    // Lamps and windows: off by day, half-on at dawn/dusk, fully on at night.
+    const darknessByPeriod = { day: 0, dawn: 0.35, dusk: 0.6, night: 1 }
+    this.lightSystem.setDarkness(darknessByPeriod[period] || 0)
     addAmbientLife(this, worldWidth, worldHeight)
 
     // ----- 7. Quick tour travel requests -----
@@ -146,19 +160,19 @@ export class VillageScene extends Phaser.Scene {
       return
     }
     if (zone.section === 'house') {
-      openSection('about') // the house interior arrives in the next step
+      this.enterBuilding('InteriorScene', { room: 'house' })
       return
     }
     openSection(zone.section)
   }
 
   // Fade out and switch to an interior scene.
-  enterBuilding(sceneKey) {
+  enterBuilding(sceneKey, sceneData) {
     const scene = this
     this.player.setVelocity(0, 0)
     this.cameras.main.fadeOut(200, 0, 0, 0)
     this.cameras.main.once('camerafadeoutcomplete', function () {
-      scene.scene.start(sceneKey)
+      scene.scene.start(sceneKey, sceneData)
     })
   }
 

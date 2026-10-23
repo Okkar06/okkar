@@ -6,19 +6,26 @@
 // =====================================================================
 
 import Phaser from 'phaser'
-import { pickZoom } from '../utils/constants.js'
+import { pickZoom, DEPTH } from '../utils/constants.js'
 import { state, bus, canPlayerMove } from '../utils/state.js'
 
 // ---------------------------------------------------------------------
 //  Camera: follow the player, stay inside the map, zoom to fit the screen.
 // ---------------------------------------------------------------------
-export function setupCamera(scene, player, worldWidth, worldHeight) {
+// options.fitRoom: zoom in further when a small room fits on screen (interiors).
+export function setupCamera(scene, player, worldWidth, worldHeight, options) {
+  const fitRoom = Boolean(options && options.fitRoom)
   const camera = scene.cameras.main
   camera.startFollow(player, true, 0.2, 0.2)
   camera.setRoundPixels(true)
 
   function applyZoom() {
-    const zoom = pickZoom(scene.scale.width, scene.scale.height)
+    let zoom = pickZoom(scene.scale.width, scene.scale.height)
+    if (fitRoom) {
+      // The biggest whole-number zoom at which the whole room is visible.
+      const fitZoom = Math.floor(Math.min(scene.scale.width / worldWidth, (scene.scale.height - 90) / worldHeight))
+      zoom = Math.min(6, Math.max(zoom, fitZoom))
+    }
     camera.setZoom(zoom)
 
     // Keep the camera inside the map. If the map is smaller than the
@@ -212,7 +219,8 @@ export function addDayNightTint(scene, worldWidth, worldHeight) {
   if (period === 'dawn') { color = 0xffc58a; alpha = 0.1 }
   if (alpha === 0) return period
 
-  // One big see-through rectangle on top of the whole world.
-  scene.add.rectangle(0, 0, worldWidth, worldHeight, color, alpha).setOrigin(0, 0).setDepth(100000)
+  // One big see-through rectangle over the world, but UNDER the lights,
+  // so windows and lamps glow through the night tint.
+  scene.add.rectangle(0, 0, worldWidth, worldHeight, color, alpha).setOrigin(0, 0).setDepth(DEPTH.light - 1)
   return period
 }

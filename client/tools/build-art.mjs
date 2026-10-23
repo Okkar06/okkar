@@ -38,7 +38,7 @@ for (let i = 0; i < spriteModules.length; i++) {
   const list = spriteModules[i].sprites()
   for (let j = 0; j < list.length; j++) sprites.push(list[j])
 }
-const tileList = tiles.tiles().concat(water.tiles())
+const tileList = tiles.tiles().concat(interior.tiles(), water.tiles())
 
 // ---------------------------------------------------------------------
 //  2. Pack sprites into one atlas ("shelf packing": tallest first,
