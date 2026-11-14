@@ -4,5 +4,8 @@
   "scripts": {
     "render-build": "cd client && npm install && npm run build && cd ../server && npm install && npx prisma generate && npx prisma migrate deploy",
     "start": "node server/src/server.js"
+  },
+  "dependencies": {
+    "ollama": "^0.6.4"
   }
 }
