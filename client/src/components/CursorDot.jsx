@@ -1,6 +1,11 @@
 import { useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 
+/**
+ * CursorDot — a pellet-sized glow that trails the pointer on fine-pointer
+ * devices. The native cursor is never hidden, and the dot takes no pointer
+ * events, so nothing about interaction changes.
+ */
 function CursorDot() {
   const shouldReduceMotion = useReducedMotion()
   const dotRef = useRef(null)
@@ -17,7 +22,6 @@ function CursorDot() {
 
     updateEnabled()
     media.addEventListener('change', updateEnabled)
-
     return () => media.removeEventListener('change', updateEnabled)
   }, [shouldReduceMotion])
 
@@ -37,11 +41,8 @@ function CursorDot() {
     if (!enabled) return undefined
 
     const tick = () => {
-      const dx = targetRef.current.x - currentRef.current.x
-      const dy = targetRef.current.y - currentRef.current.y
-
-      currentRef.current.x += dx * 0.18
-      currentRef.current.y += dy * 0.18
+      currentRef.current.x += (targetRef.current.x - currentRef.current.x) * 0.2
+      currentRef.current.y += (targetRef.current.y - currentRef.current.y) * 0.2
 
       if (dotRef.current) {
         dotRef.current.style.transform = `translate3d(${currentRef.current.x}px, ${currentRef.current.y}px, 0)`
@@ -61,13 +62,9 @@ function CursorDot() {
   return (
     <div
       ref={dotRef}
-      className="pointer-events-none fixed left-0 top-0 z-[60] h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full"
       aria-hidden="true"
-      style={{
-        background: 'rgb(var(--accent) / 0.25)',
-        border: '1.5px solid rgb(var(--accent) / 0.7)',
-        boxShadow: '0 0 18px rgb(var(--accent) / 0.5), 0 0 40px rgb(var(--accent) / 0.2)',
-      }}
+      className="pointer-events-none fixed left-0 top-0 z-[60] h-6 w-6 rounded-full border-2 border-wall/70 bg-wall/20 shadow-glow-wall"
+      style={{ marginLeft: '-12px', marginTop: '-12px' }}
     />
   )
 }

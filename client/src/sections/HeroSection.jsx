@@ -1,121 +1,142 @@
 import { motion, useReducedMotion } from 'framer-motion'
+import Ghost from '../components/Ghost'
+import Mascot from '../components/Mascot'
+import PowerDot from '../components/PowerDot'
 
-function AnimatedName({ text, baseDelay }) {
+const CHASE_DOTS = 10
+const CHASE_SECONDS = 6
+
+/**
+ * ChaseLane — the mascot runs left to right across the hero and the pellets
+ * blank out as it passes. Pure decoration: nothing here responds to input.
+ */
+function ChaseLane() {
   const shouldReduceMotion = useReducedMotion()
-  if (shouldReduceMotion) return <>{text}</>
+
+  if (shouldReduceMotion) {
+    return (
+      <div aria-hidden="true" className="pointer-events-none mt-10 flex items-center gap-3">
+        <Mascot size={34} chomping={false} />
+        {Array.from({ length: CHASE_DOTS }, (_, i) => (
+          <PowerDot key={i} size="sm" />
+        ))}
+      </div>
+    )
+  }
+
   return (
-    <>
-      {text.split('').map((char, i) => (
-        <motion.span
-          key={i}
-          aria-hidden="true"
-          initial={{ y: '105%', opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{
-            duration: 0.8,
-            delay: baseDelay + i * 0.048,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          style={{ display: 'inline-block' }}
-        >
-          {char}
-        </motion.span>
-      ))}
-    </>
+    <div
+      aria-hidden="true"
+      className="pointer-events-none relative mt-10 h-10 w-full max-w-md overflow-hidden"
+    >
+      {/* Pellets: each one blanks out as the mascot reaches it. */}
+      <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center justify-between pl-12 pr-2">
+        {Array.from({ length: CHASE_DOTS }, (_, i) => {
+          const pass = (i + 1) / (CHASE_DOTS + 1)
+          return (
+            <motion.span
+              key={i}
+              className="h-2 w-2 shrink-0 rounded-full bg-dot shadow-glow-dot"
+              animate={{ opacity: [1, 1, 0, 0] }}
+              transition={{
+                duration: CHASE_SECONDS,
+                times: [0, pass, Math.min(pass + 0.03, 1), 1],
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+            />
+          )
+        })}
+      </div>
+
+      {/* The runner */}
+      <motion.div
+        className="absolute top-1/2 -translate-y-1/2"
+        animate={{ x: ['0%', '92%'] }}
+        transition={{ duration: CHASE_SECONDS, repeat: Infinity, ease: 'linear' }}
+      >
+        <div className="animate-mascot-run">
+          <Mascot size={34} />
+        </div>
+      </motion.div>
+    </div>
   )
 }
 
-function HeroSection({ firstName, lastName, tagline }) {
+function HeroSection({ firstName, lastName, tagline, available }) {
   const shouldReduceMotion = useReducedMotion()
 
+  const rise = shouldReduceMotion
+    ? { hidden: { opacity: 1 }, visible: { opacity: 1 } }
+    : {
+        hidden: { opacity: 0, y: 22 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+      }
+
   return (
-    <section id="top" className="relative h-screen overflow-hidden">
+    <section
+      id="top"
+      aria-labelledby="hero-heading"
+      className="relative overflow-hidden px-4 pb-20 pt-32 sm:px-6 sm:pt-36"
+    >
+      {/* Decorative maze floor + ghost crew */}
+      <div aria-hidden="true" className="maze-floor pointer-events-none absolute inset-0 opacity-70" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* All four sit in the empty right-hand half, so they never cross the
+            name, the tagline or the buttons at any width. */}
+        <Ghost color="pink" size={30} delay={0.7} className="absolute right-[8%] top-[22%] hidden md:block" />
+        <Ghost color="cyan" size={28} drift="drift" delay={1.4} className="absolute right-[24%] top-[52%] hidden lg:block" />
+        <Ghost color="red" size={32} drift="drift" className="absolute right-[12%] bottom-[24%] hidden lg:block" />
+        <Ghost color="orange" size={26} delay={2.1} className="absolute right-[34%] top-[16%] hidden xl:block" />
+      </div>
 
-      {/* Background panels */}
-      <div
-        aria-hidden="true"
-        className="hero-bg-top absolute inset-0"
-        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 52%, 0 84%)' }}
-      />
-      <div
-        aria-hidden="true"
-        className="hero-bg-bottom absolute inset-0"
-        style={{ clipPath: 'polygon(0 84%, 100% 52%, 100% 100%, 0 100%)' }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 flex h-full flex-col px-8 md:px-16 lg:px-24">
-
-        {/* Name (left) + tagline (right) */}
-        <div className="flex flex-1 items-center justify-between">
-          <div>
-            <h1
-              aria-label={firstName}
-              className="hero-text-primary font-sans font-black leading-none tracking-tight"
-              style={{ fontSize: 'clamp(4.5rem, 13vw, 11rem)' }}
-            >
-              <span className="block overflow-hidden">
-                <AnimatedName text={firstName} baseDelay={0.1} />
-              </span>
-            </h1>
-            <div
-              aria-label={lastName}
-              className="hero-text-accent font-sans font-black leading-none tracking-tight block"
-              style={{ fontSize: 'clamp(4rem, 12vw, 9.5rem)' }}
-            >
-              <span className="block overflow-hidden">
-                {/* "Hein" starts only after "Okkar" finishes (~1.1 s) */}
-                <AnimatedName text={lastName} baseDelay={1.1} />
-              </span>
-            </div>
+      <div className="relative mx-auto max-w-6xl">
+        <motion.div variants={rise} initial="hidden" animate="visible">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <PowerDot power />
+            <span className="hud-label animate-hud-flicker">PLAYER 1 — FULL STACK</span>
           </div>
 
-          {tagline && (
-            <motion.p
-              initial={shouldReduceMotion ? false : { opacity: 0, x: 30 }}
-              animate={{ opacity: 0.65, x: 0 }}
-              transition={{ duration: 0.7, delay: 2.2, ease: 'easeOut' }}
-              className="hidden max-w-[260px] text-right text-base leading-relaxed md:block lg:max-w-[300px] lg:text-lg"
-              style={{ color: 'var(--color-hero-name)' }}
-            >
-              {tagline}
-            </motion.p>
-          )}
-        </div>
+          <h1
+            id="hero-heading"
+            className="mt-6 font-pixel uppercase leading-[1.35] text-ink drop-shadow-glow-wall"
+            style={{ fontSize: 'clamp(1.6rem, 8.5vw, 5rem)' }}
+          >
+            <span className="block">{firstName}</span>
+            <span className="mt-2 block text-mascot-ink drop-shadow-glow-mascot">{lastName}</span>
+          </h1>
 
-        {/* CTAs */}
-        <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 2.6 }}
-          className="flex flex-wrap items-center gap-4 pb-14"
-        >
-          <a
-            href="#projects"
-            className="inline-flex items-center gap-2 rounded-full border px-7 py-3 text-sm font-semibold tracking-wide backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current/50"
-            style={{
-              color: 'var(--color-cta-text)',
-              borderColor: 'var(--color-cta-border)',
-              background: 'var(--color-cta-bg)',
-              transition: 'opacity 0.2s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.75')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-          >
-            See my work <span aria-hidden="true">→</span>
-          </a>
-          <a
-            href="#contact"
-            className="text-sm font-semibold tracking-wide underline underline-offset-4"
-            style={{
-              color: 'var(--color-cta-link)',
-              transition: 'opacity 0.2s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-          >
-            Get in touch
-          </a>
+          <p className="mt-7 max-w-xl text-sm leading-relaxed text-ink-dim sm:text-base">
+            {tagline}
+          </p>
+
+          {available ? (
+            <p className="mt-5 inline-flex items-center gap-2.5 rounded-tile border-2 border-ghost-cyan/50 px-3 py-1.5">
+              <PowerDot power tone="cyan" />
+              <span className="font-pixel text-[0.5rem] uppercase tracking-hud text-ghost-cyan sm:text-[0.6rem]">
+                INSERT ROLE — OPEN TO WORK
+              </span>
+            </p>
+          ) : null}
+
+          {/* PRESS START — jumps to the project stages. Decorative blink only. */}
+          <div className="mt-9 flex flex-wrap items-center gap-4">
+            <a
+              href="#projects"
+              className="group inline-flex items-center gap-3 rounded-tile border-maze border-mascot bg-mascot px-6 py-3.5 font-pixel text-[0.6rem] uppercase tracking-hud text-on-mascot shadow-glow-mascot transition-transform duration-200 hover:-translate-y-0.5 sm:text-xs"
+            >
+              <span className="animate-blink">▶</span>
+              PRESS START
+            </a>
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 rounded-tile border-2 border-wall px-5 py-3 font-pixel text-[0.55rem] uppercase tracking-hud text-ink transition-colors duration-200 hover:text-hud sm:text-[0.65rem]"
+            >
+              CONTINUE?
+            </a>
+          </div>
+
+          <ChaseLane />
         </motion.div>
       </div>
     </section>
