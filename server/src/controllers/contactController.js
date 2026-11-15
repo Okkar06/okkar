@@ -1,49 +1,39 @@
-const { createContact } = require('../services/contactService')
+const contactService = require('../services/contactService')
+const { contactSchema, toFieldErrors } = require('../validation/contactSchema')
+const { badRequest } = require('../utils/httpError')
 
-function isValidEmail(email) {
-  if (typeof email !== 'string') {
-    return false
-  }
-
-  const normalized = email.trim()
-  if (normalized.length === 0 || normalized.length > 254) {
-    return false
-  }
-
-  const atIndex = normalized.indexOf('@')
-  const lastAtIndex = normalized.lastIndexOf('@')
-  if (atIndex <= 0 || atIndex !== lastAtIndex || atIndex === normalized.length - 1) {
-    return false
-  }
-
-  const domain = normalized.slice(atIndex + 1)
-  return domain.includes('.') && !domain.startsWith('.') && !domain.endsWith('.')
-}
-
+/**
+ * POST /api/contacts
+ *
+ * Validates with zod (unknown fields rejected, lengths capped, control
+ * characters refused), then writes through Prisma — which parameterises the
+ * query, so the stored values are only ever data, never SQL.
+ */
 async function submitContact(req, res, next) {
   try {
-    const { name, email, message } = req.body
+    const parsed = contactSchema.safeParse(req.body)
 
-    if (!name || !email || !message) {
-      return res.status(400).json({ error: 'name, email, and message are required' })
+    if (!parsed.success) {
+      throw badRequest('Please check the submitted fields.', toFieldErrors(parsed.error))
     }
 
-    if (!isValidEmail(email)) {
-      return res.status(400).json({ error: 'invalid email format' })
+    const { name, email, message, website } = parsed.data
+
+    // Honeypot hit: answer exactly like a success so the bot learns nothing,
+    // but store nothing.
+    if (typeof website === 'string' && website.length > 0) {
+      return res.status(201).json({ success: true, data: { received: true } })
     }
 
-    const contact = await createContact({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      message: message.trim(),
+    const contact = await contactService.createContact({ name, email, message })
+
+    return res.status(201).json({
+      success: true,
+      data: { id: contact.id, createdAt: contact.createdAt, received: true },
     })
-
-    return res.status(201).json({ id: contact.id, createdAt: contact.createdAt })
   } catch (error) {
     return next(error)
   }
 }
 
-module.exports = {
-  submitContact,
-}
+module.exports = { submitContact }
