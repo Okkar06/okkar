@@ -3,9 +3,10 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
-// Record when the page started so we can enforce a minimum loader time
+// Give the mascot time to finish its run along the pellet line before the
+// cabinet boots. Matches the 2.4 s loader animation in public/loader.css.
 const loaderStart = performance.now()
-const MIN_LOADER_MS = 2600
+const MIN_LOADER_MS = 2400
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,15 +14,29 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-// Dismiss the loader after React has painted, but never sooner than MIN_LOADER_MS
-requestAnimationFrame(() => {
-  const elapsed = performance.now() - loaderStart
-  const remaining = Math.max(0, MIN_LOADER_MS - elapsed)
+function dismissLoader() {
+  const loader = document.getElementById('app-loader')
 
-  setTimeout(() => {
-    const loader = document.getElementById('app-loader')
-    if (!loader) return
-    loader.classList.add('fade-out')
-    loader.addEventListener('transitionend', () => loader.remove(), { once: true })
-  }, remaining)
+  const announce = () => window.dispatchEvent(new CustomEvent('loader-done'))
+
+  if (!loader) {
+    announce()
+    return
+  }
+
+  loader.classList.add('fade-out')
+  loader.addEventListener(
+    'transitionend',
+    () => {
+      loader.remove()
+      announce()
+    },
+    { once: true },
+  )
+}
+
+// Dismiss once React has painted, but never before the run completes.
+requestAnimationFrame(() => {
+  const remaining = Math.max(0, MIN_LOADER_MS - (performance.now() - loaderStart))
+  setTimeout(dismissLoader, remaining)
 })
