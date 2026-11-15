@@ -1,5 +1,5 @@
 services:
-  # Single web service — Express serves both the API and the built React app
+  # Single web service — Express serves both the API and the built React app.
   - type: web
     name: okkar
     env: node
@@ -11,7 +11,27 @@ services:
         value: production
       - key: PORT
         value: 4000
+
+      # Set in the Render dashboard — never commit this value.
       - key: DATABASE_URL
-        sync: false    # set in Render dashboard — never commit this value
-      - key: CLIENT_ORIGIN
+        sync: false
+
+      # Browser origins allowed to call the API. Never "*".
+      - key: ALLOWED_ORIGINS
         value: https://okkar.onrender.com
+
+      # Render puts exactly one proxy in front of the service, so client IPs
+      # (and therefore the rate limiters) resolve correctly.
+      - key: TRUST_PROXY
+        value: 1
+
+      - key: JSON_BODY_LIMIT
+        value: 10kb
+      - key: API_RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: API_RATE_LIMIT_MAX
+        value: 300
+      - key: CONTACT_RATE_LIMIT_WINDOW_MS
+        value: 3600000
+      - key: CONTACT_RATE_LIMIT_MAX
+        value: 5
