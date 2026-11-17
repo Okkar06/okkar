@@ -1,83 +1,39 @@
+/* Fonts are self-hosted (no third-party request, works offline, and the CSP
+   needs no font CDN). Only the latin pixel face and the variable Inter. */
+@import '@fontsource/press-start-2p/latin-400.css';
+@import '@fontsource-variable/inter/wght.css';
+
+@import './styles/tokens.css';
+@import './styles/loader.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════
-   ARCADE THEME TOKENS
-   Channel triplets consumed by tailwind.config.js. Two modes:
-     [data-mode="dark"]  → night arcade (default)
-     [data-mode="light"] → arcade daylight (WCAG AA)
-   Components reference Tailwind token names only — no raw hex.
+   ARCADE THEME
+   Colour lives in ONE place: src/theme/palette.js derives every `--c-*`
+   token from the colour picked in the colour bar and writes them onto
+   <html>. styles/tokens.css is the generated fallback for the default
+   theme. tailwind.config.js maps the tokens to utility names.
+
+   Rules for everything below and for every component:
+     - reference tokens only (rgb(var(--c-…)) or a Tailwind token class)
+     - never write a hex / rgb() literal — a unit test fails the build
+   The two custom properties here are the only mode-dependent values that
+   are not colours.
 ═══════════════════════════════════════════════════════════════════ */
 
 :root,
 [data-mode='dark'] {
-  color-scheme: dark;
-
-  --c-void: 5 6 15;
-  --c-panel: 10 14 31;
-  --c-floor: 13 18 38;
-
-  --c-wall: 59 130 246;
-  --c-wall-soft: 37 99 235;
-
-  --c-dot: 255 233 168;
-  --c-hud: 255 227 71;
-
-  --c-mascot: 255 210 30;
-  --c-mascot-deep: 214 158 0;
-  /* Mascot yellow used as TEXT. On the dark cabinet it can be the same
-     yellow; in daylight it has to be darkened to clear AA. */
-  --c-mascot-ink: 255 210 30;
-
-  --c-ghost-red: 255 93 108;
-  --c-ghost-pink: 255 154 222;
-  --c-ghost-cyan: 94 231 255;
-  --c-ghost-orange: 255 177 82;
-
-  --c-ink: 243 246 255;
-  --c-ink-dim: 168 179 214;
-
-  --c-focus: 255 227 71;
-
-  /* Mode-independent: dark ink that always reads on the mascot yellow, and a
-     fixed white for character eyes. These must NOT flip with the theme. */
-  --c-on-mascot: 8 9 20;
-  --c-eye: 255 255 255;
-
+  /* Neon reads as light on a dark cabinet… */
+  --glow-strength: 1;
   --crt-opacity: 0.05;
 }
 
 [data-mode='light'] {
-  color-scheme: light;
-
-  --c-void: 238 241 251;
-  --c-panel: 255 255 255;
-  --c-floor: 226 232 248;
-
-  --c-wall: 29 78 216;
-  --c-wall-soft: 37 99 235;
-
-  --c-dot: 161 98 7;
-  --c-hud: 138 90 0;
-
-  --c-mascot: 245 166 0;
-  --c-mascot-deep: 180 110 0;
-  --c-mascot-ink: 150 90 0;
-
-  --c-ghost-red: 192 39 58;
-  --c-ghost-pink: 169 47 134;
-  --c-ghost-cyan: 10 109 138;
-  --c-ghost-orange: 154 84 16;
-
-  --c-ink: 10 14 31;
-  --c-ink-dim: 61 72 110;
-
-  --c-focus: 29 78 216;
-
-  --c-on-mascot: 8 9 20;
-  --c-eye: 255 255 255;
-
+  /* …and as a soft tinted shadow in daylight. */
+  --glow-strength: 0.4;
   --crt-opacity: 0.02;
 }
 
@@ -91,8 +47,7 @@ html {
 }
 
 body {
-  @apply m-0 bg-void text-ink antialiased;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  @apply m-0 bg-void font-sans text-ink antialiased;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -119,30 +74,52 @@ body {
     @apply rounded-maze border-maze border-wall bg-panel shadow-glow-wall;
   }
 
-  .maze-wall-strong {
-    @apply rounded-maze border-maze-thick border-wall bg-panel shadow-glow-wall-lg;
+  /* Page backdrop: two soft glows in the theme colour over a pellet-dot
+     grid. Fixed behind everything; purely decorative. */
+  .cabinet-backdrop {
+    background-image:
+      radial-gradient(
+        ellipse 90% 55% at 50% -10%,
+        rgb(var(--c-glow) / calc(0.24 * var(--glow-strength))),
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 60% 45% at 100% 105%,
+        rgb(var(--c-glow) / calc(0.14 * var(--glow-strength))),
+        transparent 70%
+      ),
+      radial-gradient(circle at center, rgb(var(--c-wall) / 0.2) 1px, transparent 1.6px);
+    background-size: auto, auto, 28px 28px;
   }
 
-  /* Faint maze-floor grid; purely decorative. */
+  /* Faint maze-line grid; purely decorative. */
   .maze-floor {
     background-image:
-      linear-gradient(to right, rgb(var(--c-wall) / 0.09) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(var(--c-wall) / 0.09) 1px, transparent 1px);
+      linear-gradient(to right, rgb(var(--c-wall) / 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--c-wall) / 0.1) 1px, transparent 1px);
     background-size: 28px 28px;
   }
 
   /* Pixel-font HUD label. */
   .hud-label {
-    @apply font-pixel text-[0.5rem] uppercase leading-none tracking-hud text-hud sm:text-[0.6rem];
+    @apply font-pixel text-pixel-xs uppercase leading-none tracking-hud text-hud sm:text-pixel-sm sm:leading-none;
   }
 
   /* Navigation maze tile. */
   .maze-tile {
-    @apply rounded-tile border-2 border-wall/45 bg-floor/70 font-pixel text-[0.5rem] uppercase tracking-hud text-ink transition-[transform,border-color,box-shadow] duration-200;
+    @apply rounded-tile border-2 border-wall/45 bg-floor/70 font-pixel text-pixel-sm uppercase leading-none tracking-hud text-ink transition-[transform,border-color,box-shadow] duration-200;
   }
 
   .maze-tile:hover {
     @apply border-wall shadow-glow-wall;
+  }
+
+  /* The 'chomp': every pressable thing squashes for a beat when pressed, so
+     a tap is acknowledged even where there is no hover. Written with
+     Tailwind's transform variables so it composes with hover lifts. The
+     element supplies its own transition (it must include transform). */
+  .chomp {
+    @apply active:scale-x-[0.97] active:scale-y-90 active:duration-75;
   }
 
   /* Faux-CRT scanlines laid over the whole page. */
@@ -156,6 +133,18 @@ body {
     );
     opacity: var(--crt-opacity);
   }
+}
+
+/* Long words (a pasted URL, an unbroken name) wrap instead of pushing the
+   layout sideways. */
+h1,
+h2,
+h3,
+p,
+li,
+dd,
+label {
+  overflow-wrap: anywhere;
 }
 
 /* ═══════════════════════════════════════════════════════════════════

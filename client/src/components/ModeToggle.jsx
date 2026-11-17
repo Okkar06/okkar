@@ -1,40 +1,19 @@
-import { useEffect, useState } from 'react'
-
-const STORAGE_KEY = 'color-mode'
-
-function readInitialMode() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved === 'light' || saved === 'dark') return saved
-  } catch {
-    // Storage can be blocked; fall through to the default.
-  }
-  return 'dark'
-}
+import { useTheme } from '../theme/useTheme'
 
 /**
- * Switches between the night arcade (dark) and arcade daylight (light) themes
- * by flipping `data-mode` on <html>, which swaps the whole token set.
+ * Switches between the night arcade (dark) and arcade daylight (light) shades
+ * of the picked theme colour. The state lives in the theme provider; this is
+ * only the button.
  */
-function DarkModeToggle() {
-  const [mode, setMode] = useState(readInitialMode)
+function ModeToggle() {
+  const { mode, toggleMode } = useTheme()
   const isDark = mode === 'dark'
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-mode', mode)
-    try {
-      localStorage.setItem(STORAGE_KEY, mode)
-    } catch {
-      // Not being able to remember the choice is not an error worth surfacing.
-    }
-  }, [mode])
 
   return (
     <button
       type="button"
-      onClick={() => setMode(isDark ? 'light' : 'dark')}
+      onClick={toggleMode}
       aria-label={isDark ? 'Switch to arcade daylight mode' : 'Switch to night arcade mode'}
-      aria-pressed={isDark}
       className="maze-tile grid h-9 w-9 place-items-center text-hud"
     >
       {isDark ? (
@@ -51,4 +30,4 @@ function DarkModeToggle() {
   )
 }
 
-export default DarkModeToggle
+export default ModeToggle

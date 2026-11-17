@@ -1,0 +1,193 @@
+/*
+ * GENERATED FILE — do not edit by hand.
+ * Source of truth: src/theme/palette.js. Regenerate with `npm run theme:tokens`.
+ *
+ * Static fallback for the default theme (seed #3b82f6). At runtime the
+ * theme engine overwrites these custom properties on <html> from whichever
+ * colour is picked in the colour bar.
+ */
+
+@property --c-void {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 2 10 27;
+}
+
+@property --c-panel {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 7 20 43;
+}
+
+@property --c-floor {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 15 32 60;
+}
+
+@property --c-wall {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 59 130 246;
+}
+
+@property --c-on-wall {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 8 9 20;
+}
+
+@property --c-glow {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 93 154 255;
+}
+
+@property --c-ink {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 239 244 252;
+}
+
+@property --c-ink-dim {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 166 181 206;
+}
+
+@property --c-dot {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 255 233 168;
+}
+
+@property --c-hud {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 255 227 71;
+}
+
+@property --c-focus {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 255 227 71;
+}
+
+@property --c-mascot {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 255 210 30;
+}
+
+@property --c-mascot-ink {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 255 210 30;
+}
+
+@property --c-on-mascot {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 8 9 20;
+}
+
+@property --c-eye {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 255 255 255;
+}
+
+@property --c-ghost-red {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 255 93 108;
+}
+
+@property --c-ghost-pink {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 255 154 222;
+}
+
+@property --c-ghost-cyan {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 94 231 255;
+}
+
+@property --c-ghost-orange {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 255 177 82;
+}
+
+:root,
+[data-mode='dark'] {
+  color-scheme: dark;
+  --c-void: 2 10 27;
+  --c-panel: 7 20 43;
+  --c-floor: 15 32 60;
+  --c-wall: 59 130 246;
+  --c-on-wall: 8 9 20;
+  --c-glow: 93 154 255;
+  --c-ink: 239 244 252;
+  --c-ink-dim: 166 181 206;
+  --c-dot: 255 233 168;
+  --c-hud: 255 227 71;
+  --c-focus: 255 227 71;
+  --c-mascot: 255 210 30;
+  --c-mascot-ink: 255 210 30;
+  --c-on-mascot: 8 9 20;
+  --c-eye: 255 255 255;
+  --c-ghost-red: 255 93 108;
+  --c-ghost-pink: 255 154 222;
+  --c-ghost-cyan: 94 231 255;
+  --c-ghost-orange: 255 177 82;
+}
+
+[data-mode='light'] {
+  color-scheme: light;
+  --c-void: 232 241 255;
+  --c-panel: 251 252 255;
+  --c-floor: 215 229 251;
+  --c-wall: 23 96 209;
+  --c-on-wall: 255 255 255;
+  --c-glow: 23 96 209;
+  --c-ink: 15 24 40;
+  --c-ink-dim: 66 83 110;
+  --c-dot: 161 98 7;
+  --c-hud: 138 90 0;
+  --c-focus: 138 90 0;
+  --c-mascot: 245 166 0;
+  --c-mascot-ink: 146 87 0;
+  --c-on-mascot: 8 9 20;
+  --c-eye: 255 255 255;
+  --c-ghost-red: 192 39 58;
+  --c-ghost-pink: 169 47 134;
+  --c-ghost-cyan: 10 109 138;
+  --c-ghost-orange: 154 84 16;
+}
+
+:root {
+  --theme-transition: 300ms;
+  transition:
+    --c-void var(--theme-transition) ease,
+    --c-panel var(--theme-transition) ease,
+    --c-floor var(--theme-transition) ease,
+    --c-wall var(--theme-transition) ease,
+    --c-on-wall var(--theme-transition) ease,
+    --c-glow var(--theme-transition) ease,
+    --c-ink var(--theme-transition) ease,
+    --c-ink-dim var(--theme-transition) ease,
+    --c-dot var(--theme-transition) ease,
+    --c-hud var(--theme-transition) ease,
+    --c-focus var(--theme-transition) ease,
+    --c-mascot var(--theme-transition) ease,
+    --c-mascot-ink var(--theme-transition) ease,
+    --c-on-mascot var(--theme-transition) ease,
+    --c-eye var(--theme-transition) ease,
+    --c-ghost-red var(--theme-transition) ease,
+    --c-ghost-pink var(--theme-transition) ease,
+    --c-ghost-cyan var(--theme-transition) ease,
+    --c-ghost-orange var(--theme-transition) ease;
+}

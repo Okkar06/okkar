@@ -8,19 +8,17 @@
       name="description"
       content="Portfolio of Okkar Hein, a full-stack developer in Singapore building clean interfaces and reliable APIs."
     />
-    <meta name="theme-color" content="#05060f" />
+    <!-- Filled in at build time from the theme engine (see vite.config.js),
+         then kept in step with the picked colour at runtime. -->
+    <meta name="theme-color" content="%THEME_COLOR%" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- External (not inline) so the CSP can keep script-src 'self'. -->
+    <!-- External (not inline) so the CSP can keep script-src 'self'. Replays
+         the saved theme before first paint. -->
     <script src="/theme-init.js"></script>
-    <link rel="stylesheet" href="/loader.css" />
+    <!-- Linked here (not imported from JS) so the tokens and the loader styles
+         are render-blocking: the first paint is already themed. -->
+    <link rel="stylesheet" href="/src/index.css" />
   </head>
   <body>
     <!-- Arcade loader: the mascot chomps along the pellet line, then the

@@ -1,10 +1,9 @@
 /*
  * Arcade loader — shown before React mounts, then faded out by main.jsx.
- * Lives in its own stylesheet (not an inline <style>) so the page stays
- * compatible with a strict Content-Security-Policy.
  *
- * Colours are duplicated here on purpose: this file must render before the
- * Tailwind bundle (and therefore the theme tokens) has loaded.
+ * Part of the main stylesheet, which index.html links directly, so it is
+ * render-blocking and already themed on first paint: every colour here is a
+ * theme token (see src/theme/palette.js), never a literal.
  */
 
 #app-loader {
@@ -17,17 +16,13 @@
   justify-content: center;
   gap: 1.5rem;
   padding: 1.5rem;
-  background: #05060f;
+  background: rgb(var(--c-void));
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
 #app-loader.fade-out {
   opacity: 0;
   visibility: hidden;
-}
-
-[data-mode='light'] #app-loader {
-  background: #eef1fb;
 }
 
 .loader-title {
@@ -37,22 +32,13 @@
   line-height: 1.6;
   text-align: center;
   text-transform: uppercase;
-  color: #f3f6ff;
-  text-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
-}
-
-[data-mode='light'] .loader-title {
-  color: #0a0e1f;
-  text-shadow: none;
+  color: rgb(var(--c-ink));
+  text-shadow: 0 0 10px rgb(var(--c-glow) / calc(0.6 * var(--glow-strength)));
 }
 
 .loader-title em {
   font-style: normal;
-  color: #ffd21e;
-}
-
-[data-mode='light'] .loader-title em {
-  color: #b46e00;
+  color: rgb(var(--c-mascot-ink));
 }
 
 .loader-sub {
@@ -61,12 +47,8 @@
   font-size: 0.5rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #ffe347;
+  color: rgb(var(--c-hud));
   animation: loader-blink 0.9s step-end infinite;
-}
-
-[data-mode='light'] .loader-sub {
-  color: #8a5a00;
 }
 
 /* ── Progress: the mascot chomps along a dotted line ── */
@@ -75,14 +57,9 @@
   position: relative;
   width: min(280px, 72vw);
   height: 34px;
-  border: 3px solid #3b82f6;
+  border: 3px solid rgb(var(--c-wall));
   border-radius: 1rem;
-  box-shadow: 0 0 14px rgba(59, 130, 246, 0.45);
-}
-
-[data-mode='light'] .loader-track {
-  border-color: #1d4ed8;
-  box-shadow: none;
+  box-shadow: 0 0 14px rgb(var(--c-glow) / calc(0.45 * var(--glow-strength)));
 }
 
 .loader-pellets {
@@ -98,14 +75,9 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #ffe9a8;
-  box-shadow: 0 0 6px rgba(255, 233, 168, 0.8);
+  background: rgb(var(--c-dot));
+  box-shadow: 0 0 6px rgb(var(--c-dot) / calc(0.8 * var(--glow-strength)));
   animation: loader-eat 0.18s linear forwards;
-}
-
-[data-mode='light'] .loader-pellets span {
-  background: #a16207;
-  box-shadow: none;
 }
 
 /* Each pellet blanks out as the mascot reaches it. The 2.4s total matches
@@ -138,7 +110,7 @@
 }
 
 .loader-jaw {
-  fill: #ffd21e;
+  fill: rgb(var(--c-mascot));
   transform-origin: 32px 32px;
   animation: loader-chomp-top 0.32s ease-in-out infinite;
 }
@@ -147,33 +119,23 @@
   animation-name: loader-chomp-bottom;
 }
 
-[data-mode='light'] .loader-jaw {
-  fill: #b46e00;
-}
-
 /* The mascot's headset and eye — the same details it wears in the app. */
-.loader-gear { stroke: #3b82f6; }
-.loader-gear-fill { fill: #3b82f6; }
-.loader-eye { fill: #080914; }
+.loader-gear { stroke: rgb(var(--c-wall)); }
+.loader-gear-fill { fill: rgb(var(--c-wall)); }
+.loader-eye { fill: rgb(var(--c-on-mascot)); }
 
-[data-mode='light'] .loader-gear { stroke: #1d4ed8; }
-[data-mode='light'] .loader-gear-fill { fill: #1d4ed8; }
 
 .loader-hint {
   margin: 0;
   max-width: 22rem;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter Variable', system-ui, -apple-system, sans-serif;
   font-size: 0.7rem;
   line-height: 1.6;
   text-align: center;
-  color: rgba(243, 246, 255, 0.55);
+  color: rgb(var(--c-ink-dim));
   opacity: 0;
   animation: loader-hint-in 0.6s ease forwards;
   animation-delay: 4s;
-}
-
-[data-mode='light'] .loader-hint {
-  color: rgba(10, 14, 31, 0.6);
 }
 
 /* ── Keyframes (transform / opacity only) ── */
