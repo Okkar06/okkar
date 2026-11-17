@@ -1,52 +1,58 @@
-import { motion, useReducedMotion } from 'framer-motion'
+import { useState } from 'react'
 import ArcadeHeading from '../components/ArcadeHeading'
 import Ghost from '../components/Ghost'
+import Mascot from '../components/Mascot'
 import MazeCard from '../components/MazeCard'
 import PowerDot from '../components/PowerDot'
+import { Reveal, RevealGroup, RevealItem } from '../components/Reveal'
 
-const ease = [0.22, 1, 0.36, 1]
+/**
+ * The portrait. Two widths are offered so a phone downloads ~18 KB instead of
+ * the full image, and width/height reserve the space so nothing shifts when
+ * it arrives. If it fails to load, the mascot stands in instead of a broken
+ * image icon.
+ */
+function Portrait({ photo }) {
+  const [failed, setFailed] = useState(false)
 
-function AboutSection({ bio, highlights = [], photoSrc, nowText }) {
-  const shouldReduceMotion = useReducedMotion()
-
-  const still = { hidden: { opacity: 1 }, visible: { opacity: 1 } }
-
-  const container = shouldReduceMotion
-    ? still
-    : { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.12 } } }
-
-  const fadeUp = shouldReduceMotion
-    ? still
-    : {
-        hidden: { opacity: 0, y: 26 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease } },
-      }
+  if (!photo?.src || failed) {
+    return (
+      <div className="absolute inset-0 grid place-items-center" role="img" aria-label={photo?.alt ?? 'Portrait unavailable'}>
+        <Mascot size={72} chomping={false} />
+      </div>
+    )
+  }
 
   return (
-    <motion.section
-      id="about"
-      aria-labelledby="about-heading"
-      className="relative scroll-mt-32 px-4 py-20 sm:px-6"
-      variants={container}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.15 }}
-    >
+    <img
+      src={photo.src}
+      srcSet={photo.srcSet}
+      sizes="(min-width: 768px) 440px, 92vw"
+      width={photo.width}
+      height={photo.height}
+      alt={photo.alt}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className="absolute inset-0 h-full w-full object-cover object-top"
+    />
+  )
+}
+
+function AboutSection({ bio, highlights = [], photo, nowText }) {
+  return (
+    <section id="about" aria-labelledby="about-heading" className="relative scroll-mt-32 px-4 py-20 sm:px-6">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <Ghost color="pink" size={28} drift="drift" className="absolute right-[8%] top-4 hidden lg:block" />
       </div>
 
       <div className="relative mx-auto max-w-6xl">
-        <motion.div variants={fadeUp}>
-          <ArcadeHeading
-            id="about-heading"
-            hud="PLAYER PROFILE"
-            title="Who's at the controls"
-          />
-        </motion.div>
+        <Reveal>
+          <ArcadeHeading id="about-heading" hud="PLAYER PROFILE" title="Who's at the controls" />
+        </Reveal>
 
-        <div className="grid gap-8 md:grid-cols-5 md:items-start">
-          <motion.div variants={fadeUp} className="md:col-span-3">
+        <RevealGroup className="grid gap-8 md:grid-cols-5 md:items-start">
+          <RevealItem className="min-w-0 md:col-span-3">
             <MazeCard className="p-6 sm:p-8">
               <p className="text-sm leading-relaxed text-ink-dim sm:text-base">{bio}</p>
 
@@ -57,7 +63,7 @@ function AboutSection({ bio, highlights = [], photoSrc, nowText }) {
                       <span className="mt-1.5">
                         <PowerDot size="sm" />
                       </span>
-                      <span className="text-sm leading-relaxed text-ink">{item}</span>
+                      <span className="min-w-0 text-sm leading-relaxed text-ink">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -70,26 +76,18 @@ function AboutSection({ bio, highlights = [], photoSrc, nowText }) {
                 </div>
               ) : null}
             </MazeCard>
-          </motion.div>
+          </RevealItem>
 
-          <motion.div variants={fadeUp} className="md:col-span-2">
+          <RevealItem className="min-w-0 md:col-span-2">
             <MazeCard className="overflow-hidden p-2">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-tile bg-floor">
-                {photoSrc ? (
-                  <img
-                    src={photoSrc}
-                    alt="Okkar Hein"
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover object-top"
-                  />
-                ) : null}
+                <Portrait photo={photo} />
               </div>
             </MazeCard>
-          </motion.div>
-        </div>
+          </RevealItem>
+        </RevealGroup>
       </div>
-    </motion.section>
+    </section>
   )
 }
 

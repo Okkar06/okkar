@@ -15,14 +15,14 @@ function ArcadeHeading({ hud, title, subtitle, id, align = 'left', level = 2 }) 
         className={`flex items-center gap-2.5 ${centred ? 'justify-center' : 'justify-start'}`}
       >
         <PowerDot power />
-        {hud ? <span className="hud-label animate-hud-flicker">{hud}</span> : null}
+        {hud ? <span className="hud-label motion-safe:animate-hud-flicker">{hud}</span> : null}
         <PowerDot size="sm" />
         <PowerDot size="sm" />
       </div>
 
       <Tag
         id={id}
-        className="mt-4 font-pixel text-base uppercase leading-[1.5] text-ink drop-shadow-glow-wall sm:text-xl md:text-2xl"
+        className="mt-4 font-pixel text-base uppercase leading-normal text-ink drop-shadow-glow-wall sm:text-xl sm:leading-normal md:text-2xl md:leading-normal"
       >
         {title}
       </Tag>

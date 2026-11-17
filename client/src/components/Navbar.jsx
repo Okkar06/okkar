@@ -1,32 +1,48 @@
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useState } from 'react'
-import DarkModeToggle from './DarkModeToggle'
+import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import ColorBar from './ColorBar'
 import Mascot from './Mascot'
+import ModeToggle from './ModeToggle'
 import PowerDot from './PowerDot'
 import { useActiveSection } from '../hooks/useActiveSection'
 
-const SECTION_IDS = ['top', 'about', 'projects', 'skills', 'contact']
+const MOBILE_NAV_ID = 'arcade-mobile-nav'
+// Tailwind's `md` breakpoint: above it the links sit in the bar itself.
+const DESKTOP_QUERY = '(min-width: 768px)'
 
-function Navbar({ links }) {
+function Navbar({ links, sectionIds }) {
   const [isOpen, setIsOpen] = useState(false)
   const shouldReduceMotion = useReducedMotion()
-  const activeId = useActiveSection(SECTION_IDS)
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') setIsOpen(false)
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  const activeId = useActiveSection(sectionIds)
+  const menuButtonRef = useRef(null)
 
   useEffect(() => {
     if (!isOpen) return undefined
-    const handleResize = () => {
-      if (window.innerWidth >= 768) setIsOpen(false)
+
+    const close = () => setIsOpen(false)
+
+    const handleKeyDown = (event) => {
+      if (event.key !== 'Escape') return
+      close()
+      // The menu is about to unmount; put focus back on what opened it.
+      menuButtonRef.current?.focus()
     }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+
+    // Close on anything that makes the open menu stale: growing past the
+    // mobile breakpoint, or the URL hash changing (link, back, forward).
+    const desktop = window.matchMedia(DESKTOP_QUERY)
+    const handleBreakpoint = (event) => {
+      if (event.matches) close()
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('hashchange', close)
+    desktop.addEventListener('change', handleBreakpoint)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('hashchange', close)
+      desktop.removeEventListener('change', handleBreakpoint)
+    }
   }, [isOpen])
 
   const menuVariants = shouldReduceMotion
@@ -44,8 +60,8 @@ function Navbar({ links }) {
         key={link.href}
         href={link.href}
         onClick={onNavigate}
-        aria-current={isActive ? 'true' : undefined}
-        className={`maze-tile flex items-center gap-2 px-3 py-2 ${
+        aria-current={isActive ? 'location' : undefined}
+        className={`maze-tile chomp flex items-center gap-2 px-3 py-2.5 ${
           isActive ? 'border-wall text-hud shadow-glow-wall' : 'hover:text-hud'
         }`}
       >
@@ -59,21 +75,24 @@ function Navbar({ links }) {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b-2 border-wall/50 bg-void/[0.92] backdrop-blur-md">
-      {/* Decorative arcade HUD strip — display text only, no real score. */}
-      <div
-        aria-hidden="true"
-        className="flex items-center justify-between border-b border-wall/25 px-4 py-1 sm:px-6"
-      >
-        <span className="hud-label animate-hud-flicker">1UP</span>
-        <span className="hud-label hidden sm:inline">HIGH SCORE</span>
-        <span className="hud-label text-mascot-ink">READY!</span>
+      {/* Arcade HUD strip. The labels are display text only (no real score);
+          the colour bar in the middle is the one working control. */}
+      <div className="flex items-center justify-center gap-3 border-b border-wall/25 px-4 py-1 sm:justify-between sm:px-6">
+        <span aria-hidden="true" className="hud-label hidden motion-safe:animate-hud-flicker sm:inline">
+          1UP
+        </span>
+        <ColorBar />
+        <span aria-hidden="true" className="hud-label hidden text-mascot-ink sm:inline">
+          READY!
+        </span>
       </div>
 
       <nav aria-label="Main navigation" className="mx-auto max-w-6xl px-4 py-3 sm:px-6">
         <div className="flex items-center justify-between gap-3">
           <a
             href="#top"
-            className="flex items-center gap-2 font-pixel text-[0.6rem] uppercase tracking-hud text-ink"
+            aria-label="Okkar — back to top"
+            className="flex items-center gap-2 font-pixel text-pixel-sm uppercase tracking-hud text-ink"
           >
             <Mascot size={22} />
             <span className="hidden sm:inline">OKKAR</span>
@@ -81,18 +100,19 @@ function Navbar({ links }) {
 
           <div className="hidden items-center gap-2 md:flex">
             {links.map((link) => renderLink(link))}
-            <DarkModeToggle />
+            <ModeToggle />
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
-            <DarkModeToggle />
+            <ModeToggle />
             <button
+              ref={menuButtonRef}
               type="button"
-              aria-label="Toggle navigation"
+              aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={isOpen}
-              aria-controls="arcade-mobile-nav"
+              aria-controls={MOBILE_NAV_ID}
               onClick={() => setIsOpen((prev) => !prev)}
-              className="maze-tile grid h-9 w-9 place-items-center"
+              className="maze-tile chomp grid h-9 w-9 place-items-center"
             >
               <span aria-hidden="true" className="relative block h-3.5 w-4">
                 <span className={`absolute left-0 top-0 h-0.5 w-full bg-current transition-transform duration-200 ${isOpen ? 'translate-y-[6px] rotate-45' : ''}`} />
@@ -106,19 +126,19 @@ function Navbar({ links }) {
 
       <AnimatePresence>
         {isOpen ? (
-          <motion.div
-            id="arcade-mobile-nav"
+          <m.div
+            id={MOBILE_NAV_ID}
             initial="hidden"
             animate="visible"
             exit="exit"
             variants={menuVariants}
             transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: 'easeOut' }}
-            className="border-t-2 border-wall/40 bg-void px-4 pb-5 pt-4 md:hidden"
+            className="max-h-[calc(100vh-6rem)] overflow-y-auto border-t-2 border-wall/40 bg-void px-4 pb-5 pt-4 md:hidden"
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-2.5">
               {links.map((link) => renderLink(link, { onNavigate: () => setIsOpen(false) }))}
             </div>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </header>

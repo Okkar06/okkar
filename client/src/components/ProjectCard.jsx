@@ -1,3 +1,5 @@
+import { isSafeHref } from '../lib/links'
+import ArcadeButton from './ArcadeButton'
 import MazeCard from './MazeCard'
 import PowerDot from './PowerDot'
 
@@ -9,8 +11,7 @@ const TAG_TONES = [
   'border-ghost-orange/55 text-ghost-orange',
 ]
 
-const linkBase =
-  'inline-flex items-center gap-2 rounded-tile border-2 px-4 py-2 font-pixel text-[0.5rem] uppercase tracking-hud transition-transform duration-200 hover:-translate-y-0.5'
+const titleClass = 'font-pixel text-pixel-md uppercase text-ink'
 
 function ProjectCard({
   title,
@@ -22,13 +23,14 @@ function ProjectCard({
   index = 0,
   placeholder = false,
 }) {
-  const stage = placeholder ? 'BONUS STAGE' : `STAGE ${index + 1}`
+  const demoUrl = isSafeHref(primaryUrl) ? primaryUrl : null
+  const sourceUrl = isSafeHref(secondaryUrl) ? secondaryUrl : null
 
   if (placeholder) {
     return (
       <MazeCard
         as="article"
-        stage={stage}
+        stage="BONUS STAGE"
         className="flex h-full min-h-[260px] flex-col items-center justify-center gap-5 p-7 text-center"
       >
         <div className="flex items-center gap-2" aria-hidden="true">
@@ -36,30 +38,35 @@ function ProjectCard({
           <PowerDot power />
           <PowerDot size="sm" />
         </div>
-        <h3 className="font-pixel text-[0.65rem] uppercase leading-[1.7] text-ink">{title}</h3>
+        <h3 className={titleClass}>{title}</h3>
         <p className="text-sm leading-relaxed text-ink-dim">{description}</p>
-        {primaryUrl ? (
-          <a href={primaryUrl} target="_blank" rel="noreferrer noopener" className={`${linkBase} border-wall text-ink`}>
+        {demoUrl ? (
+          <ArcadeButton href={demoUrl} size="sm">
             VIEW GITHUB
-          </a>
+          </ArcadeButton>
         ) : null}
       </MazeCard>
     )
   }
 
   return (
-    <MazeCard as="article" stage={stage} interactive className="flex h-full flex-col p-6 pt-8 sm:p-7 sm:pt-9">
+    <MazeCard
+      as="article"
+      stage={`STAGE ${index + 1}`}
+      interactive
+      className="flex h-full min-w-0 flex-col p-6 pt-8 sm:p-7 sm:pt-9"
+    >
       {date ? <p className="hud-label mb-3">{date}</p> : null}
-      <h3 className="font-pixel text-[0.65rem] uppercase leading-[1.8] text-ink">{title}</h3>
+      <h3 className={titleClass}>{title}</h3>
 
       <p className="mt-4 flex-1 text-sm leading-relaxed text-ink-dim">{description}</p>
 
       {tags.length > 0 ? (
-        <ul className="mt-5 flex flex-wrap gap-2">
+        <ul className="mt-5 flex flex-wrap gap-2" aria-label="Built with">
           {tags.map((tag, i) => (
             <li
               key={tag}
-              className={`rounded-sm border px-2 py-1 font-pixel text-[0.4rem] uppercase tracking-hud ${
+              className={`rounded-sm border px-2 py-1 font-pixel text-pixel-xs uppercase leading-none tracking-hud ${
                 TAG_TONES[i % TAG_TONES.length]
               }`}
             >
@@ -69,28 +76,20 @@ function ProjectCard({
         </ul>
       ) : null}
 
-      <div className="mt-6 flex flex-wrap items-center gap-2.5">
-        {primaryUrl && primaryUrl !== '#' ? (
-          <a
-            href={primaryUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-            className={`${linkBase} border-mascot bg-mascot text-on-mascot`}
-          >
-            PLAY DEMO
-          </a>
-        ) : null}
-        {secondaryUrl ? (
-          <a
-            href={secondaryUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-            className={`${linkBase} border-wall text-ink`}
-          >
-            SOURCE
-          </a>
-        ) : null}
-      </div>
+      {demoUrl || sourceUrl ? (
+        <div className="mt-6 flex flex-wrap items-center gap-2.5">
+          {demoUrl ? (
+            <ArcadeButton href={demoUrl} variant="primary" size="sm" aria-label={`Play demo: ${title}`}>
+              PLAY DEMO
+            </ArcadeButton>
+          ) : null}
+          {sourceUrl ? (
+            <ArcadeButton href={sourceUrl} size="sm" aria-label={`Source code: ${title}`}>
+              SOURCE
+            </ArcadeButton>
+          ) : null}
+        </div>
+      ) : null}
     </MazeCard>
   )
 }
