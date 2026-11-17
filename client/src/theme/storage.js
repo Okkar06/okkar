@@ -1,6 +1,6 @@
 import { normalizeHex } from './color.js'
 import { PALETTE_VERSION } from './palette.js'
-import { DEFAULT_THEME, THEME_MODES } from './presets.js'
+import { DEFAULT_THEME, THEME_MODES, findPreset } from './presets.js'
 
 /**
  * Persistence for the theme choice. The stored record also carries the derived
@@ -17,9 +17,13 @@ const LEGACY_MODE_KEY = 'color-mode'
 
 const isMode = (value) => THEME_MODES.includes(value)
 
-/** Coerces anything into a valid { color, mode } theme. */
+/**
+ * Coerces anything into a valid { color, mode } theme. Only the picker's
+ * presets are valid colours, so a custom colour saved by an older build
+ * falls back to the default instead of lingering with no way to re-pick it.
+ */
 export function sanitizeTheme(candidate) {
-  const color = normalizeHex(candidate?.color) ?? DEFAULT_THEME.color
+  const color = findPreset(normalizeHex(candidate?.color))?.color ?? DEFAULT_THEME.color
   const mode = isMode(candidate?.mode) ? candidate.mode : DEFAULT_THEME.mode
   return { color, mode }
 }

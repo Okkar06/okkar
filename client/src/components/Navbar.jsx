@@ -1,6 +1,6 @@
 import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import ColorBar from './ColorBar'
+import ColorPicker from './ColorPicker'
 import Mascot from './Mascot'
 import ModeToggle from './ModeToggle'
 import PowerDot from './PowerDot'
@@ -75,16 +75,14 @@ function Navbar({ links, sectionIds }) {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b-2 border-wall/50 bg-void/[0.92] backdrop-blur-md">
-      {/* Arcade HUD strip. The labels are display text only (no real score);
-          the colour bar in the middle is the one working control. */}
-      <div className="flex items-center justify-center gap-3 border-b border-wall/25 px-4 py-1 sm:justify-between sm:px-6">
-        <span aria-hidden="true" className="hud-label hidden motion-safe:animate-hud-flicker sm:inline">
-          1UP
-        </span>
-        <ColorBar />
-        <span aria-hidden="true" className="hud-label hidden text-mascot-ink sm:inline">
-          READY!
-        </span>
+      {/* Decorative arcade HUD strip — display text only, no real score. */}
+      <div
+        aria-hidden="true"
+        className="flex items-center justify-between border-b border-wall/25 px-4 py-1.5 sm:px-6"
+      >
+        <span className="hud-label motion-safe:animate-hud-flicker">1UP</span>
+        <span className="hud-label hidden sm:inline">HIGH SCORE</span>
+        <span className="hud-label text-mascot-ink">READY!</span>
       </div>
 
       <nav aria-label="Main navigation" className="mx-auto max-w-6xl px-4 py-3 sm:px-6">
@@ -100,10 +98,12 @@ function Navbar({ links, sectionIds }) {
 
           <div className="hidden items-center gap-2 md:flex">
             {links.map((link) => renderLink(link))}
+            <ColorPicker />
             <ModeToggle />
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
+            <ColorPicker />
             <ModeToggle />
             <button
               ref={menuButtonRef}

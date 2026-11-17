@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { applyTheme } from './applyTheme.js'
 import { normalizeHex } from './color.js'
-import { THEME_MODES } from './presets.js'
+import { THEME_MODES, findPreset } from './presets.js'
 import {
   THEME_STORAGE_KEY,
   parseStoredTheme,
@@ -49,7 +49,8 @@ function ThemeProvider({ children }) {
   }, [])
 
   const setColor = useCallback((value) => {
-    const color = normalizeHex(value)
+    // Only the picker's presets are accepted.
+    const color = findPreset(normalizeHex(value))?.color
     if (!color) return
     setTheme((current) => (current.color === color ? current : { ...current, color }))
   }, [])
