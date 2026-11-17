@@ -114,7 +114,7 @@ describe('routing', () => {
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Okkar\s*Hein/i)
     expect(screen.getByRole('navigation', { name: 'Main navigation' })).toBeInTheDocument()
-    expect(screen.getByRole('radiogroup', { name: 'Theme color' })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /^Theme color:/ }).length).toBeGreaterThan(0)
     for (const id of ['about', 'projects', 'skills', 'contact']) {
       expect(document.getElementById(id), id).not.toBeNull()
     }
@@ -152,7 +152,7 @@ describe('accessibility of the page shell', () => {
   it('gives every image alt text and hides decorative art from assistive tech', () => {
     renderApp('/')
     for (const image of document.querySelectorAll('img')) expect(image).toHaveAttribute('alt')
-    expect(screen.getByAltText('Portrait of Okkar Hein')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /Portrait of Okkar Hein/ })).toBeInTheDocument()
     for (const svg of document.querySelectorAll('svg')) expect(svg).toHaveAttribute('aria-hidden', 'true')
   })
 
@@ -194,6 +194,32 @@ describe('accessibility of the page shell', () => {
   })
 })
 
+describe('attract mode', () => {
+  it('PRESS START plays the tour, shows the demo HUD, and any key takes over', async () => {
+    const user = userEvent.setup()
+    renderApp('/')
+
+    await user.click(screen.getByRole('button', { name: /Press start/ }))
+
+    expect(screen.getByText('DEMO')).toBeInTheDocument()
+    expect(screen.getByText(/Demo playing: Title screen, stage 1 of 5/)).toBeInTheDocument()
+
+    fireEvent.keyDown(window, { key: 'ArrowDown' })
+
+    expect(screen.queryByText('DEMO')).not.toBeInTheDocument()
+  })
+
+  it('the STOP button ends it too', async () => {
+    const user = userEvent.setup()
+    renderApp('/')
+
+    await user.click(screen.getByRole('button', { name: /Press start/ }))
+    await user.click(screen.getByRole('button', { name: 'STOP' }))
+
+    expect(screen.queryByText('DEMO')).not.toBeInTheDocument()
+  })
+})
+
 describe('empty, broken and hostile content', () => {
   it('shows an empty state when there are no projects or skills', () => {
     render(withMotion(<ProjectsSection projects={[]} />))
@@ -212,7 +238,8 @@ describe('empty, broken and hostile content', () => {
   it('swaps a broken portrait for a placeholder that keeps its description', () => {
     render(withMotion(<AboutSection bio="Bio" photo={{ src: '/missing.webp', alt: 'Portrait of Okkar Hein' }} />))
 
-    fireEvent.error(screen.getByAltText('Portrait of Okkar Hein'))
+    // The photo is only a pixel source for the binary drawing.
+    fireEvent.error(document.querySelector('img'))
 
     expect(document.querySelector('img')).toBeNull()
     expect(screen.getByRole('img', { name: 'Portrait of Okkar Hein' })).toBeInTheDocument()
