@@ -21,3 +21,12 @@ export const THEME_MODES = ['dark', 'light']
 export function findPreset(color) {
   return THEME_PRESETS.find((preset) => preset.color === color) ?? null
 }
+
+/** How long each colour stays before auto-cycle moves to the next preset. */
+export const AUTO_CYCLE_MS = 30_000
+
+/** The preset after `color`, wrapping round (the first one if it is not a preset). */
+export function nextPresetColor(color) {
+  const index = THEME_PRESETS.findIndex((preset) => preset.color === color)
+  return THEME_PRESETS[(index + 1) % THEME_PRESETS.length].color
+}

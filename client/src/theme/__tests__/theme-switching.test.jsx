@@ -4,14 +4,15 @@ import { describe, expect, it, vi } from 'vitest'
 import ColorPicker from '../../components/ColorPicker'
 import ModeToggle from '../../components/ModeToggle'
 import { derivePalette, PALETTE_VERSION } from '../palette'
-import { DEFAULT_THEME, THEME_PRESETS } from '../presets'
-import { THEME_STORAGE_KEY } from '../storage'
+import { AUTO_CYCLE_MS, DEFAULT_THEME, THEME_PRESETS } from '../presets'
+import { AUTO_CYCLE_STORAGE_KEY, THEME_STORAGE_KEY } from '../storage'
 import ThemeProvider from '../ThemeProvider'
 
 const root = document.documentElement
 const cssVar = (name) => root.style.getPropertyValue(name)
 const stored = () => JSON.parse(localStorage.getItem(THEME_STORAGE_KEY))
 const preset = (id) => THEME_PRESETS.find((entry) => entry.id === id)
+const nextAfter = (id) => THEME_PRESETS[(THEME_PRESETS.indexOf(preset(id)) + 1) % THEME_PRESETS.length].color
 
 const trigger = () => screen.getByRole('button', { name: /^Theme color:/ })
 const palette = () => screen.queryByRole('radiogroup', { name: 'Theme color' })
@@ -198,9 +199,10 @@ describe('colour picker keyboard and pointer support', () => {
     await user.click(screen.getByRole('button', { name: 'elsewhere' }))
     expect(palette()).not.toBeInTheDocument()
 
+    // Tab order inside: current colour → AUTO switch → out.
     await user.click(trigger())
     await user.tab()
-    await user.tab({ shift: true })
+    expect(palette()).toBeInTheDocument()
     await user.tab()
     expect(palette()).not.toBeInTheDocument()
   })
@@ -213,6 +215,85 @@ describe('colour picker keyboard and pointer support', () => {
     for (const entry of THEME_PRESETS) {
       expect(screen.getByRole('radio', { name: entry.label })).toBeInTheDocument()
     }
+  })
+})
+
+describe('auto-cycling colour', () => {
+  const autoSwitch = () => screen.getByRole('switch', { name: 'Change color every 30 seconds' })
+  const wait = (ms) => act(() => vi.advanceTimersByTime(ms))
+
+  it('moves to the next preset every 30 seconds, wrapping round', () => {
+    vi.useFakeTimers()
+    renderTheme()
+
+    wait(AUTO_CYCLE_MS - 1)
+    expectPainted(THEME_PRESETS[0].color, 'dark')
+    wait(1)
+    expectPainted(THEME_PRESETS[1].color, 'dark')
+
+    for (let step = 2; step <= THEME_PRESETS.length; step += 1) {
+      wait(AUTO_CYCLE_MS)
+      expectPainted(THEME_PRESETS[step % THEME_PRESETS.length].color, 'dark')
+    }
+    vi.useRealTimers()
+  })
+
+  it('a pick restarts the 30 seconds, and the cycle is not announced', () => {
+    vi.useFakeTimers()
+    renderTheme()
+
+    wait(AUTO_CYCLE_MS - 1000)
+    fireEvent.click(trigger())
+    fireEvent.click(screen.getByRole('radio', { name: 'Cherry Bomb' }))
+    expect(screen.getByRole('status')).toHaveTextContent('Cherry Bomb theme')
+
+    wait(AUTO_CYCLE_MS - 1)
+    expectPainted(preset('red').color, 'dark')
+    wait(1)
+    expectPainted(nextAfter('red'), 'dark')
+    expect(screen.getByRole('status')).toHaveTextContent('Cherry Bomb theme')
+    vi.useRealTimers()
+  })
+
+  it('the AUTO switch stops it, and the choice is remembered', () => {
+    vi.useFakeTimers()
+    const first = renderTheme()
+
+    fireEvent.click(trigger())
+    expect(autoSwitch()).toHaveAttribute('aria-checked', 'true')
+    fireEvent.click(autoSwitch())
+    expect(autoSwitch()).toHaveAttribute('aria-checked', 'false')
+    expect(localStorage.getItem(AUTO_CYCLE_STORAGE_KEY)).toBe('0')
+
+    wait(AUTO_CYCLE_MS * 3)
+    expectPainted(DEFAULT_THEME.color, 'dark')
+
+    first.unmount()
+    renderTheme()
+    wait(AUTO_CYCLE_MS * 3)
+    expectPainted(DEFAULT_THEME.color, 'dark')
+
+    fireEvent.click(trigger())
+    fireEvent.click(autoSwitch())
+    wait(AUTO_CYCLE_MS)
+    expectPainted(THEME_PRESETS[1].color, 'dark')
+    vi.useRealTimers()
+  })
+
+  it('waits while the tab is hidden', () => {
+    vi.useFakeTimers()
+    const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+    renderTheme()
+    act(() => document.dispatchEvent(new Event('visibilitychange')))
+
+    wait(AUTO_CYCLE_MS * 3)
+    expectPainted(DEFAULT_THEME.color, 'dark')
+
+    visibility.mockReturnValue('visible')
+    act(() => document.dispatchEvent(new Event('visibilitychange')))
+    wait(AUTO_CYCLE_MS)
+    expectPainted(THEME_PRESETS[1].color, 'dark')
+    vi.useRealTimers()
   })
 })
 

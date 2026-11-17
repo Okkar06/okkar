@@ -20,10 +20,15 @@ const MOVES = {
  * Keyboard: Enter/Space opens it and focuses the current colour. Arrow keys,
  * Home and End move and preview live; Enter, Space or a click confirms and
  * closes; Escape closes. Focus returns to the button either way.
+ *
+ * The AUTO switch below the blocks turns the 30-second colour cycle on and
+ * off. (Anything that changes on its own needs a way to stop it — WCAG 2.2.2.)
  */
 function ColorPicker() {
-  const { color, setColor } = useTheme()
+  const { color, setColor, autoCycle, setAutoCycle } = useTheme()
   const [open, setOpen] = useState(false)
+  // Spoken only for a colour the visitor picked, not every auto-cycle step.
+  const [announcement, setAnnouncement] = useState('')
   const panelId = useId()
   const wrapperRef = useRef(null)
   const triggerRef = useRef(null)
@@ -33,6 +38,11 @@ function ColorPicker() {
   const activeIndex = active ? THEME_PRESETS.indexOf(active) : -1
   const focusIndex = activeIndex === -1 ? 0 : activeIndex
   const name = active?.label ?? 'Custom'
+
+  const choose = (preset) => {
+    setColor(preset.color)
+    setAnnouncement(`${preset.label} theme`)
+  }
 
   // Opening, or moving with the arrow keys, puts focus on the chosen swatch.
   useEffect(() => {
@@ -69,7 +79,7 @@ function ColorPicker() {
 
     event.preventDefault()
     const next = (move(current) + THEME_PRESETS.length) % THEME_PRESETS.length
-    setColor(THEME_PRESETS[next].color)
+    choose(THEME_PRESETS[next])
   }
 
   // Tabbing away closes it too. (A null relatedTarget is a click on empty
@@ -88,7 +98,7 @@ function ColorPicker() {
         aria-label={`Theme color: ${name}`}
         aria-expanded={open}
         aria-controls={panelId}
-        title="Theme color"
+        title={autoCycle ? 'Theme color (changes every 30 seconds)' : 'Theme color'}
         onClick={() => setOpen((previous) => !previous)}
         className="maze-tile chomp grid h-9 w-9 place-items-center"
       >
@@ -126,7 +136,7 @@ function ColorPicker() {
                   title={preset.label}
                   tabIndex={index === focusIndex ? 0 : -1}
                   onClick={() => {
-                    setColor(preset.color)
+                    choose(preset)
                     close()
                   }}
                   className={`chomp grid h-9 w-9 place-items-center rounded-tile border-2 bg-floor transition-[transform,border-color,box-shadow] duration-200 ${
@@ -149,12 +159,39 @@ function ColorPicker() {
           <p aria-hidden="true" className="mt-3 font-pixel text-pixel-xs uppercase text-ink-dim">
             {name}
           </p>
+
+          <button
+            type="button"
+            role="switch"
+            aria-checked={autoCycle}
+            aria-label="Change color every 30 seconds"
+            onClick={() => setAutoCycle(!autoCycle)}
+            className="chomp mt-3 flex w-full items-center justify-between gap-3 rounded-tile border-2 border-wall/40 px-2.5 py-2 font-pixel text-pixel-xs uppercase text-ink transition-[transform,border-color] duration-200 hover:border-wall"
+          >
+            <span>AUTO 30S</span>
+            {/* On/off is shown by text and knob position, never colour alone. */}
+            <span className="flex items-center gap-2">
+              <span className={autoCycle ? 'text-neon' : 'text-ink-dim'}>{autoCycle ? 'ON' : 'OFF'}</span>
+              <span
+                aria-hidden="true"
+                className={`relative block h-3 w-6 rounded-full border-2 transition-colors duration-200 ${
+                  autoCycle ? 'border-neon bg-neon/30' : 'border-ink-dim'
+                }`}
+              >
+                <span
+                  className={`absolute top-1/2 block h-1.5 w-1.5 -translate-y-1/2 rounded-full transition-transform duration-200 ${
+                    autoCycle ? 'left-0.5 translate-x-3 bg-neon' : 'left-0.5 bg-ink-dim'
+                  }`}
+                />
+              </span>
+            </span>
+          </button>
         </div>
       ) : null}
 
       {/* Tells screen-reader users the switch happened; sighted users see it. */}
       <span role="status" className="sr-only">
-        {`${name} theme`}
+        {announcement}
       </span>
     </div>
   )

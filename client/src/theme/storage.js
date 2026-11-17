@@ -69,3 +69,24 @@ export function writeStoredTheme(theme, palette) {
     // Not being able to remember the choice is not an error worth surfacing.
   }
 }
+
+/** Whether the colour cycles through the presets on its own. On by default. */
+export const AUTO_CYCLE_STORAGE_KEY = 'okkar-theme-auto'
+
+export const parseAutoCycle = (raw) => raw !== '0'
+
+export function readAutoCycle() {
+  try {
+    return parseAutoCycle(localStorage.getItem(AUTO_CYCLE_STORAGE_KEY))
+  } catch {
+    return true
+  }
+}
+
+export function writeAutoCycle(enabled) {
+  try {
+    localStorage.setItem(AUTO_CYCLE_STORAGE_KEY, enabled ? '1' : '0')
+  } catch {
+    // Ignored, as above.
+  }
+}
