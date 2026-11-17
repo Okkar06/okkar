@@ -1,9 +1,19 @@
 import ArcadeButton from '../components/ArcadeButton'
+import BonusIcon from '../components/BonusIcon'
 import Ghost from '../components/Ghost'
 import Mascot from '../components/Mascot'
 import PowerDot from '../components/PowerDot'
 
 const CHASE_DOTS = 10
+
+// The left-margin crew. Only shown from 1400px wide, where the margin beside
+// the content is wide enough that they can never sit on the text.
+const LEFT_CREW = [
+  { key: 'ghost-orange', ghost: 'orange', position: 'left-[3%] top-[18%]', delay: 0.3 },
+  { key: 'bonus-orbs', shape: 'twinOrb', color: 'red', position: 'left-[5%] top-[38%]', delay: 1.1 },
+  { key: 'bonus-key', shape: 'key', color: 'mascot', position: 'left-[2.5%] top-[58%]', delay: 0.6 },
+  { key: 'ghost-pink', ghost: 'pink', position: 'left-[5%] top-[76%]', delay: 1.8 },
+]
 
 /**
  * ChaseLane — the mascot runs left to right across the hero and the pellets
@@ -39,7 +49,7 @@ function ChaseLane() {
   )
 }
 
-function HeroSection({ firstName, lastName, tagline, available }) {
+function HeroSection({ firstName, lastName, tagline, available, onStart }) {
   return (
     <section
       id="top"
@@ -55,6 +65,27 @@ function HeroSection({ firstName, lastName, tagline, available }) {
         <Ghost color="cyan" size={28} drift="drift" delay={1.4} className="absolute right-[24%] top-[52%] hidden lg:block" />
         <Ghost color="red" size={32} drift="drift" className="absolute right-[12%] bottom-[24%] hidden lg:block" />
         <Ghost color="orange" size={26} delay={2.1} className="absolute right-[34%] top-[16%] hidden xl:block" />
+
+        {LEFT_CREW.map((member) =>
+          member.ghost ? (
+            <Ghost
+              key={member.key}
+              color={member.ghost}
+              size={28}
+              drift="drift"
+              delay={member.delay}
+              className={`absolute hidden min-[1400px]:block ${member.position}`}
+            />
+          ) : (
+            <span
+              key={member.key}
+              className={`absolute hidden motion-safe:animate-ghost-float min-[1400px]:block ${member.position}`}
+              style={{ animationDelay: `${member.delay}s` }}
+            >
+              <BonusIcon shape={member.shape} color={member.color} size={26} />
+            </span>
+          ),
+        )}
       </div>
 
       <div className="relative mx-auto max-w-6xl motion-safe:animate-rise">
@@ -82,9 +113,16 @@ function HeroSection({ firstName, lastName, tagline, available }) {
           </p>
         ) : null}
 
-        {/* PRESS START — jumps to the project stages. Decorative blink only. */}
+        {/* PRESS START plays the attract-mode tour of the whole site. Without a
+            handler it falls back to a plain jump to the projects. */}
         <div className="mt-9 flex flex-wrap items-center gap-4">
-          <ArcadeButton href="#projects" variant="primary" size="lg">
+          <ArcadeButton
+            {...(onStart
+              ? { onClick: onStart, 'aria-label': 'Press start: play an automatic tour of the site' }
+              : { href: '#projects' })}
+            variant="primary"
+            size="lg"
+          >
             <span aria-hidden="true" className="motion-safe:animate-blink">
               ▶
             </span>
