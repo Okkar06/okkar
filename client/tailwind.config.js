@@ -159,16 +159,6 @@ export default {
           from: { opacity: '0', transform: 'scale(0.96)' },
           to: { opacity: '1', transform: 'scale(1)' },
         },
-        // Binary portrait: a cover steps away (top first) as it decodes...
-        decode: {
-          from: { transform: 'scaleY(1)' },
-          to: { transform: 'scaleY(0)' },
-        },
-        // ...then a soft scan line sweeps down it now and then.
-        scan: {
-          '0%': { transform: 'translate3d(0, -15%, 0)' },
-          '60%, 100%': { transform: 'translate3d(0, 100%, 0)' },
-        },
         // First paint of the hero.
         rise: {
           from: { opacity: '0', transform: 'translate3d(0, 22px, 0)' },
@@ -190,8 +180,6 @@ export default {
         nudge: 'nudge 0.28s ease-in-out 1',
         pop: 'pop 0.3s ease-out 1 both',
         rise: 'rise 0.6s ease-out 1 both',
-        decode: 'decode 1.4s steps(16, end) 0.2s 1 both',
-        scan: 'scan 5s ease-in-out 1.8s infinite',
       },
     },
   },

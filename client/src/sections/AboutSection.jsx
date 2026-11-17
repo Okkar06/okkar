@@ -1,7 +1,7 @@
 import ArcadeHeading from '../components/ArcadeHeading'
-import BinaryPortrait from '../components/BinaryPortrait'
 import Ghost from '../components/Ghost'
 import MazeCard from '../components/MazeCard'
+import PixelPortrait from '../components/PixelPortrait'
 import PowerDot from '../components/PowerDot'
 import { Reveal, RevealGroup, RevealItem } from '../components/Reveal'
 
@@ -47,7 +47,7 @@ function AboutSection({ bio, highlights = [], photo, nowText }) {
           <RevealItem className="min-w-0 md:col-span-2">
             <MazeCard className="overflow-hidden p-2">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-tile bg-floor">
-                <BinaryPortrait photo={photo} />
+                <PixelPortrait src={photo?.src} alt={photo?.alt} {...photo?.mosaic} />
               </div>
             </MazeCard>
           </RevealItem>

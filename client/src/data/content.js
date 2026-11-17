@@ -34,11 +34,23 @@ export const CONTENT = {
   ],
   nowText:
     'Finishing up my portfolio and actively looking for full-stack developer roles in Singapore.',
-// Redrawn in the browser as a figure of binary digits (BinaryPortrait.jsx).
+  // Redrawn in the browser as a pixel mosaic (components/PixelPortrait.jsx).
   // A plain, evenly lit background works best: it is cut away automatically.
   photo: {
-    alt: 'Portrait of Okkar Hein, drawn in glowing binary digits',
+    alt: 'Pixel mosaic portrait of Okkar Hein',
     src: '/profilepic-480.webp',
+    // PixelPortrait settings. Smaller tileMin / tileMax = finer pixels;
+    // larger = chunkier. mode: 'repel' (cursor pushes tiles) or 'scatter'.
+    mosaic: {
+      tileMin: 6,
+      tileMax: 32,
+      mode: 'repel',
+      radius: 90,
+      force: 1,
+      showNumbers: true,
+      tintWithTheme: false,
+      bgThreshold: 0.12,
+    },
   },
   available: true,
   skillGroups: [

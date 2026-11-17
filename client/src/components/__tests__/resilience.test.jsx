@@ -152,7 +152,7 @@ describe('accessibility of the page shell', () => {
   it('gives every image alt text and hides decorative art from assistive tech', () => {
     renderApp('/')
     for (const image of document.querySelectorAll('img')) expect(image).toHaveAttribute('alt')
-    expect(screen.getByRole('img', { name: /Portrait of Okkar Hein/ })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /portrait of Okkar Hein/i })).toBeInTheDocument()
     for (const svg of document.querySelectorAll('svg')) expect(svg).toHaveAttribute('aria-hidden', 'true')
   })
 
@@ -238,11 +238,26 @@ describe('empty, broken and hostile content', () => {
   it('swaps a broken portrait for a placeholder that keeps its description', () => {
     render(withMotion(<AboutSection bio="Bio" photo={{ src: '/missing.webp', alt: 'Portrait of Okkar Hein' }} />))
 
-    // The photo is only a pixel source for the binary drawing.
+    // The photo is only a pixel source for the mosaic.
     fireEvent.error(document.querySelector('img'))
 
     expect(document.querySelector('img')).toBeNull()
     expect(screen.getByRole('img', { name: 'Portrait of Okkar Hein' })).toBeInTheDocument()
+  })
+
+  it('shows the original photo when the browser cannot draw the mosaic', () => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+    render(withMotion(<AboutSection bio="Bio" photo={{ src: '/me.webp', alt: 'Pixel mosaic portrait of Okkar Hein' }} />))
+
+    // Before it loads, the canvas holds the space and the description.
+    expect(screen.getByRole('img', { name: 'Pixel mosaic portrait of Okkar Hein' }).tagName).toBe('CANVAS')
+
+    fireEvent.load(document.querySelector('img'))
+
+    const photo = screen.getByRole('img', { name: 'Pixel mosaic portrait of Okkar Hein' })
+    expect(photo.tagName).toBe('IMG')
+    expect(photo).toHaveAttribute('src', '/me.webp')
+    expect(document.querySelector('canvas')).toBeNull()
   })
 
   it('renders very long text without dropping it', () => {
