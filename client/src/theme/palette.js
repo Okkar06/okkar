@@ -23,7 +23,7 @@ import { DEFAULT_THEME } from './presets.js'
  * localStorage by an older build are recomputed instead of trusted, and run
  * `npm run theme:tokens` to refresh the static fallback in styles/tokens.css.
  */
-export const PALETTE_VERSION = 1
+export const PALETTE_VERSION = 2
 
 // WCAG 2.1 AA thresholds.
 const AA_TEXT = 4.5
@@ -44,6 +44,12 @@ const SURFACES = {
 const WALL_LIGHTNESS = { dark: [0.6, 0.82], light: [0.4, 0.56] }
 const INK = { dark: [0.965, 0.012], light: [0.21, 0.035] }
 const INK_DIM = { dark: [0.77, 0.04], light: [0.44, 0.05] }
+
+// The neon accent — the hero's last name, HUD labels, the PRESS START button.
+// It is the picked colour pushed bright on dark cabinets and deep on light
+// ones, with at least this much chroma so it always reads as neon.
+const NEON_LIGHTNESS = { dark: 0.78, light: 0.5 }
+const NEON_MIN_CHROMA = 0.16
 
 /**
  * The cast keeps its own colours whatever the theme — the mascot is always
@@ -131,12 +137,17 @@ export function derivePalette(seedHex, mode = DEFAULT_THEME.mode) {
   // ── Cast ──
   const cast = CAST[resolvedMode]
   const mascot = hexToRgb(cast.mascot)
-  const hud = castMember(cast.hud)
+
+  // ── Neon accent text: follows the picked colour. ──
+  const neon = readable(
+    { l: NEON_LIGHTNESS[resolvedMode], c: Math.max(seed.c, NEON_MIN_CHROMA) * colourfulness, h: hue },
+    AA_TEXT,
+  )
 
   // The focus ring must stand apart from the walls it is drawn next to. Gold
   // does that for every theme except a gold one, where the text ink takes over.
   const wallIsGold = colourfulness > 0.3 && hueDistance(hue, GOLD_HUE) < 45
-  const focus = wallIsGold ? ink : hud
+  const focus = wallIsGold ? ink : castMember(cast.hud)
 
   const vars = {
     '--c-void': triplet(voidRgb),
@@ -151,11 +162,13 @@ export function derivePalette(seedHex, mode = DEFAULT_THEME.mode) {
     '--c-ink-dim': triplet(inkDim),
 
     '--c-dot': triplet(castMember(cast.dot, AA_UI)),
-    '--c-hud': triplet(hud),
+    '--c-hud': triplet(neon),
+    '--c-neon': triplet(neon),
+    '--c-on-neon': triplet(mostReadable(neon, [ON_FILL_DARK, ON_FILL_LIGHT])),
     '--c-focus': triplet(focus),
 
     '--c-mascot': triplet(mascot),
-    '--c-mascot-ink': triplet(castMember(cast.mascotInk)),
+    '--c-mascot-ink': triplet(neon),
     '--c-on-mascot': triplet(mostReadable(mascot, [ON_FILL_DARK, ON_FILL_LIGHT])),
     '--c-eye': triplet(ON_FILL_LIGHT),
 

@@ -99,7 +99,7 @@ function HeroSection({ firstName, lastName, tagline, available, onStart }) {
           className="mt-6 font-pixel text-pixel-hero uppercase text-ink drop-shadow-glow-wall"
         >
           <span className="block">{firstName}</span>
-          <span className="mt-2 block text-mascot-ink drop-shadow-glow-mascot">{lastName}</span>
+          <span className="mt-2 block text-neon drop-shadow-glow-neon">{lastName}</span>
         </h1>
 
         <p className="mt-7 max-w-xl text-sm leading-relaxed text-ink-dim sm:text-base">{tagline}</p>

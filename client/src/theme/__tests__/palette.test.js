@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { contrastRatio, oklchToRgb, rgbToHex } from '../color'
+import { contrastRatio, hexToRgb, hueDistance, oklchToRgb, rgbToHex, rgbToOklch } from '../color'
 import { derivePalette, THEME_VARIABLES } from '../palette'
 import { DEFAULT_THEME, THEME_MODES, THEME_PRESETS } from '../presets'
 
@@ -31,7 +31,8 @@ const ON_SURFACES = [
   ['--c-ink', 7, 'body text (AAA)'],
   ['--c-ink-dim', 4.5, 'secondary text'],
   ['--c-hud', 4.5, 'HUD labels'],
-  ['--c-mascot-ink', 4.5, 'gold accent text'],
+  ['--c-mascot-ink', 4.5, 'accent text'],
+  ['--c-neon', 4.5, 'neon accent text'],
   ['--c-ghost-red', 4.5, 'error text / red tag'],
   ['--c-ghost-pink', 4.5, 'pink tag'],
   ['--c-ghost-cyan', 4.5, 'success text / cyan tag'],
@@ -135,6 +136,7 @@ describe('WCAG AA contrast for every pickable colour', () => {
         // Text sitting on a filled accent picks whichever ink reads best.
         for (const [fill, on] of [
           ['--c-mascot', '--c-on-mascot'],
+          ['--c-neon', '--c-on-neon'],
           ['--c-wall', '--c-on-wall'],
         ]) {
           const ratio = contrastRatio(rgb(vars[on]), rgb(vars[fill]))
@@ -185,5 +187,21 @@ describe('styles/tokens.css (generated fallback)', () => {
       expect(css).toContain(`${name} var(--theme-transition) ease`)
     }
     expect(css).toMatch(/--theme-transition: 300ms;/)
+  })
+})
+
+describe('neon accent', () => {
+  it.each(THEME_MODES)('takes the picked colour, so the neon text re-colours with the theme (%s)', (mode) => {
+    const neons = new Set()
+    for (const preset of THEME_PRESETS) {
+      const { vars } = derivePalette(preset.color, mode)
+      const neon = rgbToOklch(rgb(vars['--c-neon']))
+      expect(hueDistance(neon.h, rgbToOklch(hexToRgb(preset.color)).h), preset.label).toBeLessThan(25)
+      // Every text that used to be fixed gold now uses it.
+      expect(vars['--c-mascot-ink']).toBe(vars['--c-neon'])
+      expect(vars['--c-hud']).toBe(vars['--c-neon'])
+      neons.add(vars['--c-neon'])
+    }
+    expect(neons.size).toBe(THEME_PRESETS.length)
   })
 })

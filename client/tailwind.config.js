@@ -37,6 +37,9 @@ export default {
         // Pellets + HUD
         dot: token('--c-dot'),
         hud: token('--c-hud'),
+        // Neon accent text and the one filled call to action (follows the theme)
+        neon: token('--c-neon'),
+        'on-neon': token('--c-on-neon'),
         // Mascot
         mascot: token('--c-mascot'),
         'mascot-ink': token('--c-mascot-ink'),
@@ -73,12 +76,18 @@ export default {
           '0 0 0 1px rgb(var(--c-wall) / 0.5), 0 0 18px rgb(var(--c-glow) / calc(0.65 * var(--glow-strength))), 0 0 44px rgb(var(--c-glow) / calc(0.32 * var(--glow-strength)))',
         'glow-mascot':
           '0 0 14px rgb(var(--c-mascot) / calc(0.6 * var(--glow-strength))), 0 0 34px rgb(var(--c-mascot) / calc(0.28 * var(--glow-strength)))',
+        'glow-neon':
+          '0 0 14px rgb(var(--c-neon) / calc(0.6 * var(--glow-strength))), 0 0 34px rgb(var(--c-neon) / calc(0.28 * var(--glow-strength)))',
         'glow-dot': '0 0 8px rgb(var(--c-dot) / calc(0.75 * var(--glow-strength)))',
       },
       dropShadow: {
         'glow-mascot': [
           '0 0 6px rgb(var(--c-mascot) / calc(0.75 * var(--glow-strength)))',
           '0 0 16px rgb(var(--c-mascot) / calc(0.35 * var(--glow-strength)))',
+        ],
+        'glow-neon': [
+          '0 0 6px rgb(var(--c-neon) / calc(0.75 * var(--glow-strength)))',
+          '0 0 16px rgb(var(--c-neon) / calc(0.35 * var(--glow-strength)))',
         ],
         'glow-wall': ['0 0 5px rgb(var(--c-glow) / calc(0.7 * var(--glow-strength)))'],
       },

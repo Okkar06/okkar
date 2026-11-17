@@ -5,8 +5,8 @@ const BASE =
   'chomp inline-flex items-center justify-center gap-2.5 rounded-tile font-pixel uppercase tracking-hud transition-[transform,border-color,color,box-shadow] duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0'
 
 const VARIANTS = {
-  // The one gold call to action per view.
-  primary: 'border-maze border-mascot bg-mascot text-on-mascot shadow-glow-mascot',
+  // The one neon call to action per view; it takes the theme's colour.
+  primary: 'border-maze border-neon bg-neon text-on-neon shadow-glow-neon',
   // Everything else: an outlined maze tile.
   secondary: 'border-2 border-wall text-ink hover:text-hud hover:shadow-glow-wall',
 }

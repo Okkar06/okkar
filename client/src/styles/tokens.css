@@ -64,7 +64,19 @@
 @property --c-hud {
   syntax: '<number>+';
   inherits: true;
-  initial-value: 255 227 71;
+  initial-value: 141 184 255;
+}
+
+@property --c-neon {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 141 184 255;
+}
+
+@property --c-on-neon {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 8 9 20;
 }
 
 @property --c-focus {
@@ -82,7 +94,7 @@
 @property --c-mascot-ink {
   syntax: '<number>+';
   inherits: true;
-  initial-value: 255 210 30;
+  initial-value: 141 184 255;
 }
 
 @property --c-on-mascot {
@@ -133,10 +145,12 @@
   --c-ink: 239 244 252;
   --c-ink-dim: 166 181 206;
   --c-dot: 255 233 168;
-  --c-hud: 255 227 71;
+  --c-hud: 141 184 255;
+  --c-neon: 141 184 255;
+  --c-on-neon: 8 9 20;
   --c-focus: 255 227 71;
   --c-mascot: 255 210 30;
-  --c-mascot-ink: 255 210 30;
+  --c-mascot-ink: 141 184 255;
   --c-on-mascot: 8 9 20;
   --c-eye: 255 255 255;
   --c-ghost-red: 255 93 108;
@@ -156,10 +170,12 @@
   --c-ink: 15 24 40;
   --c-ink-dim: 66 83 110;
   --c-dot: 161 98 7;
-  --c-hud: 138 90 0;
+  --c-hud: 17 91 204;
+  --c-neon: 17 91 204;
+  --c-on-neon: 255 255 255;
   --c-focus: 138 90 0;
   --c-mascot: 245 166 0;
-  --c-mascot-ink: 146 87 0;
+  --c-mascot-ink: 17 91 204;
   --c-on-mascot: 8 9 20;
   --c-eye: 255 255 255;
   --c-ghost-red: 192 39 58;
@@ -181,6 +197,8 @@
     --c-ink-dim var(--theme-transition) ease,
     --c-dot var(--theme-transition) ease,
     --c-hud var(--theme-transition) ease,
+    --c-neon var(--theme-transition) ease,
+    --c-on-neon var(--theme-transition) ease,
     --c-focus var(--theme-transition) ease,
     --c-mascot var(--theme-transition) ease,
     --c-mascot-ink var(--theme-transition) ease,
