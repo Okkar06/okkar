@@ -1,4 +1,4 @@
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { m, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { useState } from 'react'
 import DotTrail from './DotTrail'
 import Mascot from './Mascot'
@@ -18,6 +18,7 @@ function ScrollRail() {
 
   const y = useTransform(scrollYProgress, [0, 1], [0, RAIL_HEIGHT])
 
+  // Rounds to a whole pellet, so React only re-renders 15 times per page.
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
     setEaten(Math.round(value * DOTS))
   })
@@ -29,7 +30,7 @@ function ScrollRail() {
       aria-hidden="true"
       className="pointer-events-none fixed right-5 top-1/2 z-40 hidden -translate-y-1/2 lg:block"
     >
-      <div className="relative" style={{ height: RAIL_HEIGHT }}>
+      <div className="relative h-[300px]">
         <DotTrail
           count={DOTS}
           eaten={eaten}
@@ -38,9 +39,9 @@ function ScrollRail() {
           dotClass="h-1.5 w-1.5"
           className="h-full justify-between"
         />
-        <motion.div className="absolute -left-2.5 -top-3" style={{ y }}>
-          <Mascot size={26} facing="right" style={{ transform: 'rotate(90deg)' }} />
-        </motion.div>
+        <m.div className="absolute -left-2.5 -top-3" style={{ y }}>
+          <Mascot size={26} className="rotate-90" />
+        </m.div>
       </div>
     </div>
   )

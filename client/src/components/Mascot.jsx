@@ -1,24 +1,18 @@
-import { motion, useReducedMotion } from 'framer-motion'
-
 /**
  * Mascot — an original round chomping character: warm yellow disc, a single
  * forward-looking eye and a developer headset (band + ear cup + mic boom).
  * Purely decorative: it is never user-controlled and never focusable.
  *
- * The chomp is two half-discs rotating about the centre, so only `transform`
- * is animated.
+ * The chomp is two half-discs rotating about the centre — a CSS keyframe on
+ * `transform` only, so a dozen mascots cost no JavaScript. It holds still
+ * (slightly open) when `chomping` is off or the visitor prefers reduced
+ * motion.
  */
-function Mascot({ size = 48, facing = 'right', chomping = true, className = '', style }) {
-  const shouldReduceMotion = useReducedMotion()
-  const animate = chomping && !shouldReduceMotion
+const JAW = 'origin-center fill-mascot'
 
-  const jaw = (open, close) =>
-    animate
-      ? {
-          animate: { rotate: [close, open, close] },
-          transition: { duration: 0.34, repeat: Infinity, ease: 'easeInOut' },
-        }
-      : { animate: { rotate: close * 0.8 } }
+function Mascot({ size = 48, facing = 'right', chomping = true, className = '' }) {
+  const upper = chomping ? 'motion-safe:animate-chomp-top' : ''
+  const lower = chomping ? 'motion-safe:animate-chomp-bottom' : ''
 
   return (
     <svg
@@ -28,23 +22,10 @@ function Mascot({ size = 48, facing = 'right', chomping = true, className = '', 
       role="presentation"
       aria-hidden="true"
       focusable="false"
-      className={`pointer-events-none shrink-0 ${className}`}
-      style={{ transform: facing === 'left' ? 'scaleX(-1)' : undefined, ...style }}
+      className={`pointer-events-none shrink-0 ${facing === 'left' ? '-scale-x-100' : ''} ${className}`}
     >
-      {/* Upper jaw */}
-      <motion.path
-        d="M32 32 L58 32 A26 26 0 0 0 6 32 Z"
-        className="fill-mascot"
-        style={{ originX: '32px', originY: '32px' }}
-        {...jaw(-22, -4)}
-      />
-      {/* Lower jaw */}
-      <motion.path
-        d="M32 32 L58 32 A26 26 0 0 1 6 32 Z"
-        className="fill-mascot"
-        style={{ originX: '32px', originY: '32px' }}
-        {...jaw(22, 4)}
-      />
+      <path d="M32 32 L58 32 A26 26 0 0 0 6 32 Z" className={`${JAW} -rotate-[4deg] ${upper}`} />
+      <path d="M32 32 L58 32 A26 26 0 0 1 6 32 Z" className={`${JAW} rotate-[4deg] ${lower}`} />
 
       {/* Headset band + ear cup + mic boom — the mascot's own trademark */}
       <path

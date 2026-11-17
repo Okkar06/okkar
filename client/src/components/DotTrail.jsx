@@ -1,5 +1,3 @@
-import { useReducedMotion } from 'framer-motion'
-
 /**
  * DotTrail — a line of pellets. `eaten` blanks out the leading dots, which is
  * how the scroll-progress rail shows how far down the page the reader is.
@@ -13,7 +11,6 @@ function DotTrail({
   dotClass = 'h-1.5 w-1.5',
   className = '',
 }) {
-  const shouldReduceMotion = useReducedMotion()
   const layout = orientation === 'vertical' ? 'flex-col' : 'flex-row'
 
   return (
@@ -21,20 +18,14 @@ function DotTrail({
       aria-hidden="true"
       className={`pointer-events-none flex items-center ${layout} ${gap} ${className}`}
     >
-      {Array.from({ length: count }, (_, i) => {
-        const isEaten = i < eaten
-        return (
-          <span
-            key={i}
-            className={`shrink-0 rounded-full bg-dot shadow-glow-dot ${dotClass}`}
-            style={{
-              opacity: isEaten ? 0 : 0.9,
-              transform: isEaten ? 'scale(0.2)' : 'scale(1)',
-              transition: shouldReduceMotion ? 'none' : 'opacity 200ms ease, transform 200ms ease',
-            }}
-          />
-        )
-      })}
+      {Array.from({ length: count }, (_, i) => (
+        <span
+          key={i}
+          className={`shrink-0 rounded-full bg-dot shadow-glow-dot transition-[opacity,transform] duration-200 ${dotClass} ${
+            i < eaten ? 'scale-[0.2] opacity-0' : 'scale-100 opacity-90'
+          }`}
+        />
+      ))}
     </span>
   )
 }

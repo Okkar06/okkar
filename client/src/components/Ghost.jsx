@@ -1,9 +1,8 @@
-import { useReducedMotion } from 'framer-motion'
-
 /**
  * Ghost — an original drifting creature: soft dome, three-wave hem, visor brow
  * and a single antenna bead. Four colourways from the theme tokens.
- * Decoration only: aria-hidden and never focusable.
+ * Decoration only: aria-hidden and never focusable. The drift is CSS and
+ * stops under prefers-reduced-motion.
  */
 const FILLS = {
   red: 'fill-ghost-red',
@@ -20,16 +19,14 @@ const STROKES = {
 }
 
 const DRIFTS = {
-  float: 'animate-ghost-float',
-  drift: 'animate-ghost-drift',
+  float: 'motion-safe:animate-ghost-float',
+  drift: 'motion-safe:animate-ghost-drift',
   none: '',
 }
 
-function Ghost({ color = 'red', size = 40, drift = 'float', delay = 0, className = '', style }) {
-  const shouldReduceMotion = useReducedMotion()
+function Ghost({ color = 'red', size = 40, drift = 'float', delay = 0, className = '' }) {
   const fill = FILLS[color] ?? FILLS.red
   const stroke = STROKES[color] ?? STROKES.red
-  const motionClass = shouldReduceMotion ? '' : (DRIFTS[drift] ?? DRIFTS.float)
 
   return (
     <svg
@@ -39,8 +36,9 @@ function Ghost({ color = 'red', size = 40, drift = 'float', delay = 0, className
       role="presentation"
       aria-hidden="true"
       focusable="false"
-      className={`pointer-events-none shrink-0 ${motionClass} ${className}`}
-      style={{ animationDelay: shouldReduceMotion ? undefined : `${delay}s`, ...style }}
+      className={`pointer-events-none shrink-0 ${DRIFTS[drift] ?? DRIFTS.float} ${className}`}
+      // Per-instance offset so a crew of ghosts never bobs in unison.
+      style={delay ? { animationDelay: `${delay}s` } : undefined}
     >
       {/* Antenna */}
       <path d="M28 10 V3" fill="none" className={stroke} strokeWidth="3" strokeLinecap="round" />
