@@ -7,12 +7,16 @@ const { sendError } = require('./errorHandler')
 /**
  * Security headers.
  *
- * The CSP is written for the Vite production build plus Google Fonts:
+ * The CSP is written for the Vite production build. Everything the page
+ * needs — scripts, styles, fonts, images — is served from this origin, so no
+ * third-party host appears anywhere in the policy:
  *  - script-src stays 'self' because the client has no inline scripts (the
  *    theme bootstrap lives in public/theme-init.js on purpose).
- *  - style-src needs 'unsafe-inline': React and Framer Motion set style
- *    attributes on elements, which style-src governs. Fonts come from
- *    fonts.googleapis.com (CSS) and fonts.gstatic.com (font files).
+ *  - style-src is 'self' with no 'unsafe-inline'. The theme engine, React
+ *    and Framer Motion all set styles through the DOM (element.style), which
+ *    CSP allows; only inline <style> blocks and style= attributes written
+ *    into HTML are blocked, and the client ships neither.
+ *  - fonts are self-hosted (@fontsource), so font-src is 'self' too.
  *  - frame-ancestors 'none' plus X-Frame-Options: DENY stop framing.
  */
 function securityHeaders() {
@@ -24,8 +28,8 @@ function securityHeaders() {
         'base-uri': ["'self'"],
         'script-src': ["'self'"],
         'script-src-attr': ["'none'"],
-        'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-        'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        'style-src': ["'self'"],
+        'font-src': ["'self'"],
         'img-src': ["'self'", 'data:'],
         'connect-src': ["'self'"],
         'manifest-src': ["'self'"],
@@ -66,7 +70,9 @@ function corsMiddleware() {
       return callback(null, env.allowedOrigins.includes(normalized))
     },
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Accept'],
+    // Lets a cross-origin client read how long to wait after a 429 or 503.
+    exposedHeaders: ['Retry-After'],
     credentials: false,
     maxAge: 600,
   })

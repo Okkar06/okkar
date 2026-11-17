@@ -237,6 +237,38 @@ test('POST /api/contacts rejects a non-JSON content type', async (t) => {
   assert.equal(calls.length, 0)
 })
 
+test('an unreachable database returns 503 with Retry-After and no internals', async (t) => {
+  const unreachable = [
+    Object.assign(new Error("Can't reach database server at `db.internal:5432`"), {
+      name: 'PrismaClientInitializationError',
+      errorCode: 'P1001',
+    }),
+    Object.assign(new Error('Timed out fetching a new connection from the pool'), {
+      name: 'PrismaClientKnownRequestError',
+      code: 'P2024',
+    }),
+  ]
+
+  let call = 0
+  t.mock.method(contactService, 'createContact', async () => {
+    throw unreachable[call++]
+  })
+
+  const { url, close } = startServer()
+  t.after(close)
+
+  for (let i = 0; i < unreachable.length; i += 1) {
+    const { status, body, headers } = await post(`${url}/api/contacts`, validPayload())
+    const serialised = JSON.stringify(body)
+
+    assert.equal(status, 503)
+    assert.equal(body.error.code, 'service_unavailable')
+    assert.equal(headers.get('retry-after'), '30')
+    assert.equal(serialised.includes('db.internal'), false)
+    assert.equal(serialised.includes('pool'), false)
+  }
+})
+
 test('a database failure returns a generic 500 with no internals', async (t) => {
   t.mock.method(contactService, 'createContact', async () => {
     throw new Error('connect ECONNREFUSED 10.0.0.5:5432 — user=admin password=hunter2')

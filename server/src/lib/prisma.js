@@ -16,6 +16,9 @@ module.exports = new Proxy(
   {},
   {
     get(_target, property) {
+      // Disconnecting must not be the thing that creates the client.
+      if (property === '$disconnect' && !client) return async () => {}
+
       const value = getClient()[property]
       return typeof value === 'function' ? value.bind(getClient()) : value
     },

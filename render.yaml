@@ -6,6 +6,9 @@ services:
     plan: free
     buildCommand: npm run render-build
     startCommand: npm start
+    # Render polls this to decide whether a deploy is live and whether a
+    # running instance needs restarting. It is exempt from the rate limiter.
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
