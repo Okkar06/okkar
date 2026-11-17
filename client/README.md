@@ -1,16 +1,58 @@
-# React + Vite
+# Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite + Tailwind. See the root README for setup.
 
-Currently, two official plugins are available:
+## Scripts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Dev server with hot reload. |
+| `npm run build` | Production build into `dist/`. |
+| `npm test` | Vitest (jsdom + Testing Library). `npm run test:watch` to watch. |
+| `npm run lint` | ESLint. |
+| `npm run theme:tokens` | Regenerate `src/styles/tokens.css` from the theme engine. |
 
-## React Compiler
+## Layout
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+src/
+  data/content.js   everything the site says
+  theme/            the theme engine (the only place colour is defined)
+  styles/           tokens.css (generated) and the loader styles
+  components/       reusable UI
+  sections/         the page sections
+  lib/              API client, validation, small helpers
+  hooks/
+```
 
-## Expanding the ESLint configuration
+## How theming works
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The colour bar picks **one** colour. `src/theme/palette.js` derives the whole
+palette from it (page background, card and input surfaces, walls/borders,
+glow, text, focus ring) and writes each value onto `<html>` as a CSS custom
+property (`--c-void`, `--c-wall`, ...). Tailwind maps those to class names
+(`bg-void`, `border-wall`, ...) in `tailwind.config.js`.
+
+- **Add or change a colour option:** edit `src/theme/presets.js`. Nothing else.
+- **Change how shades are derived:** edit `src/theme/palette.js`, bump
+  `PALETTE_VERSION`, then run `npm run theme:tokens`.
+- **Use a colour in a component:** use a token class (`text-ink`, `bg-panel`,
+  `text-danger`) or `rgb(var(--c-wall) / 0.4)` in CSS. Never a hex or `rgb()`
+  literal: a test fails if one appears outside `src/theme`.
+
+Guarantees, each enforced by a test:
+
+- Text and controls meet WCAG AA on every surface, for every preset and a
+  sweep of custom colours, in both dark and light mode.
+- `tokens.css` (the fallback painted before JavaScript runs) matches the engine.
+- The choice persists, syncs across tabs, and is replayed before first paint
+  by `public/theme-init.js`, so there is no flash of the wrong theme.
+
+## Animation rules
+
+- Decorative loops (mascot, ghosts, pellets) are CSS keyframes on `transform`
+  and `opacity`, applied with `motion-safe:` so they stop under
+  `prefers-reduced-motion`.
+- Scroll reveals use the shared `Reveal` components (Framer Motion, loaded via
+  `LazyMotion`; use `m.div`, not `motion.div`).
+- Pressable elements take the `chomp` class for press feedback.
