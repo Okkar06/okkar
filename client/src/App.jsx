@@ -1,11 +1,13 @@
 import { LazyMotion, domAnimation } from 'framer-motion'
 import CursorDot from './components/CursorDot'
+import DemoOverlay from './components/DemoOverlay'
 import ErrorBoundary from './components/ErrorBoundary'
 import Footer from './components/Footer'
 import Navbar from './components/Navbar'
 import NotFound from './components/NotFound'
 import ScrollRail from './components/ScrollRail'
-import { CONTENT, NAV_LINKS, SECTION_IDS } from './data/content'
+import { CONTENT, NAV_LINKS, SECTION_IDS, TOUR_STOPS } from './data/content'
+import { useAttractMode } from './hooks/useAttractMode'
 import { describePath, isHomePath } from './lib/route'
 import AboutSection from './sections/AboutSection'
 import ContactSection from './sections/ContactSection'
@@ -30,6 +32,8 @@ function Cabinet({ children }) {
 }
 
 function Home() {
+  const demo = useAttractMode(TOUR_STOPS)
+
   return (
     <>
       <a href="#main" className={skipLink}>
@@ -49,6 +53,7 @@ function Home() {
             lastName={CONTENT.name.last}
             tagline={CONTENT.tagline}
             available={CONTENT.available}
+            onStart={demo.start}
           />
         </ErrorBoundary>
 
@@ -73,6 +78,8 @@ function Home() {
           <ContactSection {...CONTENT.contact} available={CONTENT.available} />
         </ErrorBoundary>
       </main>
+
+      <DemoOverlay status={demo.status} step={demo.step} stops={TOUR_STOPS} onStop={demo.stop} />
 
       <Footer
         name={CONTENT.name.first}

@@ -6,6 +6,15 @@
  */
 export const SECTION_IDS = ['top', 'about', 'projects', 'skills', 'contact']
 
+// The attract-mode tour (PRESS START) visits these, in order.
+export const TOUR_STOPS = [
+  { id: 'top', label: 'Title screen' },
+  { id: 'about', label: 'Player profile' },
+  { id: 'projects', label: 'Stage select' },
+  { id: 'skills', label: 'Bonus items' },
+  { id: 'contact', label: 'High score entry' },
+]
+
 export const NAV_LINKS = [
   { label: 'About', href: '#about' },
   { label: 'Stages', href: '#projects' },
@@ -25,13 +34,11 @@ export const CONTENT = {
   ],
   nowText:
     'Finishing up my portfolio and actively looking for full-stack developer roles in Singapore.',
-  // Two widths of the same portrait; the browser picks one (see AboutSection).
+// Redrawn in the browser as a figure of binary digits (BinaryPortrait.jsx).
+  // A plain, evenly lit background works best: it is cut away automatically.
   photo: {
-    alt: 'Portrait of Okkar Hein',
-    src: '/profilepic-960.webp',
-    srcSet: '/profilepic-480.webp 480w, /profilepic-960.webp 960w',
-    width: 960,
-    height: 1280,
+    alt: 'Portrait of Okkar Hein, drawn in glowing binary digits',
+    src: '/profilepic-480.webp',
   },
   available: true,
   skillGroups: [
