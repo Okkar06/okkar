@@ -1,6 +1,7 @@
 import ArcadeButton from '../components/ArcadeButton'
 import BonusIcon from '../components/BonusIcon'
 import Ghost from '../components/Ghost'
+import HeroArcade from '../components/HeroArcade'
 import Mascot from '../components/Mascot'
 import PowerDot from '../components/PowerDot'
 
@@ -58,14 +59,9 @@ function HeroSection({ firstName, lastName, tagline, available, onStart }) {
     >
       {/* Decorative maze floor + ghost crew */}
       <div aria-hidden="true" className="maze-floor pointer-events-none absolute inset-0 opacity-70" />
+      {/* Right-hand side: the arcade crowd, with parallax and a fly-by ghost. */}
+      <HeroArcade />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* All four sit in the empty right-hand half, so they never cross the
-            name, the tagline or the buttons at any width. */}
-        <Ghost color="pink" size={30} delay={0.7} className="absolute right-[8%] top-[22%] hidden md:block" />
-        <Ghost color="cyan" size={28} drift="drift" delay={1.4} className="absolute right-[24%] top-[52%] hidden lg:block" />
-        <Ghost color="red" size={32} drift="drift" className="absolute right-[12%] bottom-[24%] hidden lg:block" />
-        <Ghost color="orange" size={26} delay={2.1} className="absolute right-[34%] top-[16%] hidden xl:block" />
-
         {LEFT_CREW.map((member) =>
           member.ghost ? (
             <Ghost
