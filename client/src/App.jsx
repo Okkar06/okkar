@@ -1,4 +1,5 @@
 import { LazyMotion, domAnimation } from 'framer-motion'
+import { useCallback, useState } from 'react'
 import CursorDot from './components/CursorDot'
 import DemoOverlay from './components/DemoOverlay'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -33,6 +34,13 @@ function Cabinet({ children }) {
 
 function Home() {
   const demo = useAttractMode(TOUR_STOPS)
+  const startDemo = demo.start
+  // PRESS START also rebuilds the pixel portrait, which plays as the tour reaches it.
+  const [portraitReplay, setPortraitReplay] = useState(0)
+  const handleStart = useCallback(() => {
+    setPortraitReplay((count) => count + 1)
+    startDemo()
+  }, [startDemo])
 
   return (
     <>
@@ -53,7 +61,7 @@ function Home() {
             lastName={CONTENT.name.last}
             tagline={CONTENT.tagline}
             available={CONTENT.available}
-            onStart={demo.start}
+            onStart={handleStart}
           />
         </ErrorBoundary>
 
@@ -63,6 +71,7 @@ function Home() {
             highlights={CONTENT.aboutHighlights}
             photo={CONTENT.photo}
             nowText={CONTENT.nowText}
+            portraitReplay={portraitReplay}
           />
         </ErrorBoundary>
 

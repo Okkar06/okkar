@@ -5,7 +5,7 @@ import PixelPortrait from '../components/PixelPortrait'
 import PowerDot from '../components/PowerDot'
 import { Reveal, RevealGroup, RevealItem } from '../components/Reveal'
 
-function AboutSection({ bio, highlights = [], photo, nowText }) {
+function AboutSection({ bio, highlights = [], photo, nowText, portraitReplay = 0 }) {
   return (
     <section id="about" aria-labelledby="about-heading" className="relative scroll-mt-32 px-4 py-20 sm:px-6">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -47,7 +47,7 @@ function AboutSection({ bio, highlights = [], photo, nowText }) {
           <RevealItem className="min-w-0 md:col-span-2">
             <MazeCard className="overflow-hidden p-2">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-tile bg-floor">
-                <PixelPortrait src={photo?.src} alt={photo?.alt} {...photo?.mosaic} />
+                <PixelPortrait src={photo?.src} alt={photo?.alt} {...photo?.mosaic} replayKey={portraitReplay} />
               </div>
             </MazeCard>
           </RevealItem>

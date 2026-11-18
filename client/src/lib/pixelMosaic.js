@@ -16,18 +16,31 @@
  */
 
 export const MOSAIC_DEFAULTS = {
-  tileMin: 6,
+  tileMin: 4,
   tileMax: 32,
-  // Colour variance (0–1) above which a tile splits. Lower = more small tiles.
-  detail: 0.0035,
+  // Colour variance (0–1) above which a smallest-size tile still splits.
+  // Lower = more small tiles. Bigger tiles split at a lower variance (see
+  // splitThreshold), so big flat blocks are rare.
+  detail: 0.0016,
   // How far (0–1 of the full RGB distance) a pixel may be from the photo's
   // edge colour and still count as background. 0 turns background removal off.
   bgThreshold: 0.12,
-  saturation: 1.4,
-  // Colour levels per channel after posterizing.
-  levels: 10,
-  maxTiles: 1400,
+  // Saturation multiplier after the colour grade (1 = unchanged).
+  saturation: 1.8,
+  // Lightness steps after posterizing (fewer = bolder).
+  levels: 6,
+  // Random hue shift per tile, ± degrees, so flat areas aren't one block.
+  hueJitter: 14,
+  maxTiles: 1800,
 }
+
+// The colour grade's anchors, as hues in 0–1.
+const SHADOW_HUE = 0.7 // blue-violet
+const NEUTRAL_HUE = 0.55 // teal-blue
+const WARM_HUE = 0.07 // orange
+const HUE_STEPS = 24 // posterized hues: 15° apart
+const TAU = Math.PI * 2
+const SATURATION_STEPS = 4
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 const MAX_DISTANCE = Math.sqrt(3 * 255 * 255)
@@ -206,20 +219,82 @@ function hslToRgb([h, s, l]) {
   return [channel(h + 1 / 3) * 255, channel(h) * 255, channel(h - 1 / 3) * 255]
 }
 
+/** Moves hue `h` toward `target` by `amount`, the short way round (all in 0–1). */
+function towardHue(h, target, amount) {
+  let delta = target - h
+  if (delta > 0.5) delta -= 1
+  if (delta < -0.5) delta += 1
+  return (h + delta * clamp(amount, 0, 1) + 1) % 1
+}
+
 /**
- * Boosts saturation, then posterizes each channel to `levels` steps, so the
- * tiles read as vivid blocks rather than muddy averages.
+ * The mosaic's colour grade, applied to one tile's average colour:
+ *
+ * 1. Shadows take on blue-violet, so dark hair and a dark suit read as rich
+ *    blues and purples instead of muddy grey.
+ * 2. Greyish mid-tones (clothing, a white shirt) take on teal-blue.
+ * 3. Warm highlights (lit skin) push toward orange.
+ * 4. Saturation is multiplied by `saturation`; darks are lifted a little so
+ *    they still show against the dark background.
+ * 5. A stable random hue shift of ±`hueJitter`° per tile (`seed`).
+ * 6. Posterize: 24 hues, 4 saturations and `levels` lightness steps — a bold,
+ *    blocky palette.
  */
-export function vividize(rgb, { saturation = MOSAIC_DEFAULTS.saturation, levels = MOSAIC_DEFAULTS.levels } = {}) {
-  const [h, s, l] = rgbToHsl(rgb)
-  const boosted = hslToRgb([h, clamp(s * saturation, 0, 1), l])
-  const steps = Math.max(2, Math.round(levels)) - 1
-  return boosted.map((channel) => clamp(Math.round((Math.round((channel / 255) * steps) / steps) * 255), 0, 255))
+export function stylize(
+  rgb,
+  {
+    saturation = MOSAIC_DEFAULTS.saturation,
+    levels = MOSAIC_DEFAULTS.levels,
+    hueJitter = MOSAIC_DEFAULTS.hueJitter,
+    seed = 0,
+  } = {},
+) {
+  let [h, s, l] = rgbToHsl(rgb)
+
+  const shadow = clamp((0.45 - l) / 0.45, 0, 1)
+  const neutral = 1 - clamp(s / 0.3, 0, 1)
+  const highlight = clamp((l - 0.5) / 0.4, 0, 1)
+  const warm = s > 0.12 && (h < 0.15 || h > 0.95)
+
+  // The grade adds colour like mixing paint: each anchor hue is added as a
+  // vector on the colour wheel. A near-grey takes on the anchor's hue; a
+  // strong colour only leans toward it. (Rotating the hue instead would take
+  // a pale yellow through green on its way to teal.)
+  let a = s * Math.cos(h * TAU)
+  let b = s * Math.sin(h * TAU)
+  const add = (hue, amount) => {
+    a += amount * Math.cos(hue * TAU)
+    b += amount * Math.sin(hue * TAU)
+  }
+  add(SHADOW_HUE, shadow * 0.55)
+  add(NEUTRAL_HUE, neutral * (1 - shadow) * 0.35)
+  if (warm) h = towardHue(Math.atan2(b, a) / TAU + 1, WARM_HUE, highlight * 0.45)
+  else h = (Math.atan2(b, a) / TAU + 1) % 1
+  s = Math.hypot(a, b)
+
+  s = clamp(s * saturation, 0, 1)
+  l = 0.12 + l * 0.84
+
+  h = (h + ((random01(seed, 23) - 0.5) * 2 * hueJitter) / 360 + 1) % 1
+
+  const lightSteps = Math.max(2, Math.round(levels)) - 1
+  h = (Math.round(h * HUE_STEPS) % HUE_STEPS) / HUE_STEPS
+  s = Math.round(s * (SATURATION_STEPS - 1)) / (SATURATION_STEPS - 1)
+  l = Math.round(l * lightSteps) / lightSteps
+
+  return hslToRgb([h, s, l]).map((channel) => clamp(Math.round(channel), 0, 255))
 }
 
 /** Mixes `rgb` toward `target` by `amount` (0–1). */
 export const mixColor = (rgb, target, amount) =>
   rgb.map((channel, i) => Math.round(channel + (target[i] - channel) * clamp(amount, 0, 1)))
+
+/**
+ * Bigger tiles split at a lower variance than small ones (∝ √(min / size)),
+ * so the gentle texture of a suit or a cheek breaks up big blocks, while only
+ * real detail — eyes, brows, mouth, hair edges — goes down to the smallest.
+ */
+export const splitThreshold = (detail, size, tileMin) => detail * Math.sqrt(Math.max(tileMin, 1) / size)
 
 /**
  * One quadtree pass over a box of `width` × `height` CSS pixels.
@@ -241,8 +316,10 @@ function quadtree(stats, { width, height, unit, tileMin, tileMax, detail }) {
     // Mostly background: drop it, unless splitting can trace an edge.
     if (share < 0.5 && (!canSplit || share < 0.02)) return
 
-    const onEdge = share < 0.98
-    if (canSplit && (onEdge || cell.variance > detail)) {
+    // Silhouette edges split down to twice the smallest size; past that, only
+    // real detail splits them further.
+    const onEdge = share < 0.98 && size / 2 >= tileMin * 2
+    if (canSplit && (onEdge || cell.variance > splitThreshold(detail, size, tileMin))) {
       const half = size / 2
       visit(x, y, half)
       visit(x + half, y, half)
@@ -283,20 +360,26 @@ export function buildMosaic(sample, options = {}) {
   let detail = settings.detail
   let raw = quadtree(stats, { width, height, unit, tileMin, tileMax, detail })
   // Small steps, so the result lands close under the cap, not far below it.
-  for (let attempt = 0; raw.length > settings.maxTiles && attempt < 40; attempt += 1) {
-    detail *= 1.25
-    tileMin = Math.min(tileMax, tileMin * 1.06)
+  // Raise the detail threshold first — that keeps the finest tiles on the
+  // strongest features — and only coarsen the smallest size as a last resort.
+  for (let attempt = 0; raw.length > settings.maxTiles && attempt < 60; attempt += 1) {
+    if (attempt < 24) detail *= 1.2
+    else tileMin = Math.min(tileMax, tileMin * 1.08)
     raw = quadtree(stats, { width, height, unit, tileMin, tileMax, detail })
   }
 
-  const tiles = raw.map((tile, index) => ({
-    x: tile.x,
-    y: tile.y,
-    size: tile.size,
-    rgb: vividize(tile.color, settings),
-    // A few large, flat tiles get a fine inner grid (decoration only).
-    fine: tile.size >= 16 && random01(index, 7) < 0.07,
-  }))
+  const tiles = raw.map((tile) => {
+    // Seeded by position, so a tile keeps its colour across rebuilds.
+    const seed = hash(Math.round(tile.x * 4), Math.round(tile.y * 4) + tile.size)
+    return {
+      x: tile.x,
+      y: tile.y,
+      size: tile.size,
+      rgb: stylize(tile.color, { ...settings, seed }),
+      // A few large tiles get a fine inner grid (decoration only).
+      fine: tile.size >= 16 && random01(seed, 7) < 0.07,
+    }
+  })
 
   return { tiles, width, height }
 }

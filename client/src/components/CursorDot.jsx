@@ -6,9 +6,12 @@ const EASING = 0.2
 const REST_DISTANCE = 0.1
 
 /**
- * CursorDot — a pellet-sized glow that trails the pointer on fine-pointer
+ * CursorDot — a small, faint outline that trails the pointer on fine-pointer
  * devices. The native cursor is never hidden, and the dot takes no pointer
  * events, so nothing about interaction changes.
+ *
+ * It fades out over anything marked data-cursor="hide" (the pixel portrait,
+ * whose tiles already react to the pointer).
  *
  * The animation loop only runs while the dot is still catching up: once it
  * reaches the pointer it stops, and the next mouse move restarts it. A page
@@ -63,8 +66,9 @@ function CursorDot() {
         placed = true
         current.x = target.x
         current.y = target.y
-        dotRef.current?.classList.remove('opacity-0')
       }
+      const hidden = event.target instanceof Element && event.target.closest('[data-cursor="hide"]') !== null
+      dotRef.current?.classList.toggle('opacity-0', hidden)
 
       if (frame === null) frame = window.requestAnimationFrame(tick)
     }
@@ -82,7 +86,7 @@ function CursorDot() {
     <div
       ref={dotRef}
       aria-hidden="true"
-      className="pointer-events-none fixed left-0 top-0 z-[60] -ml-3 -mt-3 h-6 w-6 rounded-full border-2 border-wall/70 bg-wall/20 opacity-0 shadow-glow-wall transition-opacity duration-200"
+      className="pointer-events-none fixed left-0 top-0 z-[60] -ml-2 -mt-2 h-4 w-4 rounded-full border border-wall/30 opacity-0 transition-opacity duration-200"
     />
   )
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { averageColor, buildMosaic, detectBackground, gridLabels, mixColor, vividize } from '../pixelMosaic'
+import { averageColor, buildMosaic, detectBackground, gridLabels, mixColor, splitThreshold, stylize } from '../pixelMosaic'
 
 const WHITE = [250, 250, 250, 255]
 const SKIN = [210, 160, 130, 255]
@@ -124,25 +124,95 @@ describe('buildMosaic', () => {
   })
 })
 
-describe('colour treatment', () => {
-  it('makes colours more vivid and keeps greys grey', () => {
-    const [r, , b] = vividize([180, 150, 130])
-    expect(r - b).toBeGreaterThan(50)
-    const [gr, gg, gb] = vividize([128, 128, 128])
-    expect(gr).toBe(gg)
-    expect(gg).toBe(gb)
+/** Hue in degrees and HSL saturation of an RGB colour. */
+function hueSat([r, g, b]) {
+  const max = Math.max(r, g, b) / 255
+  const min = Math.min(r, g, b) / 255
+  const l = (max + min) / 2
+  const d = max - min
+  if (d === 0) return { hue: 0, sat: 0 }
+  const sat = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+  let hue
+  if (max === r / 255) hue = ((g - b) / 255 / d + 6) % 6
+  else if (max === g / 255) hue = (b - r) / 255 / d + 2
+  else hue = (r - g) / 255 / d + 4
+  return { hue: hue * 60, sat }
+}
+
+describe('colour grade', () => {
+  const still = { hueJitter: 0 }
+
+  it('turns dark greys into rich blues and purples, not mud', () => {
+    for (const dark of [[30, 30, 30], [45, 40, 38], [60, 60, 66]]) {
+      const { hue, sat } = hueSat(stylize(dark, still))
+      expect(hue, String(dark)).toBeGreaterThanOrEqual(200)
+      expect(hue, String(dark)).toBeLessThanOrEqual(290)
+      expect(sat, String(dark)).toBeGreaterThan(0.4)
+    }
   })
 
-  it('posterizes each channel to the given number of levels', () => {
-    const allowed = new Set([0, 85, 170, 255])
-    for (let v = 0; v < 256; v += 17) {
-      for (const channel of vividize([v, (v * 3) % 256, 255 - v], { levels: 4 })) expect(allowed.has(channel)).toBe(true)
+  it('keeps lit skin warm and makes it vivid', () => {
+    const { hue, sat } = hueSat(stylize([225, 180, 150], still))
+    expect(hue).toBeLessThanOrEqual(45)
+    expect(sat).toBeGreaterThan(hueSat([225, 180, 150]).sat)
+  })
+
+  it('pulls grey clothing toward teal and blue', () => {
+    const { hue, sat } = hueSat(stylize([140, 140, 145], still))
+    expect(hue).toBeGreaterThanOrEqual(160)
+    expect(hue).toBeLessThanOrEqual(260)
+    expect(sat).toBeGreaterThan(0.3)
+  })
+
+  it('saturation is a dial', () => {
+    const muted = hueSat(stylize([180, 120, 100], { ...still, saturation: 0.6 })).sat
+    const bold = hueSat(stylize([180, 120, 100], { ...still, saturation: 2.5 })).sat
+    expect(bold).toBeGreaterThan(muted)
+  })
+
+  it('posterizes to a small, bold palette — fewer levels, fewer colours', () => {
+    const distinct = (levels) => {
+      const colours = new Set()
+      for (let r = 0; r < 256; r += 15) for (let g = 0; g < 256; g += 15) for (let b = 0; b < 256; b += 30) {
+        colours.add(stylize([r, g, b], { ...still, levels }).join())
+      }
+      return colours.size
     }
+    expect(distinct(4)).toBeLessThan(distinct(10))
+    expect(distinct(6)).toBeLessThanOrEqual(24 * 4 * 6)
+  })
+
+  it('jitters hue per tile, stably, so flat areas are not one block', () => {
+    const flat = [200, 120, 90]
+    const jittered = new Set()
+    for (let seed = 0; seed < 40; seed += 1) jittered.add(stylize(flat, { seed, hueJitter: 20 }).join())
+    expect(jittered.size).toBeGreaterThan(1)
+    expect(stylize(flat, { seed: 7 })).toEqual(stylize(flat, { seed: 7 }))
+
+    const plain = new Set()
+    for (let seed = 0; seed < 40; seed += 1) plain.add(stylize(flat, { seed, hueJitter: 0 }).join())
+    expect(plain.size).toBe(1)
   })
 
   it('mixes toward a tint colour', () => {
     expect(mixColor([0, 0, 0], [100, 200, 50], 0.5)).toEqual([50, 100, 25])
     expect(mixColor([10, 10, 10], [100, 200, 50], 0)).toEqual([10, 10, 10])
+  })
+})
+
+describe('detail', () => {
+  it('big tiles split at a lower variance than small ones', () => {
+    expect(splitThreshold(0.01, 32, 4)).toBeLessThan(splitThreshold(0.01, 8, 4))
+    expect(splitThreshold(0.01, 4, 4)).toBeCloseTo(0.01)
+  })
+
+  it('breaks up a gently textured area (a suit) instead of one big block', () => {
+    const suit = image(64, 64, (x, y) => {
+      const v = 70 + ((x * 7 + y * 13) % 25)
+      return [v, v, v + 6, 255]
+    })
+    const sizes = buildMosaic(suit, { tileMin: 4, tileMax: 32, bgThreshold: 0 }).tiles.map((t) => t.size)
+    expect(Math.max(...sizes)).toBeLessThan(32)
   })
 })
 

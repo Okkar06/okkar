@@ -40,13 +40,22 @@ export const CONTENT = {
     alt: 'Pixel mosaic portrait of Okkar Hein',
     src: '/profilepic-480.webp',
     // PixelPortrait settings. Smaller tileMin / tileMax = finer pixels;
-    // larger = chunkier. mode: 'repel' (cursor pushes tiles) or 'scatter'.
+    // larger = chunkier. mode: 'repel' (cursor parts the tiles) or 'scatter'
+    // (they fly off and reassemble). modeToggle shows an FX button on the
+    // frame to compare the two; turn it off once you've picked one.
     mosaic: {
-      tileMin: 6,
+      tileMin: 4,
       tileMax: 32,
       mode: 'repel',
-      radius: 90,
-      force: 1,
+      modeToggle: true,
+      repelRadius: 75, // px reach of the cursor
+      repelForce: 12, // px the tile under the cursor moves
+      minScale: 0.8, // smallest a pushed tile gets
+      scatterForce: 1, // scatter mode launch speed
+      fallDuration: 2600, // ms for the falling-blocks build
+      saturation: 1.8,
+      levels: 6,
+      hueJitter: 14,
       showNumbers: true,
       tintWithTheme: false,
       bgThreshold: 0.12,
