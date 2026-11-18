@@ -1,8 +1,7 @@
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { usePlayback } from '../../hooks/usePlayback'
-import { loopLayout, nearestStep, nearestStop, stopColumn, wrap } from '../../lib/timeline'
-import PixelSprite from '../PixelSprite'
+import { loopLayout, nearestStep, wrap } from '../../lib/timeline'
 import PowerDot from '../PowerDot'
 import ProjectCard from '../ProjectCard'
 import TimelineChase from './TimelineChase'
@@ -30,12 +29,14 @@ function isKeyboardFocus(element) {
  * The scroll engine. Its state changes every frame, so it lives outside
  * React: one requestAnimationFrame loop, running only during a glide, writes
  * `transform` on the track. `x` is how far the view has moved along the
- * loop, in px; card k rests at `stopColumn(k) * half` (lib/timeline.js).
+ * loop, in px; a stage rests at every multiple of `half`. After the last
+ * stage the next pass simply follows, one step on, so the run starts over
+ * without a break.
  */
 function createEngine() {
   const state = { x: 0, half: 0, inset: 0, anim: null, frame: 0, track: null }
-  const settings = { current: { count: 0, unit: 0, columns: 0, glideMs: 0, reducedMotion: false } }
-  const length = () => settings.current.columns * state.half
+  const settings = { current: { unit: 0, glideMs: 0, reducedMotion: false } }
+  const length = () => settings.current.unit * state.half
 
   const paint = () => {
     const track = state.track
@@ -77,20 +78,17 @@ function createEngine() {
       done?.()
       return
     }
-    // The longer hop over the CONTINUE? marker takes a little longer.
-    const hops = Math.abs(to - state.x) / state.half
-    const scaled = duration * Math.min(1.5, Math.max(1, Math.sqrt(hops)))
-    state.anim = { from: state.x, to, duration: scaled, start: null, done }
+    state.anim = { from: state.x, to, duration, start: null, done }
     state.frame = requestAnimationFrame(tick)
   }
 
-  const here = () => (state.half ? nearestStop(state.x / state.half, settings.current.count) : 0)
-  const xOf = (k) => stopColumn(k, settings.current.count) * state.half
+  const here = () => (state.half ? Math.round(state.x / state.half) : 0)
+  const xOf = (k) => k * state.half
 
   return {
     paint,
     stop,
-    /** Latest { count, unit, columns, glideMs, reducedMotion } from the component. */
+    /** Latest { unit, glideMs, reducedMotion } from the component. */
     configure(next) {
       settings.current = next
     },
@@ -110,8 +108,7 @@ function createEngine() {
       state.track = track
       const first = track?.querySelector('[data-slot="0"]')
       const second = track?.querySelector('[data-slot="1"]')
-      const span = stopColumn(1, settings.current.count)
-      state.half = first && second && span ? (second.offsetLeft - first.offsetLeft) / span : 0
+      state.half = first && second ? second.offsetLeft - first.offsetLeft : 0
       const card = first?.querySelector('article')
       const cardOffset = card ? card.offsetLeft - first.offsetLeft : 0
       state.inset = (viewport?.clientWidth ?? 0) * FADE + REST_GAP - cardOffset
@@ -132,15 +129,15 @@ function createEngine() {
   }
 }
 
-const gridColumn = (column) => `${column + 1} / span 2`
+const gridColumn = (slot) => `${slot + 1} / span 2`
 
-function Node({ column, side, date, nodeRef }) {
+function Node({ slot, side, date, nodeRef }) {
   const above = side === 'above'
   return (
     <div
       ref={nodeRef}
       aria-hidden="true"
-      style={{ gridColumn: gridColumn(column), gridRow: 2 }}
+      style={{ gridColumn: gridColumn(slot), gridRow: 2 }}
       className="relative flex items-center justify-center"
     >
       {/* Connector from the card to the line */}
@@ -157,23 +154,6 @@ function Node({ column, side, date, nodeRef }) {
           {date}
         </span>
       ) : null}
-    </div>
-  )
-}
-
-/** Where the run starts over: a CONTINUE? sign on the line. */
-function SeamMarker({ column }) {
-  return (
-    <div
-      aria-hidden="true"
-      data-marker=""
-      style={{ gridColumn: gridColumn(column), gridRow: 2 }}
-      className="flex items-center justify-center"
-    >
-      <span className="flex items-center gap-1.5 whitespace-nowrap rounded-tile border-2 border-wall bg-void px-2 py-1.5 font-pixel text-pixel-xs uppercase leading-none tracking-hud text-hud shadow-glow-wall">
-        <PixelSprite name="loop" size={9} />
-        CONTINUE?
-      </span>
     </div>
   )
 }
@@ -205,7 +185,7 @@ function HorizontalTimeline({
 }) {
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   const count = stages.length
-  const { unit, columns, items, markers } = useMemo(() => loopLayout(count), [count])
+  const { unit, items } = useMemo(() => loopLayout(count), [count])
 
   const viewportRef = useRef(null)
   const trackRef = useRef(null)
@@ -221,8 +201,8 @@ function HorizontalTimeline({
   // Created once; it is handed the latest settings and the track element.
   const [engine] = useState(createEngine)
   useLayoutEffect(() => {
-    engine.configure({ count, unit, columns, glideMs, reducedMotion })
-  }, [engine, count, unit, columns, glideMs, reducedMotion])
+    engine.configure({ unit, glideMs, reducedMotion })
+  }, [engine, unit, glideMs, reducedMotion])
 
   const idleTimer = useRef(0)
   const wheelTimer = useRef(0)
@@ -404,7 +384,7 @@ function HorizontalTimeline({
               <Fragment key={item.slot}>
                 <div
                   data-slot={item.slot}
-                  style={{ gridColumn: gridColumn(item.column), gridRow: above ? 1 : 3 }}
+                  style={{ gridColumn: gridColumn(item.slot), gridRow: above ? 1 : 3 }}
                   className={`flex min-w-0 justify-center ${above ? '' : 'pt-3'}`}
                   aria-hidden={item.copy || undefined}
                 >
@@ -417,7 +397,7 @@ function HorizontalTimeline({
                   </div>
                 </div>
                 <Node
-                  column={item.column}
+                  slot={item.slot}
                   side={item.side}
                   date={stage.date}
                   nodeRef={item.slot === 0 ? nodeRef : undefined}
@@ -425,9 +405,6 @@ function HorizontalTimeline({
               </Fragment>
             )
           })}
-          {markers.map((column) => (
-            <SeamMarker key={`marker-${column}`} column={column} />
-          ))}
         </div>
 
         {lineTop !== null ? (

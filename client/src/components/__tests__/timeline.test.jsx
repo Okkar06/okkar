@@ -63,14 +63,14 @@ describe('projects timeline (tablet and up)', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
-  it('marks where the run starts over, and labels no node NEXT', () => {
+  it('runs straight back into stage 1 after the last stage, with no marker or NEXT label', () => {
     mediaMatches(WIDE)
     const { container } = renderSection()
-    const markers = container.querySelectorAll('[data-marker]')
-    expect(markers.length).toBeGreaterThan(0)
-    expect(markers[0]).toHaveTextContent('CONTINUE?')
-    expect(markers[0]).toHaveAttribute('aria-hidden', 'true')
-    expect(screen.getByTestId('timeline-viewport')).not.toHaveTextContent('NEXT')
+    const slots = [...container.querySelectorAll('[data-slot]')]
+    // Every card sits one column on from the one before it, seam included.
+    slots.forEach((slot, i) => expect(slot.style.gridColumn).toBe(`${i + 1} / span 2`))
+    expect(container.querySelector('[data-marker]')).toBeNull()
+    expect(screen.getByTestId('timeline-viewport')).not.toHaveTextContent(/NEXT|CONTINUE/)
   })
 
   it('numbers the stages in date order', () => {

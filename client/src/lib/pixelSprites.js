@@ -91,8 +91,6 @@ export const SPRITES = {
   pause: ['nn.nn', 'nn.nn', 'nn.nn', 'nn.nn', 'nn.nn', 'nn.nn', 'nn.nn'],
   play: ['n.....', 'nnn...', 'nnnnn.', 'nnnnnn', 'nnnnn.', 'nnn...', 'n.....'],
   close: ['nn...nn', 'nnn.nnn', '.nnnnn.', '..nnn..', '.nnnnn.', 'nnn.nnn', 'nn...nn'],
-  // A loop-around arrow for the timeline's CONTINUE? marker.
-  loop: ['..nnn.n.', '.n...nn.', 'n...nnn.', 'n.......', 'n......n', 'n......n', '.n....n.', '..nnnn..'],
 
   // Tech-stack glyphs for the About section's POWER-UPS chips.
   react: [
