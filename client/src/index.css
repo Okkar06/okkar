@@ -135,6 +135,13 @@ body {
   }
 }
 
+/* Decorative scenes (hero sprites, footer chase) freeze while offscreen or in
+   a hidden tab. See hooks/usePlayback.js. */
+.anim-paused,
+.anim-paused * {
+  animation-play-state: paused !important;
+}
+
 /* Long words (a pasted URL, an unbroken name) wrap instead of pushing the
    layout sideways. */
 h1,

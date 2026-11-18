@@ -23,7 +23,7 @@ import { DEFAULT_THEME } from './presets.js'
  * localStorage by an older build are recomputed instead of trusted, and run
  * `npm run theme:tokens` to refresh the static fallback in styles/tokens.css.
  */
-export const PALETTE_VERSION = 2
+export const PALETTE_VERSION = 3
 
 // WCAG 2.1 AA thresholds.
 const AA_TEXT = 4.5
@@ -66,6 +66,7 @@ const CAST = {
     ghostPink: '#ff9ade',
     ghostCyan: '#5ee7ff',
     ghostOrange: '#ffb152',
+    ghostScared: '#5c6dff',
   },
   light: {
     mascot: '#f5a600',
@@ -76,6 +77,7 @@ const CAST = {
     ghostPink: '#a92f86',
     ghostCyan: '#0a6d8a',
     ghostOrange: '#9a5410',
+    ghostScared: '#2c3ad0',
   },
 }
 
@@ -85,6 +87,18 @@ const ON_FILL_DARK = hexToRgb('#080914')
 const ON_FILL_LIGHT = hexToRgb('#ffffff')
 
 const GOLD_HUE = rgbToOklch(hexToRgb(CAST.dark.hud)).h
+
+// The frightened ghost is blue — unless the picked colour is itself close to
+// that blue, in which case it swings this far round the wheel (whichever way
+// lands further from the picked hue) so it still stands out from the walls.
+const SCARED_CLASH = 45
+const SCARED_SWING = 60
+
+function scaredHue(baseHue, themeHue, themeIsColourful) {
+  if (!themeIsColourful || hueDistance(baseHue, themeHue) >= SCARED_CLASH) return baseHue
+  const options = [(baseHue + SCARED_SWING) % 360, (baseHue - SCARED_SWING + 360) % 360]
+  return hueDistance(options[0], themeHue) >= hueDistance(options[1], themeHue) ? options[0] : options[1]
+}
 
 const triplet = (rgb) => rgb.join(' ')
 
@@ -149,6 +163,9 @@ export function derivePalette(seedHex, mode = DEFAULT_THEME.mode) {
   const wallIsGold = colourfulness > 0.3 && hueDistance(hue, GOLD_HUE) < 45
   const focus = wallIsGold ? ink : castMember(cast.hud)
 
+  const scaredBase = rgbToOklch(hexToRgb(cast.ghostScared))
+  const scared = readable({ ...scaredBase, h: scaredHue(scaredBase.h, hue, colourfulness > 0.3) }, AA_UI)
+
   const vars = {
     '--c-void': triplet(voidRgb),
     '--c-panel': triplet(panel),
@@ -176,6 +193,7 @@ export function derivePalette(seedHex, mode = DEFAULT_THEME.mode) {
     '--c-ghost-pink': triplet(castMember(cast.ghostPink)),
     '--c-ghost-cyan': triplet(castMember(cast.ghostCyan)),
     '--c-ghost-orange': triplet(castMember(cast.ghostOrange)),
+    '--c-ghost-scared': triplet(scared),
   }
 
   return { seed: seedColor, mode: resolvedMode, vars, themeColor: rgbToHex(voidRgb) }

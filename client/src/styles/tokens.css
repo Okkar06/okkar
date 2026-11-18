@@ -133,6 +133,12 @@
   initial-value: 255 177 82;
 }
 
+@property --c-ghost-scared {
+  syntax: '<number>+';
+  inherits: true;
+  initial-value: 199 63 183;
+}
+
 :root,
 [data-mode='dark'] {
   color-scheme: dark;
@@ -157,6 +163,7 @@
   --c-ghost-pink: 255 154 222;
   --c-ghost-cyan: 94 231 255;
   --c-ghost-orange: 255 177 82;
+  --c-ghost-scared: 199 63 183;
 }
 
 [data-mode='light'] {
@@ -182,6 +189,7 @@
   --c-ghost-pink: 169 47 134;
   --c-ghost-cyan: 10 109 138;
   --c-ghost-orange: 154 84 16;
+  --c-ghost-scared: 143 0 139;
 }
 
 :root {
@@ -207,5 +215,6 @@
     --c-ghost-red var(--theme-transition) ease,
     --c-ghost-pink var(--theme-transition) ease,
     --c-ghost-cyan var(--theme-transition) ease,
-    --c-ghost-orange var(--theme-transition) ease;
+    --c-ghost-orange var(--theme-transition) ease,
+    --c-ghost-scared var(--theme-transition) ease;
 }

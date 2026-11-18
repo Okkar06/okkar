@@ -6,6 +6,28 @@
 // must use these names — never a raw hex / rgb() value.
 const token = (name) => `rgb(var(${name}) / <alpha-value>)`
 
+// ── Footer chase: one 10s loop shared by every part (components/FooterChase.jsx).
+// The mascot walks the divider from 5% to 55% of the loop; each pellet blinks
+// out at the moment the mascot's mouth reaches it. The last one is the power
+// pellet: at 55% the ghost turns frightened, flees, and is caught at 70% (+200).
+// Everything is back in its starting place by 92%, then a short pause.
+// The 0% and 100% frames are identical, and are the still frame shown under
+// prefers-reduced-motion.
+export const CHASE_EATEN_AT = [12.5, 21, 29.5, 38, 46.5, 55]
+const chasePellet = (at) => ({
+  '0%': { opacity: '1', transform: 'scale(1)' },
+  [`${at}%`]: { opacity: '1', transform: 'scale(1)' },
+  [`${at + 0.8}%`]: { opacity: '0', transform: 'scale(0.2)' },
+  '86%': { opacity: '0', transform: 'scale(0.2)' },
+  '90%, 100%': { opacity: '1', transform: 'scale(1)' },
+})
+const chasePelletKeyframes = Object.fromEntries(
+  CHASE_EATEN_AT.map((at, index) => [`chase-pellet-${index}`, chasePellet(at)]),
+)
+const chasePelletAnimations = Object.fromEntries(
+  CHASE_EATEN_AT.map((_, index) => [`chase-pellet-${index}`, `chase-pellet-${index} 10s linear infinite`]),
+)
+
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   darkMode: ['selector', '[data-mode="dark"]'],
@@ -51,6 +73,9 @@ export default {
           pink: token('--c-ghost-pink'),
           cyan: token('--c-ghost-cyan'),
           orange: token('--c-ghost-orange'),
+          // A frightened ghost (after a power pellet). Steers clear of the
+          // picked colour's hue so it never blends into the walls.
+          scared: token('--c-ghost-scared'),
         },
         // Type
         ink: token('--c-ink'),
@@ -164,6 +189,61 @@ export default {
           from: { opacity: '0', transform: 'translate3d(0, 22px, 0)' },
           to: { opacity: '1', transform: 'translate3d(0, 0, 0)' },
         },
+
+        // ── Hero arcade sprites (components/HeroArcade.jsx) ──
+        // A ghost slowly patrolling side to side.
+        'ghost-sway': {
+          '0%, 100%': { transform: 'translate3d(0, 0, 0)' },
+          '50%': { transform: 'translate3d(18px, 0, 0)' },
+        },
+        // Power pellets breathing on and off. Ends lit (reduced-motion frame).
+        'pellet-blink': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.2' },
+        },
+        // Mostly a dim glint, now and then a bright twinkle.
+        twinkle: {
+          '0%, 84%, 100%': { opacity: '0.35', transform: 'scale(0.7)' },
+          '91%': { opacity: '1', transform: 'scale(1.2)' },
+        },
+        // Now and then a ghost glides across the right side and off screen.
+        // Ends hidden, so it never shows under reduced motion.
+        'ghost-flyby': {
+          '0%': { opacity: '0', transform: 'translate3d(0, 0, 0)' },
+          '4%': { opacity: '1', transform: 'translate3d(4vw, -6px, 0)' },
+          '32%': { opacity: '1', transform: 'translate3d(55vw, 6px, 0)' },
+          '33%, 100%': { opacity: '0', transform: 'translate3d(55vw, 0, 0)' },
+        },
+
+        // ── Footer chase (see CHASE_EATEN_AT above) ──
+        // On full-width wrappers, so a percentage is a share of the track.
+        'chase-mascot': {
+          '0%, 5%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
+          '55%': { opacity: '1', transform: 'translate3d(72%, 0, 0)' },
+          '70%': { opacity: '1', transform: 'translate3d(90%, 0, 0)' },
+          '78%': { opacity: '1', transform: 'translate3d(92%, 0, 0)' },
+          '82%': { opacity: '0', transform: 'translate3d(92%, 0, 0)' },
+          '86%': { opacity: '0', transform: 'translate3d(0, 0, 0)' },
+          '92%, 100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
+        },
+        'chase-ghost': {
+          '0%, 55%': { opacity: '1', transform: 'translate3d(88%, 0, 0)' },
+          '55.5%, 88%': { opacity: '0', transform: 'translate3d(88%, 0, 0)' },
+          '92%, 100%': { opacity: '1', transform: 'translate3d(88%, 0, 0)' },
+        },
+        'chase-scared': {
+          '0%, 55%': { opacity: '0', transform: 'translate3d(88%, 0, 0)' },
+          '55.5%': { opacity: '1', transform: 'translate3d(88%, 0, 0)' },
+          '70%': { opacity: '1', transform: 'translate3d(96%, 0, 0)' },
+          '70.5%, 100%': { opacity: '0', transform: 'translate3d(88%, 0, 0)' },
+        },
+        'chase-score': {
+          '0%, 70%': { opacity: '0', transform: 'translate3d(0, 4px, 0) scale(0.6)' },
+          '72%': { opacity: '1', transform: 'translate3d(0, -4px, 0) scale(1.1)' },
+          '80%': { opacity: '1', transform: 'translate3d(0, -10px, 0) scale(1)' },
+          '84%, 100%': { opacity: '0', transform: 'translate3d(0, -14px, 0) scale(1)' },
+        },
+        ...chasePelletKeyframes,
       },
       animation: {
         blink: 'blink 0.9s step-end infinite',
@@ -180,6 +260,15 @@ export default {
         nudge: 'nudge 0.28s ease-in-out 1',
         pop: 'pop 0.3s ease-out 1 both',
         rise: 'rise 0.6s ease-out 1 both',
+        'ghost-sway': 'ghost-sway 6s ease-in-out infinite',
+        'pellet-blink': 'pellet-blink 1.6s ease-in-out infinite',
+        twinkle: 'twinkle 5s ease-in-out infinite',
+        'ghost-flyby': 'ghost-flyby 13s linear 3s infinite backwards',
+        'chase-mascot': 'chase-mascot 10s linear infinite',
+        'chase-ghost': 'chase-ghost 10s linear infinite',
+        'chase-scared': 'chase-scared 10s linear infinite',
+        'chase-score': 'chase-score 10s linear infinite',
+        ...chasePelletAnimations,
       },
     },
   },

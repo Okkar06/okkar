@@ -37,6 +37,7 @@ const ON_SURFACES = [
   ['--c-ghost-pink', 4.5, 'pink tag'],
   ['--c-ghost-cyan', 4.5, 'success text / cyan tag'],
   ['--c-ghost-orange', 4.5, 'orange tag'],
+  ['--c-ghost-scared', 3, 'frightened ghost'],
   ['--c-wall', 3, 'borders and controls'],
   ['--c-focus', 3, 'focus ring'],
   ['--c-dot', 3, 'pellets'],
@@ -187,6 +188,26 @@ describe('styles/tokens.css (generated fallback)', () => {
       expect(css).toContain(`${name} var(--theme-transition) ease`)
     }
     expect(css).toMatch(/--theme-transition: 300ms;/)
+  })
+})
+
+describe('frightened ghost', () => {
+  it.each(THEME_MODES)('always stands apart from the walls, whatever colour is picked (%s)', (mode) => {
+    for (const preset of THEME_PRESETS) {
+      const { vars } = derivePalette(preset.color, mode)
+      const scared = rgbToOklch(rgb(vars['--c-ghost-scared']))
+      const wall = rgbToOklch(rgb(vars['--c-wall']))
+      expect(hueDistance(scared.h, wall.h), preset.label).toBeGreaterThan(40)
+    }
+  })
+
+  it('is blue unless the picked colour is blue itself', () => {
+    const blue = (color) => rgbToOklch(rgb(derivePalette(color, 'dark').vars['--c-ghost-scared'])).h
+    const tangerine = blue(THEME_PRESETS.find((entry) => entry.id === 'orange').color)
+    const mazeBlue = blue(THEME_PRESETS.find((entry) => entry.id === 'blue').color)
+    expect(tangerine).toBeGreaterThan(240)
+    expect(tangerine).toBeLessThan(290)
+    expect(hueDistance(mazeBlue, tangerine)).toBeGreaterThan(40)
   })
 })
 

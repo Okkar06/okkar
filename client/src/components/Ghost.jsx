@@ -1,6 +1,7 @@
 /**
  * Ghost — an original drifting creature: soft dome, three-wave hem, visor brow
- * and a single antenna bead. Four colourways from the theme tokens.
+ * and a single antenna bead. Four colourways from the theme tokens, plus a
+ * frightened one (`scared`) with a worried face, for after a power pellet.
  * Decoration only: aria-hidden and never focusable. The drift is CSS and
  * stops under prefers-reduced-motion.
  */
@@ -9,6 +10,7 @@ const FILLS = {
   pink: 'fill-ghost-pink',
   cyan: 'fill-ghost-cyan',
   orange: 'fill-ghost-orange',
+  scared: 'fill-ghost-scared',
 }
 
 const STROKES = {
@@ -16,6 +18,7 @@ const STROKES = {
   pink: 'stroke-ghost-pink',
   cyan: 'stroke-ghost-cyan',
   orange: 'stroke-ghost-orange',
+  scared: 'stroke-ghost-scared',
 }
 
 const DRIFTS = {
@@ -60,11 +63,29 @@ function Ghost({ color = 'red', size = 40, drift = 'float', delay = 0, className
         opacity="0.35"
       />
 
-      {/* Eyes */}
-      <circle cx="20" cy="33" r="7" className="fill-eye" />
-      <circle cx="37" cy="33" r="7" className="fill-eye" />
-      <circle cx="22" cy="34" r="3.2" className="fill-on-mascot" />
-      <circle cx="39" cy="34" r="3.2" className="fill-on-mascot" />
+      {color === 'scared' ? (
+        <>
+          {/* Worried face: small eyes and a wobbling mouth */}
+          <rect x="17" y="29" width="6" height="6" rx="1" className="fill-eye" />
+          <rect x="33" y="29" width="6" height="6" rx="1" className="fill-eye" />
+          <path
+            d="M12 46 l4-4 l4 4 l4-4 l4 4 l4-4 l4 4 l4-4 l4 4"
+            fill="none"
+            className="stroke-eye"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+        </>
+      ) : (
+        <>
+          {/* Eyes */}
+          <circle cx="20" cy="33" r="7" className="fill-eye" />
+          <circle cx="37" cy="33" r="7" className="fill-eye" />
+          <circle cx="22" cy="34" r="3.2" className="fill-on-mascot" />
+          <circle cx="39" cy="34" r="3.2" className="fill-on-mascot" />
+        </>
+      )}
     </svg>
   )
 }
