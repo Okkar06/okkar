@@ -14,6 +14,8 @@ export const THEME_STORAGE_KEY = 'okkar-theme'
 
 // Written by builds that only had a dark/light switch.
 const LEGACY_MODE_KEY = 'color-mode'
+// Written by builds that had an on/off switch for the colour cycle.
+const LEGACY_AUTO_CYCLE_KEY = 'okkar-theme-auto'
 
 const isMode = (value) => THEME_MODES.includes(value)
 
@@ -65,28 +67,9 @@ export function writeStoredTheme(theme, palette) {
       }),
     )
     localStorage.removeItem(LEGACY_MODE_KEY)
+    localStorage.removeItem(LEGACY_AUTO_CYCLE_KEY)
   } catch {
     // Not being able to remember the choice is not an error worth surfacing.
   }
 }
 
-/** Whether the colour cycles through the presets on its own. On by default. */
-export const AUTO_CYCLE_STORAGE_KEY = 'okkar-theme-auto'
-
-export const parseAutoCycle = (raw) => raw !== '0'
-
-export function readAutoCycle() {
-  try {
-    return parseAutoCycle(localStorage.getItem(AUTO_CYCLE_STORAGE_KEY))
-  } catch {
-    return true
-  }
-}
-
-export function writeAutoCycle(enabled) {
-  try {
-    localStorage.setItem(AUTO_CYCLE_STORAGE_KEY, enabled ? '1' : '0')
-  } catch {
-    // Ignored, as above.
-  }
-}

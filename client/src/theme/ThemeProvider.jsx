@@ -2,16 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'reac
 import { applyTheme } from './applyTheme.js'
 import { normalizeHex } from './color.js'
 import { AUTO_CYCLE_MS, THEME_MODES, findPreset, nextPresetColor } from './presets.js'
-import {
-  AUTO_CYCLE_STORAGE_KEY,
-  THEME_STORAGE_KEY,
-  parseAutoCycle,
-  parseStoredTheme,
-  readAutoCycle,
-  readStoredTheme,
-  writeAutoCycle,
-  writeStoredTheme,
-} from './storage.js'
+import { THEME_STORAGE_KEY, parseStoredTheme, readStoredTheme, writeStoredTheme } from './storage.js'
 import { ThemeContext } from './ThemeContext.js'
 
 const sameTheme = (a, b) => a.color === b.color && a.mode === b.mode
@@ -24,7 +15,6 @@ const pageVisible = () => typeof document === 'undefined' || document.visibility
  */
 function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(readStoredTheme)
-  const [autoCycle, setAutoCycleState] = useState(readAutoCycle)
   const [visible, setVisible] = useState(pageVisible)
 
   // Layout effect: the tokens are on <html> before the browser paints.
@@ -41,7 +31,6 @@ function ThemeProvider({ children }) {
     // Another tab changed the theme.
     const handleStorage = (event) => {
       if (event.key === THEME_STORAGE_KEY) adopt(parseStoredTheme(event.newValue))
-      if (event.key === AUTO_CYCLE_STORAGE_KEY) setAutoCycleState(parseAutoCycle(event.newValue))
     }
 
     const handleVisibility = () => setVisible(pageVisible())
@@ -61,22 +50,17 @@ function ThemeProvider({ children }) {
     }
   }, [])
 
-  // Auto-cycle: move to the next preset after AUTO_CYCLE_MS. The timer restarts
-  // whenever the colour changes (a pick, or another tab), and waits while the
-  // tab is hidden so a background tab does not churn through colours.
+  // Auto-cycle (always on): move to the next preset after AUTO_CYCLE_MS. The
+  // timer restarts whenever the colour changes (a pick, or another tab), and
+  // waits while the tab is hidden so a background tab does not churn through
+  // colours.
   useEffect(() => {
-    if (!autoCycle || !visible) return undefined
+    if (!visible) return undefined
     const timer = setTimeout(() => {
       setTheme((current) => ({ ...current, color: nextPresetColor(current.color) }))
     }, AUTO_CYCLE_MS)
     return () => clearTimeout(timer)
-  }, [autoCycle, visible, theme.color])
-
-  const setAutoCycle = useCallback((enabled) => {
-    const next = Boolean(enabled)
-    setAutoCycleState(next)
-    writeAutoCycle(next)
-  }, [])
+  }, [visible, theme.color])
 
   const setColor = useCallback((value) => {
     // Only the picker's presets are accepted.
@@ -95,8 +79,8 @@ function ThemeProvider({ children }) {
   }, [])
 
   const value = useMemo(
-    () => ({ color: theme.color, mode: theme.mode, autoCycle, setColor, setMode, toggleMode, setAutoCycle }),
-    [theme, autoCycle, setColor, setMode, toggleMode, setAutoCycle],
+    () => ({ color: theme.color, mode: theme.mode, setColor, setMode, toggleMode }),
+    [theme, setColor, setMode, toggleMode],
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

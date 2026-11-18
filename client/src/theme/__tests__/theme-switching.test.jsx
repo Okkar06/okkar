@@ -5,7 +5,7 @@ import ColorPicker from '../../components/ColorPicker'
 import ModeToggle from '../../components/ModeToggle'
 import { derivePalette, PALETTE_VERSION } from '../palette'
 import { AUTO_CYCLE_MS, DEFAULT_THEME, THEME_PRESETS } from '../presets'
-import { AUTO_CYCLE_STORAGE_KEY, THEME_STORAGE_KEY } from '../storage'
+import { THEME_STORAGE_KEY } from '../storage'
 import ThemeProvider from '../ThemeProvider'
 
 const root = document.documentElement
@@ -199,10 +199,8 @@ describe('colour picker keyboard and pointer support', () => {
     await user.click(screen.getByRole('button', { name: 'elsewhere' }))
     expect(palette()).not.toBeInTheDocument()
 
-    // Tab order inside: current colour → AUTO switch → out.
+    // Tab order inside: current colour → out.
     await user.click(trigger())
-    await user.tab()
-    expect(palette()).toBeInTheDocument()
     await user.tab()
     expect(palette()).not.toBeInTheDocument()
   })
@@ -219,7 +217,6 @@ describe('colour picker keyboard and pointer support', () => {
 })
 
 describe('auto-cycling colour', () => {
-  const autoSwitch = () => screen.getByRole('switch', { name: 'Change color every 30 seconds' })
   const wait = (ms) => act(() => vi.advanceTimersByTime(ms))
 
   it('moves to the next preset every 30 seconds, wrapping round', () => {
@@ -255,26 +252,15 @@ describe('auto-cycling colour', () => {
     vi.useRealTimers()
   })
 
-  it('the AUTO switch stops it, and the choice is remembered', () => {
+  it('is always on: there is no switch, and an "off" saved by an older build is ignored and cleared', () => {
     vi.useFakeTimers()
-    const first = renderTheme()
-
-    fireEvent.click(trigger())
-    expect(autoSwitch()).toHaveAttribute('aria-checked', 'true')
-    fireEvent.click(autoSwitch())
-    expect(autoSwitch()).toHaveAttribute('aria-checked', 'false')
-    expect(localStorage.getItem(AUTO_CYCLE_STORAGE_KEY)).toBe('0')
-
-    wait(AUTO_CYCLE_MS * 3)
-    expectPainted(DEFAULT_THEME.color, 'dark')
-
-    first.unmount()
+    localStorage.setItem('okkar-theme-auto', '0')
     renderTheme()
-    wait(AUTO_CYCLE_MS * 3)
-    expectPainted(DEFAULT_THEME.color, 'dark')
 
     fireEvent.click(trigger())
-    fireEvent.click(autoSwitch())
+    expect(screen.queryByRole('switch')).not.toBeInTheDocument()
+    expect(localStorage.getItem('okkar-theme-auto')).toBeNull()
+
     wait(AUTO_CYCLE_MS)
     expectPainted(THEME_PRESETS[1].color, 'dark')
     vi.useRealTimers()
