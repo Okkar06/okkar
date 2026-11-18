@@ -34,6 +34,23 @@ export const CONTENT = {
   ],
   nowText:
     'Finishing up my portfolio and actively looking for full-stack developer roles in Singapore.',
+  // About › POWER-UPS chips. `icon` names a glyph in components/PixelSprite.jsx.
+  powerUps: [
+    { label: 'React', icon: 'react' },
+    { label: 'TypeScript', icon: 'typescript' },
+    { label: 'Express', icon: 'express' },
+    { label: 'Node.js', icon: 'node' },
+    { label: 'PostgreSQL', icon: 'postgresql' },
+    { label: 'Prisma', icon: 'prisma' },
+    { label: 'Tailwind CSS', icon: 'tailwind' },
+    { label: 'Supabase', icon: 'supabase' },
+  ],
+  // About › PLAYER STATS boxes. Placeholders: edit freely.
+  playerStats: [
+    { label: 'Projects', value: '5+' },
+    { label: 'Level', value: 'Year 3' },
+    { label: 'Stack', value: 'Full' },
+  ],
   // Redrawn in the browser as a pixel mosaic (components/PixelPortrait.jsx).
   // A plain, evenly lit background works best: it is cut away automatically.
   photo: {
@@ -158,5 +175,8 @@ export const CONTENT = {
     email: 'okkarhein09@gmail.com',
     githubUrl: 'https://github.com/Okkar06',
     linkedinUrl: 'https://www.linkedin.com/in/okkar-hein',
+    // The "EXTRA LIFE" card. Put the file at client/public/resume.pdf.
+    resumeUrl: '/resume.pdf',
+    roles: ['Full-Stack Developer', 'Frontend Developer', 'Internship'],
   },
 }

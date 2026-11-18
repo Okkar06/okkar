@@ -71,6 +71,8 @@ function Home() {
             highlights={CONTENT.aboutHighlights}
             photo={CONTENT.photo}
             nowText={CONTENT.nowText}
+            powerUps={CONTENT.powerUps}
+            playerStats={CONTENT.playerStats}
             portraitReplay={portraitReplay}
           />
         </ErrorBoundary>
