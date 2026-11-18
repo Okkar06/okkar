@@ -3,12 +3,14 @@ import BonusIcon from '../components/BonusIcon'
 import EmptyState from '../components/EmptyState'
 import MazeCard from '../components/MazeCard'
 import { Reveal, RevealGroup, RevealItem } from '../components/Reveal'
+import SideArcade from '../components/SideArcade'
 
 /** Skills — a grid of bonus tokens: each entry is a labelled original glyph. */
 function SkillsSection({ groups = [] }) {
   return (
     <section id="skills" aria-labelledby="skills-heading" className="relative scroll-mt-32 px-4 py-20 sm:px-6">
-      <div className="mx-auto max-w-6xl">
+      <SideArcade scene="skills" />
+      <div className="relative mx-auto max-w-6xl">
         <Reveal>
           <ArcadeHeading
             id="skills-heading"

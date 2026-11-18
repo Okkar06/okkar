@@ -61,6 +61,18 @@ export const SPRITES = {
     '.kkkkkkkkk.',
     '....yyy....',
   ],
+  cherry: [
+    '.......nn..',
+    '.....nn.n..',
+    '....n...n..',
+    '...n....n..',
+    '..n.....n..',
+    '.rrr...rrr.',
+    'rrdrr.rrdrr',
+    'rdrrr.rdrrr',
+    'rrrrr.rrrrr',
+    '.rrr...rrr.',
+  ],
   key: [
     '..cccc..',
     '.cc..cc.',

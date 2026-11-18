@@ -1,8 +1,10 @@
 import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import ColorPicker from './ColorPicker'
+import Ghost from './Ghost'
 import Mascot from './Mascot'
 import ModeToggle from './ModeToggle'
+import PixelSprite from './PixelSprite'
 import PowerDot from './PowerDot'
 import { useActiveSection } from '../hooks/useActiveSection'
 
@@ -80,9 +82,31 @@ function Navbar({ links, sectionIds }) {
         aria-hidden="true"
         className="flex items-center justify-between border-b border-wall/25 px-4 py-1.5 sm:px-6"
       >
-        <span className="hud-label motion-safe:animate-hud-flicker">1UP</span>
-        <span className="hud-label hidden sm:inline">HIGH SCORE</span>
-        <span className="hud-label text-mascot-ink">READY!</span>
+        {/* 1UP and two spare lives */}
+        {/* Each group is held to the text height, so the sprites never make
+            the strip (and the header) taller. */}
+        <span className="flex h-2 items-center gap-2.5 sm:h-2.5">
+          <span className="hud-label motion-safe:animate-hud-flicker">1UP</span>
+          <span className="flex items-center gap-1">
+            <Mascot size={10} chomping={false} />
+            <Mascot size={10} chomping={false} />
+          </span>
+        </span>
+        <span className="hidden h-2.5 items-center gap-2.5 sm:flex">
+          <Ghost color="red" size={10} drift="none" />
+          <span className="hud-label">HIGH SCORE</span>
+          <Ghost color="cyan" size={10} drift="none" />
+        </span>
+        {/* The fruit collected so far, then READY! */}
+        <span className="flex h-2 items-center gap-2.5 sm:h-2.5">
+          <span className="flex items-center gap-1.5">
+            <PixelSprite name="cherry" size={10} />
+            <PixelSprite name="strawberry" size={10} className="hidden sm:block" />
+            <PixelSprite name="orange" size={10} className="hidden sm:block" />
+            <PixelSprite name="bell" size={10} className="hidden lg:block" />
+          </span>
+          <span className="hud-label text-mascot-ink">READY!</span>
+        </span>
       </div>
 
       <nav aria-label="Main navigation" className="mx-auto max-w-6xl px-4 py-3 sm:px-6">

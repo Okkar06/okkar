@@ -5,10 +5,12 @@ import PixelPortrait from '../components/PixelPortrait'
 import PowerDot from '../components/PowerDot'
 import { PlayerStats, PowerUps } from '../components/PowerUps'
 import { Reveal, RevealGroup, RevealItem } from '../components/Reveal'
+import SideArcade from '../components/SideArcade'
 
 function AboutSection({ bio, highlights = [], photo, nowText, powerUps = [], playerStats = [], portraitReplay = 0 }) {
   return (
     <section id="about" aria-labelledby="about-heading" className="relative scroll-mt-32 px-4 py-20 sm:px-6">
+      <SideArcade scene="about" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <Ghost color="pink" size={28} drift="drift" className="absolute right-[8%] top-4 hidden lg:block" />
       </div>

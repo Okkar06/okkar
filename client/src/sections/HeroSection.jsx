@@ -4,6 +4,7 @@ import Ghost from '../components/Ghost'
 import HeroArcade from '../components/HeroArcade'
 import Mascot from '../components/Mascot'
 import PowerDot from '../components/PowerDot'
+import SideArcade from '../components/SideArcade'
 
 const CHASE_DOTS = 10
 
@@ -61,6 +62,8 @@ function HeroSection({ firstName, lastName, tagline, available, onStart }) {
       <div aria-hidden="true" className="maze-floor pointer-events-none absolute inset-0 opacity-70" />
       {/* Right-hand side: the arcade crowd, with parallax and a fly-by ghost. */}
       <HeroArcade />
+      {/* The left margin, on wide screens. */}
+      <SideArcade scene="hero" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         {LEFT_CREW.map((member) =>
           member.ghost ? (

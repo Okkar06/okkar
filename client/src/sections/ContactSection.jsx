@@ -3,6 +3,7 @@ import ArcadeHeading from '../components/ArcadeHeading'
 import ContactForm from '../components/ContactForm'
 import ErrorBoundary from '../components/ErrorBoundary'
 import Ghost from '../components/Ghost'
+import SideArcade from '../components/SideArcade'
 import IconLink from '../components/IconLink'
 import { GitHubIcon, LinkedInIcon, MailIcon } from '../components/icons'
 import MazeCard from '../components/MazeCard'
@@ -28,6 +29,7 @@ function StatusRow({ label, children, tone = 'text-ink' }) {
 function ContactSection({ email, githubUrl, linkedinUrl, available = true, resumeUrl, roles = [] }) {
   return (
     <section id="contact" aria-labelledby="contact-heading" className="relative scroll-mt-32 px-4 py-20 sm:px-6">
+      <SideArcade scene="contact" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <Ghost color="red" size={28} className="absolute right-[12%] top-4 hidden lg:block" />
       </div>

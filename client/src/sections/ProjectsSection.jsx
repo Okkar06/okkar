@@ -3,6 +3,7 @@ import ArcadeHeading from '../components/ArcadeHeading'
 import EmptyState from '../components/EmptyState'
 import Ghost from '../components/Ghost'
 import ProjectDetails from '../components/ProjectDetails'
+import SideArcade from '../components/SideArcade'
 import { Reveal } from '../components/Reveal'
 import HorizontalTimeline from '../components/timeline/HorizontalTimeline'
 import VerticalTimeline from '../components/timeline/VerticalTimeline'
@@ -71,6 +72,7 @@ function ProjectsSection({ projects = [], holdMs, glideMs }) {
       aria-labelledby="projects-heading"
       className="relative scroll-mt-32 px-4 py-20 sm:px-6 md:scroll-mt-[5.625rem] md:py-[clamp(0.75rem,2.5vh,4rem)]"
     >
+      <SideArcade scene="projects" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <Ghost color="orange" size={28} className="absolute right-[10%] top-5 hidden lg:block" />
       </div>
