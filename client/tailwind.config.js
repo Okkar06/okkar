@@ -244,6 +244,29 @@ export default {
           '84%, 100%': { opacity: '0', transform: 'translate3d(0, -14px, 0) scale(1)' },
         },
         ...chasePelletKeyframes,
+
+        // ── Projects timeline chomper (components/timeline/TimelineChase.jsx) ──
+        // All on full-width layers, so 100% is the timeline's width. The
+        // runner and the "ahead" window move together; the window's content
+        // moves back by the same amount, so the pellets stay put and vanish
+        // as the runner reaches them. The "behind" window trails 160px back,
+        // so pellets reappear behind him.
+        'tl-run': {
+          from: { transform: 'translate3d(0, 0, 0)' },
+          to: { transform: 'translate3d(100%, 0, 0)' },
+        },
+        'tl-run-counter': {
+          from: { transform: 'translate3d(0, 0, 0)' },
+          to: { transform: 'translate3d(-100%, 0, 0)' },
+        },
+        'tl-trail': {
+          from: { transform: 'translate3d(calc(-100% - 160px), 0, 0)' },
+          to: { transform: 'translate3d(-160px, 0, 0)' },
+        },
+        'tl-trail-counter': {
+          from: { transform: 'translate3d(calc(100% + 160px), 0, 0)' },
+          to: { transform: 'translate3d(160px, 0, 0)' },
+        },
       },
       animation: {
         blink: 'blink 0.9s step-end infinite',
@@ -269,6 +292,10 @@ export default {
         'chase-scared': 'chase-scared 10s linear infinite',
         'chase-score': 'chase-score 10s linear infinite',
         ...chasePelletAnimations,
+        'tl-run': 'tl-run 18s linear infinite',
+        'tl-run-counter': 'tl-run-counter 18s linear infinite',
+        'tl-trail': 'tl-trail 18s linear infinite',
+        'tl-trail-counter': 'tl-trail-counter 18s linear infinite',
       },
     },
   },

@@ -85,6 +85,12 @@ export const SPRITES = {
   star: ['..d..', '.ddd.', 'ddddd', '.ddd.', '..d..'],
   pellet: ['.dddd.', 'dddddd', 'dddddd', 'dddddd', 'dddddd', '.dddd.'],
 
+  // Timeline controls.
+  arrowLeft: ['...n...', '..nn...', '.nnnnnn', 'nnnnnnn', '.nnnnnn', '..nn...', '...n...'],
+  arrowRight: ['...n...', '...nn..', 'nnnnnn.', 'nnnnnnn', 'nnnnnn.', '...nn..', '...n...'],
+  pause: ['nn.nn', 'nn.nn', 'nn.nn', 'nn.nn', 'nn.nn', 'nn.nn', 'nn.nn'],
+  play: ['n.....', 'nnn...', 'nnnnn.', 'nnnnnn', 'nnnnn.', 'nnn...', 'n.....'],
+
   // Tech-stack glyphs for the About section's POWER-UPS chips.
   react: [
     '....n....',

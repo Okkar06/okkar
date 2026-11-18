@@ -142,6 +142,19 @@ body {
   animation-play-state: paused !important;
 }
 
+/* Soft fade at the left and right edges of a horizontal strip (the projects
+   timeline), so content fades in and out instead of being cut off. A mask
+   only reads opacity, so the colour itself does not matter. */
+.edge-fade-x {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    rgb(var(--c-ink)) 7%,
+    rgb(var(--c-ink)) 93%,
+    transparent
+  );
+}
+
 /* Long words (a pasted URL, an unbroken name) wrap instead of pushing the
    layout sideways. */
 h1,

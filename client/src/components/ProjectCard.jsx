@@ -21,6 +21,7 @@ function ProjectCard({
   primaryUrl,
   secondaryUrl,
   index = 0,
+  stage,
   placeholder = false,
 }) {
   const demoUrl = isSafeHref(primaryUrl) ? primaryUrl : null
@@ -52,7 +53,7 @@ function ProjectCard({
   return (
     <MazeCard
       as="article"
-      stage={`STAGE ${index + 1}`}
+      stage={`STAGE ${stage ?? index + 1}`}
       interactive
       className="flex h-full min-w-0 flex-col p-6 pt-8 sm:p-7 sm:pt-9"
     >
