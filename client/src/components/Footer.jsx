@@ -1,8 +1,6 @@
-import DotTrail from './DotTrail'
-import Ghost from './Ghost'
+import FooterChase from './FooterChase'
 import IconLink from './IconLink'
 import { GitHubIcon, LinkedInIcon } from './icons'
-import Mascot from './Mascot'
 
 function Footer({ name, githubUrl, linkedinUrl }) {
   const year = new Date().getFullYear()
@@ -10,10 +8,8 @@ function Footer({ name, githubUrl, linkedinUrl }) {
   return (
     <footer className="relative border-t-2 border-wall/50 bg-panel px-4 py-10 sm:px-6">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-5 flex justify-center">
-        <div className="flex items-center gap-3 rounded-full bg-void px-4 py-1.5">
-          <Mascot size={22} />
-          <DotTrail count={6} dotClass="h-1.5 w-1.5" />
-          <Ghost color="cyan" size={18} drift="none" />
+        <div className="rounded-full bg-void px-4 py-1.5">
+          <FooterChase />
         </div>
       </div>
 
