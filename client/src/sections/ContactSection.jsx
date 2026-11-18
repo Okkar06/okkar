@@ -1,3 +1,4 @@
+import ArcadeButton from '../components/ArcadeButton'
 import ArcadeHeading from '../components/ArcadeHeading'
 import ContactForm from '../components/ContactForm'
 import ErrorBoundary from '../components/ErrorBoundary'
@@ -24,12 +25,11 @@ function StatusRow({ label, children, tone = 'text-ink' }) {
   )
 }
 
-function ContactSection({ email, githubUrl, linkedinUrl, available = true }) {
+function ContactSection({ email, githubUrl, linkedinUrl, available = true, resumeUrl, roles = [] }) {
   return (
     <section id="contact" aria-labelledby="contact-heading" className="relative scroll-mt-32 px-4 py-20 sm:px-6">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <Ghost color="red" size={28} className="absolute right-[12%] top-4 hidden lg:block" />
-        <Ghost color="pink" size={26} drift="drift" delay={0.9} className="absolute bottom-5 right-[26%] hidden lg:block" />
       </div>
 
       <div className="relative mx-auto max-w-6xl">
@@ -42,7 +42,9 @@ function ContactSection({ email, githubUrl, linkedinUrl, available = true }) {
           />
         </Reveal>
 
-        <Reveal className="grid gap-7 lg:grid-cols-5 lg:items-start">
+        {/* Grid items stretch, so the side column ends exactly level with the
+            form card; its cards grow to share the height evenly. */}
+        <Reveal className="grid gap-7 lg:grid-cols-5 lg:items-stretch">
           {/* The cabinet: name-entry screen */}
           <MazeCard className="min-w-0 p-6 sm:p-8 lg:col-span-3" stage="HIGH SCORE ENTRY">
             <div aria-hidden="true" className="mb-6 flex items-center gap-2">
@@ -59,8 +61,8 @@ function ContactSection({ email, githubUrl, linkedinUrl, available = true }) {
           </MazeCard>
 
           {/* Side panel: direct routes + status */}
-          <div className="min-w-0 space-y-5 lg:col-span-2">
-            <MazeCard className="p-6">
+          <div className="flex min-w-0 flex-col gap-5 lg:col-span-2">
+            <MazeCard className="p-6 lg:flex-1">
               <p className="hud-label">DIRECT LINE</p>
               {email ? (
                 <a
@@ -90,7 +92,7 @@ function ContactSection({ email, githubUrl, linkedinUrl, available = true }) {
               </div>
             </MazeCard>
 
-            <MazeCard className="p-6">
+            <MazeCard className="p-6 lg:flex-1">
               <p className="hud-label">CABINET STATUS</p>
               <dl className="mt-4 space-y-3 text-sm">
                 <StatusRow label="Location">Singapore</StatusRow>
@@ -102,6 +104,30 @@ function ContactSection({ email, githubUrl, linkedinUrl, available = true }) {
                 </StatusRow>
                 <StatusRow label="Reply time">Within 24 h</StatusRow>
               </dl>
+            </MazeCard>
+
+            <MazeCard className="flex flex-col p-6 lg:flex-1">
+              <p className="hud-label">EXTRA LIFE</p>
+              <p className="mt-4 text-sm text-ink-dim">Want the full stats?</p>
+
+              {resumeUrl ? (
+                <ArcadeButton href={resumeUrl} download variant="primary" size="md" className="mt-5 self-start">
+                  Download Resume
+                </ArcadeButton>
+              ) : null}
+
+              {roles.length > 0 ? (
+                <ul aria-label="Roles I'm looking for" className="mt-6 flex flex-wrap gap-2">
+                  {roles.map((role) => (
+                    <li
+                      key={role}
+                      className="rounded-tile border-2 border-wall/40 bg-floor/60 px-2.5 py-1.5 font-pixel text-pixel-xs uppercase leading-none tracking-hud text-ink"
+                    >
+                      {role}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </MazeCard>
           </div>
         </Reveal>
