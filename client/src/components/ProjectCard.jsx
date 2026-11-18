@@ -44,8 +44,8 @@ function ProjectCard({
         className="flex h-full flex-col items-center justify-center gap-3 px-4 pb-4 pt-7 text-center"
       >
         {/* The bonus stage has no popup, so its text is never clamped; the
-            dots make room for it on short screens instead. */}
-        <div className="flex items-center gap-2 short:hidden" aria-hidden="true">
+            dots make room for it on laptop-height screens (≤820px tall) instead. */}
+        <div className="flex items-center gap-2 [@media(max-height:820px)]:hidden" aria-hidden="true">
           <PowerDot size="sm" />
           <PowerDot power />
           <PowerDot size="sm" />
@@ -80,7 +80,7 @@ function ProjectCard({
     >
       <h3 className="font-pixel text-pixel-sm uppercase leading-relaxed text-ink line-clamp-2">{title}</h3>
 
-      <p className="mt-2 text-sm leading-relaxed text-ink-dim line-clamp-3 short:line-clamp-2">{description}</p>
+      <p className="mt-2 text-sm leading-relaxed text-ink-dim line-clamp-3 [@media(max-height:820px)]:line-clamp-2">{description}</p>
 
       {shown.length > 0 ? (
         <ul className="mt-3 flex flex-wrap gap-1" aria-label="Built with">
