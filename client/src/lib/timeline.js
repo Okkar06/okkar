@@ -62,26 +62,58 @@ const MIN_UNIT = 8
  * (the second time with sides flipped); it is then repeated until it is at
  * least MIN_UNIT long. Three units are drawn and the view stays on the
  * middle one, wrapping by exactly one unit, so there are cards on both sides
- * of the view, the seam is invisible and the alternation never breaks.
+ * of the view and the alternation never breaks.
+ *
+ * Positions are grid columns of half a card step: card k starts at
+ * `stopColumn(k, count)`. After every pass there is one extra column, where
+ * a CONTINUE? marker shows that the run starts over (`markers`).
  *
  * The real cards are the first pass of the middle unit (slots `unit` to
- * `unit + count - 1`); every other slot is a decorative copy (aria-hidden
- * and inert).
+ * `unit + count - 1`); every other slot is a decorative copy (aria-hidden,
+ * and out of the Tab order).
  *
- * @returns {{ unit: number, items: Array<{ slot: number, source: number, side: 'above' | 'below', copy: boolean }> }}
+ * @returns {{
+ *   unit: number,
+ *   columns: number,
+ *   items: Array<{ slot: number, column: number, source: number, side: 'above' | 'below', copy: boolean }>,
+ *   markers: number[],
+ * }}
  */
 export function loopLayout(count) {
-  if (!Number.isInteger(count) || count <= 0) return { unit: 0, items: [] }
+  if (!Number.isInteger(count) || count <= 0) return { unit: 0, columns: 0, items: [], markers: [] }
   let unit = count % 2 === 0 ? count : count * 2
   while (unit < MIN_UNIT) unit += count % 2 === 0 ? count : count * 2
 
   const items = Array.from({ length: unit * 3 }, (_, slot) => ({
     slot,
+    column: stopColumn(slot, count),
     source: slot % count,
     side: slot % 2 === 0 ? 'above' : 'below',
     copy: slot < unit || slot >= unit + count,
   }))
-  return { unit, items }
+  // Each marker sits on the line halfway between a pass's last card and the
+  // next pass's first.
+  const markers = Array.from({ length: (unit * 3) / count }, (_, pass) => pass * (count + 1) + count)
+  return { unit, columns: stopColumn(unit, count), items, markers }
+}
+
+/**
+ * The grid column where the card at loop position `k` starts (any integer
+ * k): `count` cards a column apart, then one spare column for the marker.
+ */
+export function stopColumn(k, count) {
+  if (!(count > 0)) return 0
+  return Math.floor(k / count) * (count + 1) + wrap(k, count)
+}
+
+/** The loop position whose card starts nearest to `column` (any number). */
+export function nearestStop(column, count) {
+  if (!(count > 0)) return 0
+  const pass = Math.floor(column / (count + 1))
+  const k = pass * count + Math.min(Math.floor(column - pass * (count + 1)), count - 1)
+  const here = Math.abs(stopColumn(k, count) - column)
+  const next = Math.abs(stopColumn(k + 1, count) - column)
+  return next < here ? k + 1 : k
 }
 
 /** Wraps any offset into [0, length). */

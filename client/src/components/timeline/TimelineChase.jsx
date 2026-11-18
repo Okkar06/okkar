@@ -1,12 +1,12 @@
 import Mascot from '../Mascot'
 
-const PELLETS = 64
+const PELLETS = 32
 
 function PelletRow() {
   return (
-    <div className="absolute inset-0 flex items-center justify-between px-3">
+    <div className="absolute inset-0 flex items-center justify-between px-6">
       {Array.from({ length: PELLETS }, (_, i) => (
-        <span key={i} className="h-1 w-1 shrink-0 rounded-full bg-dot shadow-glow-dot" />
+        <span key={i} className="h-[3px] w-[3px] shrink-0 rounded-full bg-dot shadow-glow-dot" />
       ))}
     </div>
   )

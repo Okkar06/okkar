@@ -12,6 +12,7 @@ const VARIANTS = {
 }
 
 const SIZES = {
+  xs: 'px-3 py-1.5 text-pixel-xs',
   sm: 'px-4 py-2 text-pixel-sm',
   md: 'px-5 py-3 text-pixel-sm',
   lg: 'px-6 py-3.5 text-pixel-sm sm:text-pixel-md',

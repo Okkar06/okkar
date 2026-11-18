@@ -3,14 +3,15 @@ import PowerDot from './PowerDot'
 /**
  * ArcadeHeading — a section title in the pixel font with an arcade HUD strip
  * above it. The HUD text ("1UP", "HIGH SCORE", "READY!") is decoration: there
- * is no real score anywhere in this site.
+ * is no real score anywhere in this site. `className` replaces the default
+ * bottom margin.
  */
-function ArcadeHeading({ hud, title, subtitle, id, align = 'left', level = 2 }) {
+function ArcadeHeading({ hud, title, subtitle, id, align = 'left', level = 2, className = 'mb-10' }) {
   const Tag = `h${level}`
   const centred = align === 'center'
 
   return (
-    <div className={`mb-10 ${centred ? 'text-center' : 'text-left'}`}>
+    <div className={`${className} ${centred ? 'text-center' : 'text-left'}`}>
       <div
         className={`flex items-center gap-2.5 ${centred ? 'justify-center' : 'justify-start'}`}
       >

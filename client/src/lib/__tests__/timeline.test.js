@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { loopLayout, nearestStep, orderStages, parseStageDate, wrap } from '../timeline'
+import { loopLayout, nearestStep, nearestStop, orderStages, parseStageDate, stopColumn, wrap } from '../timeline'
 
 describe('parseStageDate', () => {
   it('reads month-year and year-only dates', () => {
@@ -38,7 +38,7 @@ describe('orderStages', () => {
 
 describe('loopLayout', () => {
   it.each([1, 2, 3, 5, 6, 7])('alternates sides across the loop seam for %i stages', (count) => {
-    const { unit, items } = loopLayout(count)
+    const { unit, columns, items } = loopLayout(count)
     expect(unit).toBeGreaterThanOrEqual(8)
     expect(items).toHaveLength(unit * 3)
     // The unit is a whole number of passes and an even number of slots, so
@@ -48,6 +48,7 @@ describe('loopLayout', () => {
     for (let slot = 0; slot < unit * 2; slot += 1) {
       expect(items[slot + unit].source).toBe(items[slot].source)
       expect(items[slot + unit].side).toBe(items[slot].side)
+      expect(items[slot + unit].column).toBe(items[slot].column + columns)
     }
     for (let slot = 1; slot < items.length; slot += 1) expect(items[slot].side).not.toBe(items[slot - 1].side)
   })
@@ -60,7 +61,29 @@ describe('loopLayout', () => {
   })
 
   it('is empty for no stages', () => {
-    expect(loopLayout(0)).toEqual({ unit: 0, items: [] })
+    expect(loopLayout(0)).toEqual({ unit: 0, columns: 0, items: [], markers: [] })
+  })
+})
+
+describe('loop seam', () => {
+  it('leaves one spare column after each pass, with a marker centred in the gap', () => {
+    const { items, markers } = loopLayout(3)
+    expect(items.slice(0, 7).map((item) => item.column)).toEqual([0, 1, 2, 4, 5, 6, 8])
+    expect(markers.slice(0, 2)).toEqual([3, 7])
+    // Card and marker centres sit one column in from where they start.
+    const last = items[2].column + 1
+    const next = items[3].column + 1
+    expect(markers[0] + 1).toBe((last + next) / 2)
+    expect(markers).toHaveLength(items.length / 3)
+  })
+
+  it('maps any position to a card column and back', () => {
+    for (const k of [-7, -1, 0, 1, 5, 6, 13]) expect(nearestStop(stopColumn(k, 6), 6)).toBe(k)
+    expect(stopColumn(-1, 6)).toBe(-2)
+    // Halfway across the seam gap belongs to whichever card is nearer.
+    expect(nearestStop(5.9, 6)).toBe(5)
+    expect(nearestStop(6.1, 6)).toBe(6)
+    expect(nearestStop(2.4, 6)).toBe(2)
   })
 })
 

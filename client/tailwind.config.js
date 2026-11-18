@@ -33,6 +33,11 @@ export default {
   darkMode: ['selector', '[data-mode="dark"]'],
   theme: {
     extend: {
+      screens: {
+        // Laptop-height screens (1366×768 and the like): the projects
+        // timeline tightens up so the whole section fits on one screen.
+        short: { raw: '(max-height: 820px)' },
+      },
       fontFamily: {
         pixel: ["'Press Start 2P'", "'Courier New'", 'monospace'],
         sans: ["'Inter Variable'", 'system-ui', '-apple-system', 'sans-serif'],
